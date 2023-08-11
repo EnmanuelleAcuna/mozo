@@ -1,0 +1,120 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<InicioTipoSesionViewModel>
+
+@{
+    ViewBag.Title = "Tipos de Sesión de Junta Directiva";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="TipSes" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Actas", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Tipos de Sesión de Junta Directiva
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="#" class="breadcrumb">Tipos de Sesión</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m10 mb-1">
+                    <span class="fz-1-2r font-bold">
+                        Lista de Tipos de Sesión
+                    </span>
+                </div>
+
+                <div class="col s12 m2">
+                    @* Botón [Agregar] *@
+                    <a class="btn btn-small yellow black-text font-bold waves-effect right" id="BtnAgregar" title="Agregar Tipo de Objeto" onclick="PopUpForm('@Url.Action("Agregar", "TipoSesion")')">
+                        Agregar
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <table id="TablaTiposSesion" class="table responsive display width-100 bordered cell-border">
+                        <thead>
+                            <tr>
+                                <th nowrap>@Html.DisplayNameFor(model => model.Descripcion)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var TipoSesion in Model) {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => TipoSesion.Descripcion)
+                                    </td>
+                                    <td>
+                                        <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@TipoSesion.IdTipoSesion'>
+                                            <i class="fa fa-caret-down blue-text"></i>
+                                        </a>
+
+                                        @* Contenido del Dropdown *@
+                                        <ul id='dropdown_@TipoSesion.IdTipoSesion' class='dropdown-content'>
+                                            <li>
+                                                <a class="blue-text" title='Editar' onclick="PopUpForm('@Url.Action("Editar", "TipoSesion", new { IdTipoSesion=TipoSesion.IdTipoSesion } )')">Editar</a>
+                                            </li>
+                                            <li>
+                                                <a class="red-text" title='Borrar' onclick="PopUpForm('@Url.Action("Eliminar", "TipoSesion", new { IdTipoSesion=TipoSesion.IdTipoSesion } )')">Borrar</a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        var PopUp;
+
+        $(document).ready(function () {
+            $("#TablaTiposSesion").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                sorting: false,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                ordering: false
+            })
+        });
+    </script>
+}

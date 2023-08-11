@@ -1,0 +1,417 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model InicioSeguimientoViewModel
+
+@{
+    ViewBag.Title = "Seguimiento de acuerdos";
+
+    int IdUnidad = Convert.ToInt32(User.IdUnidad());
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniSeg" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Acuerdos", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Seguimiento de Acuerdos
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Acuerdos", "Inicio")" class="breadcrumb">Módulo de Acuerdos</a>
+                    <a href="#" class="breadcrumb">Seguimiento de Acuerdos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m8 mb-1">
+                    <span class="fz-1-2r font-bold">Lista de seguimientos</span>
+                </div>
+                <div class="col s6 m2">
+                    <button id="BtnFiltrar" type="button" value="Filtrar" class="btn btn-small grey lighten-3 waves-effect black-text font-bold">
+                        <i class="fa fa-filter left"></i>
+                        Filtrar
+                    </button>
+                </div>
+                @if (User.IsInRole("Administrador") || User.IsInRole("Administrador Datasoft")) {
+                    <div class="col s6 m2">
+                        @* Botón agregar *@
+                        <a class="btn btn-small yellow waves-effect black-text font-bold right" title="Agregar usuario" href="@Url.Action("Agregar", "Seguimiento")">
+                            Agregar
+                        </a>
+                    </div>
+                }
+            </div>
+
+            <div class="row">
+                @* Selector de pestañas *@
+                <div class="col s12">
+                    <ul class="tabs tabs-fixed-width z-depth-2">
+                        <li class="tab">
+                            <a href="#ventana1" class="active blue-grey-text font-bold">
+                                <i class="fa fa-fw fa-stop">&nbsp;</i>
+                                No ejecutados
+                            </a>
+                        </li>
+                        <li class="tab">
+                            <a href="#ventana2" class="green-text font-bold">
+                                <i class="fa fa-fw fa-play">&nbsp;</i>
+                                En ejecución
+                            </a>
+                        </li>
+                        <li class="tab">
+                            <a href="#ventana3" class="deep-orange-text font-bold">
+                                <i class="fa fa-fw fa-archive">&nbsp;</i>
+                                Ejecutados
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            @if (User.IsInRole("Administrador") || User.IsInRole("Jefe despacho") || User.IsInRole("Coordinación Actas") || User.IsInRole("Secretario Técnico") || User.IsInRole("Abogado Secretaría Técnica") || User.IsInRole("Profesional de apoyo Secretaría Técnica") || User.IsInRole("Profesional Secretaría Técnica") || User.IsInRole("Director") || User.IsInRole("Gerente General") || User.IsInRole("Presidente Ejecutivo") || User.IsInRole("Subgerente Administrativo") || User.IsInRole("Abogado") || User.IsInRole("Administrador Datasoft")) {
+                <div class="row">
+                    @* Contenedor de pestaña 1 *@
+                    <div id="ventana1" class="col s12">
+                        <table id="TablaNoEjecutados" class="table responsive display width-100 bordered cell-border">
+                            <thead>
+                                <tr>
+                                    <th nowrap class="black-text">@Html.DisplayNameFor(model => model.SeguimientosNoEjecutados)</th>
+                                    <th nowrap class="black-text">Ejecución</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (SeguimientoViewModel Seguimiento in Model.SeguimientosNoEjecutados) {
+                                    <tr>
+                                        <td>
+                                            <a href="@Url.Action("Editar", "Seguimiento" , new { Id=Seguimiento.IdSeguimiento })">
+                                                <span class="black-text">Seguimiento&nbsp;al Acuerdo&nbsp;@Seguimiento.TituloAcuerdo</span>
+                                            </a>
+                                        </td>
+                                        <td nowrap>
+                                            <progress id="BarraAvance" class="width-80" max="100" title="Avance del Seguimiento" value="@Seguimiento.Avance"></progress>
+                                            @Html.DisplayFor(model => Seguimiento.Avance)%
+                                        </td>
+                                        <td>
+                                            <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Seguimiento.IdSeguimiento'>
+                                                <i class="fa fa-caret-down blue-text"></i>
+                                            </a>
+
+                                            @* Contenido del Dropdown *@
+                                            <ul id='dropdown_@Seguimiento.IdSeguimiento' class='dropdown-content'>
+                                                <li>
+                                                    <a class="blue-text" title='Ver Acuerdo' href="@Url.Action("Detalles", "Acuerdo" , new { Id=Seguimiento.IdAcuerdo })" target="_blank" )>Ver Acuerdo</a>
+                                                </li>
+                                                <li class="divider" tabindex="-1"></li>
+                                                <li>
+                                                    <a class="blue-text" title='Editar' href="@Url.Action("Editar", "Seguimiento" , new { Id=Seguimiento.IdSeguimiento })">Editar</a>
+                                                </li>
+                                                @if (Seguimiento.CodigoEstado.Equals("SA-NE") && (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador"))) {
+                                                    <li>
+                                                        <a class="red-text" title="Eliminar" onclick="PopUpForm('@Url.Action("Eliminar", "Seguimiento", new { Id=Seguimiento.IdSeguimiento } )')">
+                                                            Eliminar
+                                                        </a>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @* Contenedor de pestaña 2 *@
+                    <div id="ventana2" class="col s12">
+                        <table id="TablaEnEjecucion" class="table responsive display width-100 bordered cell-border">
+                            <thead>
+                                <tr>
+                                    <th nowrap class="black-text">@Html.DisplayNameFor(model => model.SeguimientosEnEjecucion)</th>
+                                    <th nowrap class="black-text">Ejecución</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (SeguimientoViewModel Seguimiento in Model.SeguimientosEnEjecucion) {
+                                    <tr>
+                                        <td nowrap>
+                                            <a href="@Url.Action("Editar", "Seguimiento" , new { Id=Seguimiento.IdSeguimiento })">
+                                                <span class="black-text">Seguimiento&nbsp;al Acuerdo&nbsp;@Seguimiento.TituloAcuerdo</span>
+                                            </a>
+                                        </td>
+                                        <td nowrap>
+                                            <progress id="BarraAvance" class="width-80" max="100" title="Avance del Seguimiento" value="@Seguimiento.Avance"></progress>
+                                            @Html.DisplayFor(model => Seguimiento.Avance)%
+                                        </td>
+                                        <td>
+                                            <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Seguimiento.IdSeguimiento'>
+                                                <i class="fa fa-caret-down blue-text"></i>
+                                            </a>
+
+                                            @* Coontenido del Dropdown *@
+                                            <ul id='dropdown_@Seguimiento.IdSeguimiento' class='dropdown-content'>
+                                                <li>
+                                                    <a class="blue-text" title='Ver detalles' href="@Url.Action("Detalles", "Acuerdo" , new { Id=Seguimiento.IdAcuerdo })" )>Ver Acuerdo</a>
+                                                </li>
+                                                <li class="divider" tabindex="-1"></li>
+                                                <li>
+                                                    <a class="blue-text" title='Editar' href="@Url.Action("Editar", "Seguimiento" , new { Id=Seguimiento.IdSeguimiento })">Editar</a>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @* Contenedor de pestaña 3 *@
+                    <div id="ventana3" class="col s12">
+                        <table id="TablaEjecutados" class="table responsive display width-100 bordered cell-border">
+                            <thead>
+                                <tr>
+                                    <th nowrap class="black-text">@Html.DisplayNameFor(model => model.SeguimientosEjecutados)</th>
+                                    <th nowrap class="black-text">Ejecución</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (SeguimientoViewModel Seguimiento in Model.SeguimientosEjecutados) {
+                                    <tr>
+                                        <td nowrap>
+                                            <a href="@Url.Action("Editar", "Seguimiento" , new { Id=Seguimiento.IdSeguimiento })">
+                                                <span class="black-text">Seguimiento&nbsp;al Acuerdo&nbsp;@Seguimiento.TituloAcuerdo</span>
+                                            </a>
+                                        </td>
+                                        <td nowrap>
+                                            <progress id="BarraAvance" class="width-80" max="100" title="Avance del Seguimiento" value="@Seguimiento.Avance"></progress>
+                                            @Html.DisplayFor(model => Seguimiento.Avance)%
+                                        </td>
+                                        <td>
+                                            <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Seguimiento.IdSeguimiento'>
+                                                <i class="fa fa-caret-down blue-text"></i>
+                                            </a>
+
+                                            @* Coontenido del Dropdown *@
+                                            <ul id='dropdown_@Seguimiento.IdSeguimiento' class='dropdown-content'>
+                                                <li>
+                                                    <a class="blue-text" title='Ver detalles' href="@Url.Action("Detalles", "Acuerdo" , new { Id=Seguimiento.IdAcuerdo })" )>Ver Acuerdo</a>
+                                                </li>
+                                                <li class="divider" tabindex="-1"></li>
+                                                <li>
+                                                    <a class="blue-text" title='Editar' href="@Url.Action("Editar", "Seguimiento" , new { Id=Seguimiento.IdSeguimiento })">Editar</a>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else {
+                if (Model.UnidadesEjecutorasSeguimiento.ElementAt(0).IdUnidad == IdUnidad) {
+                    <div class="row">
+                        @* Contenedor de pestaña 1 *@
+                        <div id="ventana1" class="col s12">
+                            <table id="TablaNoEjecutados" class="table responsive display width-100 bordered cell-border">
+                                <thead>
+                                    <tr>
+                                        <th nowrap class="black-text">@Html.DisplayNameFor(model => model.SeguimientosNoEjecutados)</th>
+                                        <th nowrap class="black-text">Ejecución</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (SeguimientoViewModel Seguimiento in Model.SeguimientosNoEjecutados) {
+
+                                        foreach (InformeSeguimientoPorUnidadViewModel Unidad in Model.UnidadesEjecutorasSeguimiento) {
+
+                                            if (Seguimiento.IdSeguimiento == Unidad.IdSeguimietno) {
+                                                <tr>
+                                                    <td>
+                                                        <a href="@Url.Action("Editar", "Seguimiento" , new { Id=Seguimiento.IdSeguimiento })">
+                                                            <span class="black-text">Seguimiento&nbsp;al Acuerdo&nbsp;@Seguimiento.TituloAcuerdo</span>
+                                                        </a>
+                                                    </td>
+                                                    <td nowrap>
+                                                        <progress id="BarraAvance" class="width-80" max="100" title="Avance del Seguimiento" value="@Seguimiento.Avance"></progress>
+                                                        @Html.DisplayFor(model => Seguimiento.Avance)%
+                                                    </td>
+                                                    <td>
+                                                        <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Seguimiento.IdSeguimiento'>
+                                                            <i class="fa fa-caret-down blue-text"></i>
+                                                        </a>
+
+                                                        @* Contenido del Dropdown *@
+                                                        <ul id='dropdown_@Seguimiento.IdSeguimiento' class='dropdown-content'>
+                                                            <li>
+                                                                <a class="blue-text" title='Ver detalles' href="@Url.Action("Detalles", "Acuerdo" , new { Id=Seguimiento.IdAcuerdo })" target="_blank" )>Ver Acuerdo</a>
+                                                            </li>
+                                                            <li class="divider" tabindex="-1"></li>
+                                                            <li>
+                                                                <a class="blue-text" title='Editar' href="@Url.Action("Editar", "Seguimiento" , new { Id=Seguimiento.IdSeguimiento })">Editar</a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @* Contenedor de pestaña 2 *@
+                        <div id="ventana2" class="col s12">
+                            <table id="TablaEnEjecucion" class="table responsive display width-100 bordered cell-border">
+                                <thead>
+                                    <tr>
+                                        <th nowrap class="black-text">@Html.DisplayNameFor(model => model.SeguimientosEnEjecucion)</th>
+                                        <th nowrap class="black-text">Ejecución</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (SeguimientoViewModel Seguimiento in Model.SeguimientosEnEjecucion) {
+
+                                        foreach (InformeSeguimientoPorUnidadViewModel Unidad in Model.UnidadesEjecutorasSeguimiento) {
+
+                                            if (Seguimiento.IdSeguimiento == Unidad.IdSeguimietno) {
+                                                <tr>
+                                                    <td nowrap>
+                                                        <a href="@Url.Action("Editar", "Seguimiento" , new { Id=Seguimiento.IdSeguimiento })">
+                                                            <span class="black-text">Seguimiento&nbsp;al Acuerdo&nbsp;@Seguimiento.TituloAcuerdo</span>
+                                                        </a>
+                                                    </td>
+                                                    <td nowrap>
+                                                        <progress id="BarraAvance" class="width-80" max="100" title="Avance del Seguimiento" value="@Seguimiento.Avance"></progress>
+                                                        @Html.DisplayFor(model => Seguimiento.Avance)%
+                                                    </td>
+                                                    <td>
+                                                        <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Seguimiento.IdSeguimiento'>
+                                                            <i class="fa fa-caret-down blue-text"></i>
+                                                        </a>
+
+                                                        @* Coontenido del Dropdown *@
+                                                        <ul id='dropdown_@Seguimiento.IdSeguimiento' class='dropdown-content'>
+                                                            <li>
+                                                                <a class="blue-text" title='Ver detalles' href="@Url.Action("Detalles", "Acuerdo" , new { Id=Seguimiento.IdAcuerdo })" )>Ver Acuerdo</a>
+                                                            </li>
+                                                            <li class="divider" tabindex="-1"></li>
+                                                            <li>
+                                                                <a class="blue-text" title='Editar' href="@Url.Action("Editar", "Seguimiento" , new { Id=Seguimiento.IdSeguimiento })">Editar</a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @* Contenedor de pestaña 3 *@
+                        <div id="ventana3" class="col s12">
+                            <table id="TablaEjecutados" class="table responsive display width-100 bordered cell-border">
+                                <thead>
+                                    <tr>
+                                        <th nowrap class="black-text">@Html.DisplayNameFor(model => model.SeguimientosEjecutados)</th>
+                                        <th nowrap class="black-text">Ejecución</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (SeguimientoViewModel Seguimiento in Model.SeguimientosEjecutados) {
+
+                                        foreach (InformeSeguimientoPorUnidadViewModel Unidad in Model.UnidadesEjecutorasSeguimiento) {
+
+                                            if (Seguimiento.IdSeguimiento == Unidad.IdSeguimietno) {
+                                                <tr>
+                                                    <td nowrap>
+                                                        <a href="@Url.Action("Editar", "Seguimiento" , new { Id=Seguimiento.IdSeguimiento })">
+                                                            <span class="black-text">Seguimiento&nbsp;al Acuerdo&nbsp;@Seguimiento.TituloAcuerdo</span>
+                                                        </a>
+                                                    </td>
+                                                    <td nowrap>
+                                                        <progress id="BarraAvance" class="width-80" max="100" title="Avance del Seguimiento" value="@Seguimiento.Avance"></progress>
+                                                        @Html.DisplayFor(model => Seguimiento.Avance)%
+                                                    </td>
+                                                    <td>
+                                                        <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Seguimiento.IdSeguimiento'>
+                                                            <i class="fa fa-caret-down blue-text"></i>
+                                                        </a>
+
+                                                        @* Coontenido del Dropdown *@
+                                                        <ul id='dropdown_@Seguimiento.IdSeguimiento' class='dropdown-content'>
+                                                            <li>
+                                                                <a class="blue-text" title='Ver detalles' href="@Url.Action("Detalles", "Acuerdo" , new { Id=Seguimiento.IdAcuerdo })" )>Ver Acuerdo</a>
+                                                            </li>
+                                                            <li class="divider" tabindex="-1"></li>
+                                                            <li>
+                                                                <a class="blue-text" title='Editar' href="@Url.Action("Editar", "Seguimiento" , new { Id=Seguimiento.IdSeguimiento })">Editar</a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            }
+
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#TablaNoEjecutados, #TablaEnEjecucion, #TablaEjecutados").DataTable({
+                initComplete: CambiarPropiedadesFiltro,
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: true,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 }
+                ]
+            });
+        });
+
+    </script>
+}

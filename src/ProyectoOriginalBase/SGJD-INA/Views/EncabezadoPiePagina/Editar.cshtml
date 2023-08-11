@@ -1,0 +1,129 @@
+﻿@using SGJD_INA.Models.Entities
+
+@model EncabezadoPiePagina
+
+@{
+    ViewBag.Title = "Editar encabezado y pie de página";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="EditEncPie" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "EncabezadoPiePagina")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Encabezado y Pie de Página
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="@Url.Action("Inicio", "EncabezadoPiePagina")" class="breadcrumb">Encabezados y Pie de Página</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12">
+                    <span class="fz-1-2r font-bold">
+                        Editar encabezado y pie de página de @Html.DisplayFor(model => model.TipoObjeto.Descripcion)
+                    </span>
+                </div>
+            </div>
+
+            @using (Html.BeginForm("Editar", "EncabezadoPiePagina", FormMethod.Post, htmlAttributes: new { id = "frmGuardarEncabezadoPie", autocomplete = "off" })) {
+                @Html.AntiForgeryToken()
+
+                @Html.HiddenFor(m => m.Id)
+                @Html.HiddenFor(m => m.IdTipoObjeto)
+
+                // Se guarda aqui los valores del campo para manipularlo y actualizarlo con los nuevos valores del
+                // editor de texto antes de enviar a guardar los cambios
+                @Html.HiddenFor(model => model.Encabezado)
+                @Html.HiddenFor(model => model.PiePagina)
+
+                <div class="row">
+                    <div class="col s12">
+                        @Html.LabelFor(model => model.Encabezado, new { @class = "po-relative font-bold black-text" })
+                    </div>
+
+                    <div class="col s12">
+                        <div id="EditorEncabezado">@Html.Raw(Model.Encabezado)</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col s12">
+                        @Html.LabelFor(model => model.PiePagina, new { @class = "po-relative font-bold black-text" })
+                    </div>
+
+                    <div class="col s12">
+                        <div id="EditorPiePagina">@Html.Raw(Model.PiePagina)</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col s12">
+                        <div class="input-field red-text font-bold">
+                            @Html.ValidationSummary(true, "", new { @class = "data-error" })
+                        </div>
+                    </div>
+
+                    <div class="col s12">
+                        <button type="submit" id="BtnGuardar" title="Guardar" value="Guardar" class="btn btn-small yellow black-text font-bold waves-effect waves-light">
+                            Guardar
+                        </button>
+
+                        <a title="Cancelar" href="@Url.Action("Inicio", "EncabezadoPiePagina")" class="btn btn-small grey lighten-3 red-text waves-effect">
+                            Cancelar
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/quill")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/quill")
+
+    <script type="text/javascript">
+        // Definición de objetos para cargar el editor de texto enriquecido WYSIWYG QuillJS
+        var EditorEncabezado = new Quill('#EditorEncabezado', OpcionesQuillJS);
+        var EditorPiePagina = new Quill('#EditorPiePagina', OpcionesQuillJS);
+        var EPPGuardado;
+
+        // Si la vista se carga despues de crear un usuario se verifica si existe el mensaje dentro del ViewBag para mostrarlo como notificación
+        @if (ViewBag.EPPGuardado != null) {
+            @:EPPGuardado = '@ViewBag.EPPGuardado';
+        }
+
+        if (EPPGuardado === 'true') {
+            MostrarMensajeExito("Encabezado y pie de página guardados correctamente");
+        }
+
+        // Antes de realizar el submit, llenas los valores de encabezado y pie con el contenido del editor de texto
+        $('#frmGuardarEncabezadoPie').submit(function () {
+            // Obtener el valor del editor, incluyendo formato HTML y guardarlo en los inputs establecidos en Razor
+            $("#Encabezado").val(EditorEncabezado.root.innerHTML);
+            $("#PiePagina").val(EditorPiePagina.root.innerHTML);
+        });
+    </script>
+
+    @* Se llama en esta posición puesto que necesita que primero se ejecute el script local *@
+    @Scripts.Render("~/bundles/quillextra")
+}

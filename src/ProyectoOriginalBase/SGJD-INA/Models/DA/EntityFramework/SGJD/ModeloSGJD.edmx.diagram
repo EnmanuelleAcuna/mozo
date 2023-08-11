@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="6fcf90149e5a498c9d55e84f00c01f8e" Name="Diagram1" ZoomLevel="72">
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACT_TAB_ACTAS_ACUERSOFT" Width="1.5" PointX="0.75" PointY="1" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACT_TAB_ACTAS_DETALLE_ACUERSOFT" Width="1.5" PointX="3" PointY="1.125" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACT_TAB_ASISTENTES_SESION" Width="1.5" PointX="34.5" PointY="32.5" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACT_TAB_MIEMBROS_JUNTA_DIRECTIVA" Width="1.5" PointX="29.25" PointY="47.125" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACT_TAB_ORDENES_DIA" Width="1.5" PointX="31.5" PointY="28.375" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACT_TAB_OTROS_ASISTENTES_SESION" Width="1.5" PointX="34.5" PointY="28.375" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACT_TAB_SESIONES" Width="1.5" PointX="29.25" PointY="32" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACT_TAB_TOMOS" Width="1.5" PointX="32.25" PointY="31.625" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACT_TAB_USUARIOS_ARTICULO" Width="1.5" PointX="39.75" PointY="31.625" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACU_TAB_ACUERDOS" Width="1.5" PointX="15" PointY="30.75" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACU_TAB_AVANCES" Width="1.5" PointX="19.5" PointY="32.875" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACU_TAB_CORREOS_ADICIONALES" Width="1.5" PointX="17.25" PointY="37.375" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACU_TAB_CORREOS_UNIDADES_ACUERDO" Width="1.5" PointX="24.75" PointY="36" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACU_TAB_ELEMENTOS_RELACIONADOS" Width="1.5" PointX="19.5" PointY="28.75" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACU_TAB_SEGUIMIENTOS" Width="1.5" PointX="17.25" PointY="32.25" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACU_TAB_UNIDADES_INFORMACION_PREDETERMINADAS" Width="1.5" PointX="24.75" PointY="30.125" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACU_TAB_VOTACIONES_ACUERDO" Width="1.5" PointX="36.75" PointY="33" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_ARCHIVOS_ADJUNTOS" Width="1.5" PointX="3" PointY="34" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_AUDIOS" Width="1.5" PointX="10.5" PointY="30.875" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_AVISOS" Width="1.5" PointX="24.75" PointY="32.25" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_AYUDA_USUARIO" Width="1.5" PointX="5.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_BITACORA" Width="1.5" PointX="29.25" PointY="40.375" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_CORREOS_USUARIO" Width="1.5" PointX="29.25" PointY="49.25" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_ENCABEZADO_PIEPAGINA" Width="1.5" PointX="3" PointY="30.5" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_ESTADOS" Width="1.5" PointX="6" PointY="31.5" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_PARAMETROS_EDICION" Width="1.5" PointX="3" PointY="41.625" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_PARAMETROS_GENERALES" Width="1.5" PointX="0.75" PointY="5.75" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_REPOSITORIOS" Width="1.5" PointX="0.75" PointY="36.375" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_RESPALDOS" Width="1.5" PointX="29.25" PointY="44" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_ROLES" Width="1.375" PointX="24.875" PointY="26.75" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_SECCIONES" Width="1.5" PointX="33.75" PointY="25.75" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_TELEFONOS_USUARIO" Width="1.5" PointX="29.25" PointY="51.875" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_TIPOS_APROBACION" Width="1.5" PointX="12.75" PointY="29.375" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_TIPOS_ARCHIVO" Width="1.5" PointX="0.75" PointY="38.875" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_TIPOS_OBJETO" Width="1.5" PointX="0.75" PointY="31.875" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_TIPOS_SESION" Width="1.375" PointX="27.125" PointY="27.5" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_TIPOS_USUARIO" Width="1.5" PointX="24.75" PointY="39.25" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_UNIDADES" Width="1.5" PointX="22.5" PointY="32.5" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_USUARIOS" Width="1.5" PointX="27" PointY="30.625" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_VISTAS" Width="1.5" PointX="24.75" PointY="23.75" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_VISTAS_PERFIL" Width="1.5" PointX="27" PointY="24.625" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_DETALLE_ACUERSOFT__ACTAS_ACUERSOFT" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ASISTENTESESION_SESION" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ASISTENTESESION_USUARIO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_VOTACION_ASISTENTE" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_MIEMBROJD_USUARIO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ORDENDIA_ESTADO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ORDENDIA_SESION" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_OTROASISTENTESESION_SESION" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_OTROASISTENTESESION_TIPOUSUARIO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_USUARIOARTICULO_OTROASISTENTESESION" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_SESION_ESTADO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_SESION_TIPOSESION" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_SESION_USUARIO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_TOMO_ESTADO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_TOMO_USUARIOAPERTURA" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_TOMO_USUARIOCIERRE" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_USUARIOARTICULO_USUARIO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ACUERDO_ESTADO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ACUERDO_TIPOAPROBACION" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_SEGUIMIENTO_ACUERDO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_VOTACION_ACUERDO" />
+        <AssociationConnector Association="ModeloSGJD.DA.LLF_ElementosRelacionados_Acuerdos_LLF_IdAcuerdo" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_AVANCE_SEGUIMIENTO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_AVANCE_USUARIO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_CORREUNIDADACUERDO_UNIDAD" />
+        <AssociationConnector Association="ModeloSGJD.DA.LLF_ElementosRelacionados_Seguimientos_LLF_IdSeguimiento" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_SEGUIMIENTO_ESTADO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_UNIDADINFORMACIONPREDETERMINADA_UNIDAD" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ARCHIVOADJUNTO_REPOSITORIO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ARCHIVOADJUNTO_TIPOARCHIVO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ARCHIVOADJUNTO_TIPOOBJETO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_AVISO_UNIDAD" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ESTADO_AVISO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_BITACORA_USUARIO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_CORREOUSUARIO_USUARIO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ENCABEZADOPIEPAGINA_TIPOOBJETO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ESTADO_TIPOOBJETO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_PARAMETROEDICION_TIPOOBJETO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_RESPALDO_USUARIO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_VISTAPERFIL_ROL" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_TELEFONOUSUARIO_USUARIO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_USUARIO_TIPOUSUARIO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_USUARIO_UNIDAD" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_VISTAPERFIL_VISTA" />
+        <AssociationConnector Association="ModeloSGJD.DA.SGJD_ACT_TAB_SECCIONES_ORDEN_DIA" />
+        <AssociationConnector Association="ModeloSGJD.DA.SGJD_ACU_TAB_CORREOS_ADICIONALES_ACUERDO" />
+        <AssociationConnector Association="ModeloSGJD.DA.SGJD_ACU_TAB_UNIDADES_EJECUCION_ACUERDO" />
+        <AssociationConnector Association="ModeloSGJD.DA.SGJD_ACU_TAB_UNIDADES_EJECUCION_SEGUIMIENTO" />
+        <AssociationConnector Association="ModeloSGJD.DA.SGJD_ACU_TAB_UNIDADES_INFORMACION_ACUERDO" />
+        <AssociationConnector Association="ModeloSGJD.DA.SGJD_ADM_TAB_ROLES_USUARIO" />
+        <AssociationConnector Association="ModeloSGJD.DA.SGJD_ADM_TAB_USUARIO_AVISO_ACUERDO" />
+        <AssociationConnector Association="ModeloSGJD.DA.SGJD_ADM_TAB_USUARIOS_AVISO" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ADM_TAB_ERRORES" Width="2.5" PointX="5.375" PointY="3.75" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACT_TAB_ARTICULOS" Width="1.5" PointX="12.75" PointY="34" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACT_TAB_CAPITULOS" Width="1.5" PointX="10.5" PointY="34.375" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACT_TAB_TEMAS" Width="1.5" PointX="37" PointY="29" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ACUERDO_ARTICULO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ARTICULO_CAPITULO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ARTICULO_TEMA" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_USUARIOARTICULO_ARTICULO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_TEMA_ORDENDIA" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_TEMA_ESTADO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_TEMA_SECCION" />
+        <EntityTypeShape EntityType="ModeloSGJD.DA.SGJD_ACT_TAB_ACTAS" Width="1.5" PointX="34.5" PointY="36.25" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ACTA_ESTADO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ACTA_SESION" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ACTA_SESIONAprobada" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ACTA_TOMO" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ACTAS_USUARIOPreside" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_ACTAS_UsuarioSecretario" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_AUDIO_ACTA" />
+        <AssociationConnector Association="ModeloSGJD.DA.FK_CAPITULO_ACTA" />
+        <AssociationConnector Association="ModeloSGJD.DA.LLF_ElementosRelacionados_Actas_LLF_IdActa" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

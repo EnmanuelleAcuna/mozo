@@ -1,0 +1,319 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<InicioAcuerdoViewModel>
+
+@{
+    ViewBag.Title = "Acuerdos";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniAcu" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Acuerdos", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Acuerdos de Sesión
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Acuerdos", "Inicio")" class="breadcrumb">Modulo de Acuerdos</a>
+                    <a href="#" class="breadcrumb">Acuerdos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+
+            <div class="row">
+                <div class="col s12 mb-2">
+                    <ul class="tabs tabs-fixed-width z-depth-1">
+                        <li class="tab col s3">
+                            <a href="#Acuerdos" class="active blue-text font-bold">
+                                Todos los Acuerdos
+                            </a>
+                        </li>
+                        <li class="tab col s3">
+                            <a href="#Buscar" class="blue-text">
+                                <i class="fa fa-search">&nbsp;</i>
+                                Buscar en Acuerdos
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                @* Contenedor de pestaña [TODOS LOS ACUERDOS] *@
+                <div id="Acuerdos" class="col s12">
+                    <div class="row">
+                        <div class="col s12 m8">
+                            @* Botón filtrar *@
+                            <button id="BtnFiltrar" type="button" value="Filtrar" title="Filtrar" class="btn btn-small grey lighten-3 waves-effect black-text font-bold">
+                                <i class="fa fa-filter left"></i>
+                                Filtrar
+                            </button>
+                        </div>
+                        @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas") || User.IsInRole("Abogado Secretaría Técnica")) {
+                            <div class="col s12 m4">
+                                @* Botón agregar *@
+                                <a class="btn btn-small yellow black-text font-bold waves-effect right" id="Agregar" title="Agregar Acuerdo" href="@Url.Action("Agregar", "Acuerdo")">
+                                    Agregar nuevo Acuerdo
+                                </a>
+                            </div>
+                        }
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col s12">
+                            <table id="TablaAcuerdos" class="table responsive display width-100 bordered cell-border">
+                                <thead>
+                                    <tr>
+                                        <th nowrap>@Html.DisplayNameFor(model => model.Titulo)</th>
+                                        <th nowrap>@Html.DisplayNameFor(model => model.NombreEstado)</th>
+                                        <th nowrap>@Html.DisplayNameFor(model => model.Firmeza)</th>
+                                        <th nowrap>@Html.DisplayNameFor(model => model.IdAcuerdo)</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var Acuerdo in Model) {
+                                        <tr>
+                                            <td class="no-wrap">
+                                                @Titulo(Acuerdo.Titulo, Acuerdo.NumeroVersion, Acuerdo.IdAcuerdo)
+                                            </td>
+                                            <td>
+                                                @Helpers.Estado(Acuerdo.CodigoEstado, Acuerdo.NombreEstado)
+                                            </td>
+                                            <td>
+                                                @Firmeza(Acuerdo.Firmeza, Acuerdo.FechaFirmeza)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => Acuerdo.IdAcuerdo)
+                                            </td>
+                                            <td>
+                                                <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Acuerdo.IdAcuerdo'>
+                                                    <i class="fa fa-caret-down blue-text"></i>
+                                                </a>
+
+                                                @* Contenido del Dropdown *@
+                                                <ul id='dropdown_@Acuerdo.IdAcuerdo' class='dropdown-content'>
+                                                    @if (Acuerdo.CodigoEstado.Equals("ACU-NOTI") || Acuerdo.CodigoEstado.Equals("ACU-VA") || Acuerdo.CodigoEstado.Equals("ACU-EE") || Acuerdo.CodigoEstado.Equals("ACU-EJEC") || Acuerdo.CodigoEstado.Equals("ACU-REV")) {
+                                                        <li>
+                                                            <a class="blue-text" title="Ver Acuerdo" href="@Url.Action("Detalles", "Acuerdo", new { Id = Acuerdo.IdAcuerdo })" target="_blank" )>Ver Acuerdo</a>
+                                                        </li>
+                                                    }
+                                                    @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas") || User.IsInRole("Abogado Secretaría Técnica") || User.IsInRole("Archivo")) {
+                                                        <li class="divider" tabindex="-1"></li>
+                                                        <li>
+                                                            <a class="blue-text" title="Editar" href="@Url.Action("Editar", "Acuerdo", new { Id = Acuerdo.IdAcuerdo })">Editar</a>
+                                                        </li>
+                                                    }
+                                                    @if (Acuerdo.CodigoEstado.Equals("ACU-BORR") && (User.IsInRole("Administrador Datasoft") || User.IsInRole("Abogado Secretaría Técnica"))) {
+                                                        <li>
+                                                            <a class="red-text" title="Eliminar" onclick="PopUpForm('@Url.Action("Eliminar", "Acuerdo", new { IdAcuerdo=Acuerdo.IdAcuerdo } )')">
+                                                                Eliminar
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                @* Contenedor de pestaña [BUSCAR EN ACUERDOS] *@
+                <div id="Buscar" class="col s12">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input placeholder="Contenido del Acuerdo" id="PalabraClave" type="text" class="">
+                            <label for="PalabraClave">Buscar en contenido de los Acuerdos</label>
+                        </div>
+
+                        <div class="col s6 pt-2">
+                            <button type="button" id="btn-buscar" class="btn btn-small yellow black-text font-bold z-depth-0">Buscar</button>
+                        </div>
+
+                        <div class="col s12 mb-1">
+                            <span id="LblInfo" class="" hidden></span>
+                        </div>
+
+                        <div class="col s12">
+                            <table id="TablaFiltro" class="table responsive display width-100 bordered cell-border">
+                                <thead>
+                                    <tr>
+                                        <th nowrap>Acuerdo</th>
+                                        <th>Asunto</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@helper Titulo(string Titulo, int NumeroVersion, int IdAcuerdo) {
+    if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas") || User.IsInRole("Abogado Secretaría Técnica") || User.IsInRole("Archivo")) {
+        if (NumeroVersion > 1) {
+            <span>Acuerdo</span> <a href="@Url.Action("Editar", "Acuerdo", new { Id = IdAcuerdo })" class="blue-text"><b>@Titulo</b></a> <span>V.@NumeroVersion</span>
+        }
+        else {
+            <span>Acuerdo</span> <a href="@Url.Action("Editar", "Acuerdo", new { Id = IdAcuerdo })" class="blue-text"><b>@Titulo</b></a>
+        }
+    }
+    else {
+        if (NumeroVersion > 1) {
+            <span>Acuerdo</span> <a class="blue-text"><b>@Titulo</b></a> <span>V.@NumeroVersion</span>
+        }
+        else {
+            <span>Acuerdo</span> <a class="blue-text"><b>@Titulo</b></a>
+        }
+    }
+}
+
+@helper Firmeza(bool Firme, string Fecha) {
+    if (Firme == true) {
+        <span class="blue-text"><b>En firme</b> @Fecha</span>
+    }
+    else {
+        <span class="grey-text">No firme</span>
+    }
+}
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#TablaAcuerdos").DataTable({
+                initComplete: CambiarPropiedadesFiltro,
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: true,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                order: [3, "desc"],
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 },
+                    { targets: 3, visible: false }
+                ]
+            });
+
+            $("#TablaFiltro").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                responsive: true,
+                info: false,
+                pageLength: 10,
+                autoWidth: true,
+                lengthChange: false,
+                columns: Columnas,
+                ordering: false
+            });
+        });
+
+        let Columnas = [
+            {
+                className: "dt-nowrap", render: function (data, type, row) {
+                    var IdAcuerdo = row['IdAcuerdo'];
+                    var NumeroVersion = row['NumeroVersion'];
+                    var Titulo = row['Titulo'];
+
+                    var EnlaceVer = "<a href='/Acuerdo/Detalles/"+ IdAcuerdo +"' target='_blank' class='blue-text'><b><i class='fa fa-fw fa-align-justify'>&nbsp;</i>Ver Acuerdo</b></a>";
+                    var EnlaceEditar = "<a href='/Acuerdo/Detalles/ "+ IdAcuerdo +"' target='_blank' class='blue-text'>Ver Acuerdo</a>";;
+
+                    var TituloAcuerdo;
+
+                    if (NumeroVersion > 1) {
+                        TituloAcuerdo = "Acuerdo <span class='blue-text font-bold'>" + Titulo + "</span> V." + NumeroVersion;
+                    }
+                    else {
+                        TituloAcuerdo = "Acuerdo <span class='blue-text font-bold'>" + Titulo + "</span>";
+                    }
+
+                    return TituloAcuerdo + "</br>" + EnlaceVer;
+                }
+            },
+            {
+                data: "Asunto", render: function (data) {
+                    var Texto = data;
+                    if (Texto.length >= 255) {
+                        return Texto.substring(0, 255) + '...';
+                    }
+                    else {
+                        return Texto;
+                    }
+                }
+            }
+        ];
+
+        // Eventos para ejecutar petición de búsqueda de acuerdos
+        $('#PalabraClave').keyup(function (e) {
+            if (e.keyCode == 13) {
+                BuscarAcuerdosPorPalabraClave();
+            }
+        });
+
+        $("#btn-buscar").click(function () {
+            BuscarAcuerdosPorPalabraClave();
+        });
+
+        // Función para ejecutar petición de búsqueda de Acuerdos por palabra clave
+        async function BuscarAcuerdosPorPalabraClave() {
+            MostrarCargandoPagina();
+
+            let PalabraClave = $("#PalabraClave").val();
+
+            // Ejecutar petición AJAX para obtener los Acuerdo de acuerdo al filtro
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("ObtenerTodosPorPalabraClave", "Acuerdo")',
+                data: {
+                    Palabra: PalabraClave
+                },
+                success: function (data) {
+                    $("#TablaFiltro").dataTable().fnClearTable();
+                    $("#TablaFiltro").dataTable().fnAddData(data.Lista);
+                    $("#LblInfo").text("Se encontró [ " + PalabraClave + " ] en " + data.Registros + " Acuerdo(s).");
+                    $("#LblInfo").show();
+                },
+                error: function () {
+                    MostrarMensajeError(); // Notificar error
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina();
+                }
+            });
+        }
+    </script>
+}

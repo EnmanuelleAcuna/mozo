@@ -1,0 +1,322 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model InicioTelefonoCorreoViewModel
+
+@{
+    ViewBag.Title = "Usuarios";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="EdiTelCor" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "Usuario")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Usuarios
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="@Url.Action("Inicio", "Usuario")" class="breadcrumb">Usuarios</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m10 mb-1">
+                    <span class="fz-1-2r font-bold">Teléfonos y correos de @Html.DisplayFor(model => model.NombreUsuario)</span>
+                </div>
+
+                <div class="col s6 m2">
+                    <button id="BtnFiltrar" type="button" value="Filtrar" title="Filtrar" class="btn btn-small grey lighten-3 waves-effect black-text font-bold right">
+                        <i class="fa fa-filter left"></i>
+                        Filtrar
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12 m6">
+                    <div class="row">
+                        @* Agregar teléfono *@
+                        <div class="col s2 my-2">
+                            <button type="button" id="BtnNuevoTelefono" class="btn btn-small grey lighten-3 waves-effect blue-text font-bold" title="Agregar teléfono" value="Agregar teléfono">
+                                <i class="material-icons">add</i>
+                            </button>
+                        </div>
+
+                        <div id="DivAgregarTelefono" class="col s10" hidden>
+                            <div class="row my-0">
+                                <div class="col s5">
+                                    @* Número *@
+                                    <div class="input-field">
+                                        <input type="text" id="TxtNuevoTelefono" name="TxtNuevoTelefono" class="validate" />
+                                        <label for="TxtNuevoTelefono" class="active">Teléfono</label>
+                                    </div>
+                                </div>
+
+                                <div class="col s3">
+                                    @* Extensión *@
+                                    <div class="input-field">
+                                        <input type="text" id="TxtNuevaExtension" name="TxtNuevaExtension" class="validate" />
+                                        <label for="TxtNuevaExtension" class="active">Ext.</label>
+                                    </div>
+                                </div>
+
+                                <div class="col s4">
+                                    <button type="button" id="BtnAgregarTelefono" class="btn btn-small waves-effect yellow black-text font-bold mt-2 right">Agregar</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        @* Teléfonos del usuario *@
+                        <div class="col s12">
+                            <table id="TablaTelefonos" class="table responsive display width-100 bordered">
+                                <thead>
+                                    <tr>
+                                        <th nowrap>@Html.DisplayNameFor(model => model.Telefonos.FirstOrDefault().Numero)</th>
+                                        <th nowrap>@Html.DisplayNameFor(model => model.Telefonos.FirstOrDefault().Extension)</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var Telefono in Model.Telefonos) {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => Telefono.Numero)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => Telefono.Extension)
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-small grey lighten-3 waves-effect black-text right" onclick="BorrarTelefono('@Telefono.IdTelefono')">
+                                                    Borrar
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                @* Correos del usuario *@
+                <div class="col s12 m6">
+                    <div class="row">
+                        @* Agregar correo *@
+                        <div class="col s2 my-2">
+                            <button type="button" id="BtnNuevoCorreo" class="btn btn-small grey lighten-3 waves-effect blue-text font-bold" title="Agregar correo" value="Agregar correo">
+                                <i class="material-icons">add</i>
+                            </button>
+                        </div>
+
+                        <div id="DivAgregarCorreo" class="col s10" hidden>
+                            <div class="row my-0">
+                                <div class="col s8">
+                                    @* Correo *@
+                                    <div class="input-field">
+                                        <input type="text" id="TxtNuevoCorreo" name="TxtNuevoCorreo" class="validate" />
+                                        <label for="TxtNuevoCorreo">Correo electrónico</label>
+                                    </div>
+                                </div>
+
+                                <div class="col s4">
+                                    <button type="button" id="BtnAgregarCorreo" class="btn btn-small waves-effect yellow black-text font-bold mt-2 right">Agregar</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col s12">
+                            <table id="TablaCorreos" class="table responsive display width-100 bordered">
+                                <thead>
+                                    <tr>
+                                        <th nowrap>@Html.DisplayNameFor(model => model.Correos.FirstOrDefault().Correo)</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var Correo in Model.Correos) {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => Correo.Correo)
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-small grey lighten-3 waves-effect right black-text" onclick="BorrarCorreo('@Correo.IdCorreo')">
+                                                    Borrar
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryinputmask")
+
+    <script type="text/javascript">
+        var PopUp, DataTableCorreo, DataTableTelefono, DataTable, TipoDato, UsuarioGuardado;
+
+        // Inicializar tablas con teléfonos y correos
+        $(document).ready(function () {
+            $("#TablaTelefonos,#TablaCorreos").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: true,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true,
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 }
+                ],
+                initComplete: CambiarPropiedadesFiltro
+            });
+
+            // Mostrar u ocultar formularios para agregar teléfono o correo
+            $("#BtnNuevoTelefono").click(function () {
+                ($("#DivAgregarTelefono").is(":visible")) ? $("#DivAgregarTelefono").hide("slideDown") : $("#DivAgregarTelefono").show("slideUp");
+            });
+
+            $("#BtnNuevoCorreo").click(function () {
+                ($("#DivAgregarCorreo").is(":visible")) ? $("#DivAgregarCorreo").hide("slideDown") : $("#DivAgregarCorreo").show("slideUp");
+            });
+
+            $("#TxtNuevoTelefono").inputmask({"mask": "(999) 9999-9999"});
+            $("#TxtNuevaExtension").inputmask({ "mask": "9999" });
+            $("#TxtNuevoCorreo").inputmask({ alias: "email"});
+        });
+
+        $("#BtnAgregarTelefono").click(function () {
+            MostrarMensajeInformacion("Procesando.");
+
+            const ModeloJSON = {
+                IdUsuario: '@Model.IdUsuario',
+                Numero: $("#TxtNuevoTelefono").val(),
+                Extension: $("#TxtNuevaExtension").val()
+            };
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Agregar", "UsuarioTelefono")',
+                data: { ModeloTelefonoJSON: JSON.stringify(ModeloJSON) },
+                success: function (data) {
+                    if (data.success) {
+                        MostrarMensajeExito(data.message); // Notificar
+                        location.reload();
+                    } else {
+                        MostrarMensajeError(data.message); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                }
+            });
+        });
+
+        $("#BtnAgregarCorreo").click(function () {
+            MostrarMensajeInformacion("Procesando.");
+
+            const ModeloJSON = {
+                IdUsuario: '@Model.IdUsuario',
+                Correo: $("#TxtNuevoCorreo").val()
+            };
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Agregar", "UsuarioCorreo")',
+                data: { ModeloCorreoJSON: JSON.stringify(ModeloJSON) },
+                success: function (data) {
+                    if (data.success) {
+                        MostrarMensajeExito(data.message); // Notificar
+                        location.reload();
+                    } else {
+                        MostrarMensajeError(data.message); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                }
+            });
+        });
+
+        /** Borrar un telefono del Usuario */
+        function BorrarTelefono(IdTelefono) {
+            MostrarMensajeInformacion("Procesando.");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Eliminar", "UsuarioTelefono")',
+                dataType: 'json',
+                data: { IdTelefono: IdTelefono },
+                success: function (data) {
+                    if (data.success) {
+                        MostrarMensajeExito(data.message); //Notificar
+                        location.reload();
+                    }
+                    else {
+                        MostrarMensajeError(data.message); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                }
+            });
+        }
+
+        /** Borrar un correo del Usuario */
+        function BorrarCorreo(IdCorreo) {
+            MostrarMensajeInformacion("Procesando.");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Eliminar", "UsuarioCorreo")',
+                dataType: 'json',
+                data: { IdCorreo: IdCorreo },
+                success: function (data) {
+                    if (data.success) {
+                        MostrarMensajeExito(data.message); //Notificar
+                        location.reload();
+                    }
+                    else {
+                        MostrarMensajeError(data.message); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                }
+            });
+        }
+    </script>
+}

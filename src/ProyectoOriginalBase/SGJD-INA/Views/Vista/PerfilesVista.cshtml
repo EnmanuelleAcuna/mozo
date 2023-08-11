@@ -1,0 +1,32 @@
+﻿@using SGJD_INA.Models.Entities
+
+@model IEnumerable<ApplicationRole>
+
+@{
+    Layout = null;
+}
+
+<h6 class="center text-uppercase font-bold fz-1r black-text">
+    Perfiles con acceso a la vista "@ViewBag.Vista.NombreVista"
+</h6>
+
+<section class="section">
+    @if (Model.Count() == 0) {
+        <h6 class="center">No hay perfiles</h6>
+    }
+    else {
+        <ol>
+            @foreach (var item in Model) {
+                <li>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </li>
+            }
+        </ol>
+    }
+</section>
+
+<section class="section center">
+    <button type="button" title="Cerrar" value="Cerrar" class="btn btn-small grey lighten-3 red-text font-bold waves-effect max-width-144px" onclick="CerrarDialog()">
+        Cerrar
+    </button>
+</section>

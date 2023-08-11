@@ -1,0 +1,286 @@
+﻿@using SGJD_INA.Models.Entities
+
+@model MiembroJD
+
+@{
+    ViewBag.Title = "Miembros de Junta Directiva";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="MiJuDi" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Actas", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Miembros de Junta Directiva
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Modulo de Administración</a>
+                    <a href="#" class="breadcrumb">Miembros de Junta Directiva</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m12 mb-1">
+                    <span class="fz-1-2r font-bold">Editar miembros de Junta Directiva</span>
+                </div>
+            </div>
+
+            <div class="row clearfix">
+                <div class="col s12 m6">
+                    <h6 class="blue-text">Usuarios del sistema</h6>
+                    <table id="tablaUsuarios" class="table compact width-100">
+                        <thead class="display-none">
+                        </thead>
+                    </table>
+                </div>
+
+                <div class="col s12 m6">
+                    <h6 class="blue-text">Usuarios miembros de la Junta Directiva</h6>
+                    <table id="tablaMiembros" class="table compact width-100">
+                        <thead class="display-none">
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+
+    <script type="text/javascript">
+        let tablaUsuarios, tablaMiembrosJD;
+        let jsonUsuarios = new Array();
+        let jsonMiembros = new Array();
+
+        $(document).ready(function () {
+            // Primero cargar la tabla de miembros y despues la de usuarios
+            $.when(CargarDataTableMiembroJD()).then(function () {
+                CargarDataTableUsuario();
+            });
+        });
+
+        // Función para cargar los usuarios miembros de Junta Directiva
+        function CargarDataTableMiembroJD() {
+            const parametrosAJAXMiembrosJD = {
+                url: '@Url.Action("ObtenerMiembrosJD", "MiembrosJD")',
+                type: "GET",
+                datatype: "json",
+                error: MostrarMensajeError,
+                dataSrc: function (json) {
+
+                    for (let i = 0; i < json.data.length; i++) {
+                        jsonMiembros.push({
+                            'Id': json.data[i]['Usuario'].Id,
+                            'Nombre': json.data[i]['Usuario'].Nombre
+                        })
+                    }
+
+                    return jsonMiembros;
+                }
+            };
+
+            tablaMiembrosJD = $("#tablaMiembros").DataTable({
+                columnDefs: [{
+                    targets: 0,
+                    render: function (data, type, row) {
+                        if (window.matchMedia("(max-width: 400px)").matches) {
+                            return data.length > 20 ? data.substr(0, 20) + '…' : data;
+                        }
+                        else {
+                            data;
+                        }
+                    }
+                }],
+                ajax: parametrosAJAXMiembrosJD,
+                columns: [
+                    {
+                        render: function (data, type, row) {
+                            //El nombre debe tratarse antes de ser incrustado en el evento OnClick ya que normalmente al construirse los parámetros de la
+                            //función en el primer espacio inserta ", por lo que los espacios se sustituyen por _
+                            let id = row['Id'];
+                            let nombre = row['Nombre'].trim().replace(/\s+/g, '_');
+                            let nombreMiembro = row['Nombre'];
+                            return "<a class='btn btn-small grey lighten-3 waves-effect waves-red black-text text-left width-100' title='Quitar' onclick=QuitarMiembro('" + id + "','" + nombre + "')><i class='fa fa-caret-left red-text left'></i>" + nombreMiembro + "</a>";
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                sorting: false,
+                responsive: false,
+                info: false,
+                pageLength: 10,
+                autoWidth: true,
+                lengthChange: false,
+                ordering: true,
+                filtering: false
+            });
+        }
+
+        //Función para cargar los usuarios activos del sistema
+        function CargarDataTableUsuario() {
+            const parametrosAJAXUsuarios = {
+                url: '@Url.Action("ObtenerTodos", "Usuario")',
+                type: "GET",
+                datatype: "json",
+                error: MostrarMensajeError,
+                dataSrc: function (json) {
+
+                    for (let i = 0; i < json.data.length; i++) {
+                        let esMiembro = false;
+
+                        //Recorrer lista de miembros para saber si el usuario es miembro de JD
+                        for (let x = 0; x < jsonMiembros.length; x++) {
+                            if (json.data[i].Id === jsonMiembros[x].Id) {
+                                esMiembro = true;
+                            }
+                        }
+
+                        if (!esMiembro) {
+                            jsonUsuarios.push({
+                                'Id': json.data[i].Id,
+                                'Nombre': json.data[i].Nombre
+                            })
+                        }
+                    }
+
+                    return jsonUsuarios;
+                }
+            };
+
+            tablaUsuarios = $("#tablaUsuarios").DataTable({
+                ajax: parametrosAJAXUsuarios,
+                columns: [
+                    {
+                        render: function (data, type, row) {
+                            //El nombre debe tratarse antes de ser incrustado en el evento OnClick ya que normalmente al construirse los parámetros de la
+                            //función en el primer espacio inserta ", por lo que los espacios se sustituyen por _
+                            let id = row['Id'];
+                            let nombre = row['Nombre'].trim().replace(/\s+/g, '_');
+                            let nombreUsuario = row['Nombre'];
+                            return "<a class='btn btn-small grey lighten-3 waves-effect black-text text-left width-100' title='Agregar' onclick=AgregarMiembro('" + id + "','" + nombre + "')><i class='fa fa-caret-right blue-text right'></i>" + nombreUsuario + "</a>";
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                responsive: false,
+                info: false,
+                pageLength: 10,
+                autoWidth: true,
+                lengthChange: false,
+                filtering: false
+            });
+        }
+
+        function AgregarMiembro(IdUsuario, NombreUsuario) {
+            MostrarCargandoPagina();
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AgregarMiembro", "MiembrosJD")',
+                dataType: 'json',
+                data: { IdUsuario: IdUsuario },
+                success: function (data) {
+                    // Quitar de lista de usuarios
+                    jsonUsuarios.forEach(function (currentValue, index, arr) {
+                        if (jsonUsuarios[index].Id == IdUsuario) {
+                            jsonUsuarios.splice(index, 1);
+                        }
+                    });
+
+                    // Agregar miembro
+                    // El nombre debe tratarse antes de ser insertado en el Json array, ya que viene con _ en vez de espacios y para mostrarlo en el botón
+                    // correctamente se reemplaza los _ con espacio
+                    jsonMiembros.push({
+                        'Id': IdUsuario,
+                        'Nombre': NombreUsuario.replace(/_/g, ' ')
+                    });
+
+                    //Actualizar DataTables
+                    tablaMiembrosJD.clear();
+                    tablaMiembrosJD.rows.add(jsonMiembros);
+                    tablaMiembrosJD.draw();
+
+                    tablaUsuarios.clear();
+                    tablaUsuarios.rows.add(jsonUsuarios);
+                    tablaUsuarios.draw();
+
+                    MostrarMensajeExito(data.message);
+                },
+                error: function () {
+                    MostrarMensajeExito("Error al procesar su solicitud");
+                }
+            });
+
+            DesaparecerCargandoPagina();
+        }
+
+        function QuitarMiembro(IdMiembro, NombreMiembro) {
+            MostrarCargandoPagina();
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("QuitarMiembro", "MiembrosJD")',
+                dataType: 'json',
+                data: { IdUsuario: IdMiembro },
+                success: function (data) {
+                    //Quitar miembro
+                    jsonMiembros.forEach(function (currentValue, index, arr) {
+                        if (jsonMiembros[index].Id == IdMiembro) {
+                            jsonMiembros.splice(index, 1);
+                        }
+                    });
+
+                    //Agregar usuario
+                    //El nombre debe tratarse antes de ser insertado en el Json array, ya que viene con _ en vez de espacios y para mostrarlo en el botón
+                    //correctamente se reemplaza los _ con espacio
+                    jsonUsuarios.push({
+                        'Id': IdMiembro,
+                        'Nombre': NombreMiembro.replace(/_/g, ' ')
+                    })
+
+                    //Actualizar DataTables
+                    tablaMiembrosJD.clear();
+                    tablaMiembrosJD.rows.add(jsonMiembros);
+                    tablaMiembrosJD.draw();
+
+                    tablaUsuarios.clear();
+                    tablaUsuarios.rows.add(jsonUsuarios);
+                    tablaUsuarios.draw();
+
+                    MostrarMensajeExito(data.message);
+                },
+                error: function () {
+                    MostrarMensajeExito("Error al procesar su solicitud");
+                }
+            });
+
+            DesaparecerCargandoPagina();
+        }
+    </script>
+}

@@ -1,0 +1,19 @@
+﻿@{
+    ViewBag.Title = "Cambio de contraseña exitoso";
+    Layout = "~/Views/Shared/_LayoutLogIn.cshtml";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="RestaContraConfir" />
+
+<h6 class="center">@ViewBag.Title</h6>
+
+<p class="text-justified">
+    El cambio de contraseña ha sido realizado correctamente.
+</p>
+
+<div class="input-field center">
+    <a href="@Url.Action("IniciarSesion", "Cuenta")" title="Iniciar sesión" class="btn btn-small waves-effect waves-light white-text blue">
+        Ir a inicio de sesión
+    </a>
+</div>

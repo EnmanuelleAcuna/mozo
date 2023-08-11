@@ -1,0 +1,57 @@
+﻿@using SGJD_INA.Models.ViewModels;
+
+@model DetalleBitacoraViewModel
+
+@{
+    Layout = null; // No se necesita estilos o scripts por loque no se carga el LayoutEmpty
+}
+
+<h6 class="center text-uppercase">
+    Detalles del registro de la bitácora
+</h6>
+
+<p>
+    <span class="font-bold">@Html.DisplayNameFor(model => model.NombreUsuario):</span>
+    @Html.DisplayFor(model => model.NombreUsuario)
+</p>
+
+<p>
+    <span class="font-bold">@Html.DisplayNameFor(model => model.Fecha):</span>
+    @Html.DisplayFor(model => model.Fecha)
+</p>
+
+<p>
+    <span class="font-bold">@Html.DisplayNameFor(model => model.Accion):</span>
+    @Html.DisplayFor(model => model.Accion)
+</p>
+
+<p>
+    <span class="font-bold">@Html.DisplayNameFor(model => model.ValorAntiguo):</span>
+    @Html.DisplayFor(model => model.ValorAntiguo)
+</p>
+
+<p>
+    <span class="font-bold">@Html.DisplayNameFor(model => model.ValorNuevo):</span>
+    @Html.DisplayFor(model => model.ValorNuevo)
+</p>
+
+<p>
+    <span class="font-bold">@Html.DisplayNameFor(model => model.IP):</span>
+    @Html.DisplayFor(model => model.IP)
+</p>
+
+<p>
+    <span class="font-bold">@Html.DisplayNameFor(model => model.Dispositivo):</span>
+    @Html.DisplayFor(model => model.Dispositivo)
+</p>
+
+<p>
+    <span class="font-bold">@Html.DisplayNameFor(model => model.Seccion):</span>
+    @Html.DisplayFor(model => model.Seccion)
+</p>
+
+<div class="center">
+    <button type="button" title="Cerrar" value="Cerrar" class="btn btn-small grey lighten-3 red-text font-bold waves-effect fz-0-8r" onclick="CerrarDialog()">
+        Cerrar
+    </button>
+</div>

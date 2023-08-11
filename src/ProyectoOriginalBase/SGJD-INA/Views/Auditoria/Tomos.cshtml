@@ -1,0 +1,187 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<InicioTomoViewModel>
+
+@{
+    ViewBag.Title = "Libro de Actas";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="TomAud" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Actas", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Libro de Actas
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Actas", "Inicio")" class="breadcrumb">Módulo de Actas</a>
+                    <a href="#" class="breadcrumb">Libro de Actas</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m7 mb-1">
+                    <span class="fz-1-2r font-bold">Lista de Tomos</span>
+                </div>
+                <div class="col s12 m2">
+                    <button id="BtnFiltrar" type="button" value="Filtrar" title="Filtrar" class="btn btn-small grey lighten-3 waves-effect black-text font-bold">
+                        <i class="fa fa-filter left"></i>
+                        Filtrar
+                    </button>
+                </div>
+                @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Auditor") || User.IsInRole("Sub. Auditor")) {
+                    <div class="col s12 m3">
+                        @* Botón agregar *@
+                        <a class="btn btn-small yellow black-text font-bold waves-effect right" id="Agregar" title="Apertura de Tomo" href="@Url.Action("AperturaTomo", "Auditoria")" target="_blank">
+                            Apertura de Tomo
+                        </a>
+                    </div>
+                }
+
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <table id="TablaTomos" class="table responsive display width-100 bordered cell-border">
+                        <thead>
+                            <tr>
+                                <th colspan="2"></th>
+                                <th colspan="2" class="green lighten-2 font-bold">Apertura</th>
+                                <th colspan="2" class="blue-grey lighten-2 font-bold">Cierre</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th nowrap>@Html.DisplayNameFor(model => model.NombreTomo)</th>
+                                <th nowrap class="text-center">@Html.DisplayNameFor(model => model.NombreEstado)</th>
+                                <th nowrap class="">@Html.DisplayNameFor(model => model.FechaApertura)</th>
+                                <th nowrap class="">@Html.DisplayNameFor(model => model.UsuarioApertura)</th>
+                                <th nowrap class="">@Html.DisplayNameFor(model => model.FechaCierre)</th>
+                                <th nowrap class="">@Html.DisplayNameFor(model => model.UsuarioCierre)</th>
+                                <th nowrap class="text-center">@Html.DisplayNameFor(model => model.CantidadDeActas)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.IdTomo)</th>
+                                <th nowrap></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Tomo in Model) {
+                                <tr>
+                                    <td nowrap>
+                                        <a class="blue-text font-bold" title="Tomo.NombreTomo" href="@Url.Action("DetalleTomo", "Auditoria", new { Id = Tomo.IdTomo })" target="_blank" )>
+                                            @Html.DisplayFor(model => Tomo.NombreTomo)
+                                        </a>
+                                    </td>
+                                    <td nowrap>
+                                        @Helpers.Estado(Tomo.CodigoEstado, Tomo.NombreEstado)
+                                    </td>
+                                    <td class="">@Html.DisplayFor(model => Tomo.FechaApertura)</td>
+                                    <td class="">@Html.DisplayFor(model => Tomo.UsuarioApertura)</td>
+                                    <td class="">@Html.DisplayFor(model => Tomo.FechaCierre)</td>
+                                    <td class="">@Html.DisplayFor(model => Tomo.UsuarioCierre)</td>
+
+                                    @if (Tomo.CantidadDeActas > 0) {
+                                        <td class="text-center">
+                                            @Html.DisplayFor(model => Tomo.NumeroActaInicial) - @Html.DisplayFor(model => Tomo.NumeroActaFinal) (@Html.DisplayFor(model => Tomo.CantidadDeActas))
+                                        </td>
+                                    }
+                                    else {
+                                        <td class="text-center">
+                                            <span class="font-bold">Sin Actas</span>
+                                        </td>
+                                    }
+
+                                    <td>
+                                        @Html.DisplayFor(model => Tomo.IdTomo)
+                                    </td>
+                                    <td>
+                                        <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Tomo.IdTomo'>
+                                            <i class="fa fa-caret-down blue-text"></i>
+                                        </a>
+
+                                        @* Contenido del Dropdown *@
+                                        <ul id='dropdown_@Tomo.IdTomo' class='dropdown-content'>
+                                            <li>
+                                                <a class="blue-text" title="Ver Tomo" href="@Url.Action("DetalleTomo", "Auditoria", new { Id = Tomo.IdTomo })" target="_blank" )>Detalles del Tomo</a>
+                                                <a class="blue-text" title="Descargar Tomo" href="@Url.Action("Descargar", "Auditoria", new { IdTomo = Tomo.IdTomo })">Descargar Tomo</a>
+                                            </li>
+                                            <li class="divider" tabindex="-1"></li>
+                                            <li>
+                                                <a href="@Url.Action("DetalleAperturaTomo", "Auditoria", new { Id = Tomo.IdTomo })" target="_blank" class="blue-text" title="Detalle Apertura">Detalle Apertura</a>
+                                            </li>
+                                            <li class="divider" tabindex="-1"></li>
+                                            @if (Tomo.CodigoEstado.Equals("TOM-ABIE")) {
+                                                if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Auditor") || User.IsInRole("Sub. Auditor")) {
+                                                    <li>
+                                                        <a href="@Url.Action("CierreTomo", "Auditoria", new { Id = Tomo.IdTomo })" class="blue-text" title="Cerrar Tomo">Cerrar Tomo</a>
+                                                    </li>
+                                                }
+                                            }
+                                            else {
+                                                <li>
+                                                    <a href="@Url.Action("DetalleCierreTomo", "Auditoria", new { Id = Tomo.IdTomo })" target="_blank" class="blue-text" title="Detalle Apertura">Detalle Cierre</a>
+                                                </li>
+                                            }
+
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#TablaTomos").DataTable({
+                initComplete: CambiarPropiedadesFiltro,
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: true,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                order: [7, "desc"],
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 },
+                    { targets: 7, visible: false },
+                    { orderable: false, "targets": 2 },
+                    { orderable: false, "targets": 3 },
+                    { orderable: false, "targets": 4 },
+                    { orderable: false, "targets": 5 }
+                ]
+            });
+        });
+    </script>
+}

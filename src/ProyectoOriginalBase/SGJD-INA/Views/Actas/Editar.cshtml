@@ -1,0 +1,1789 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model EditarActaViewModel
+
+@{
+    ViewBag.Title = "Editar Acta";
+    ViewBag.ACFirmadoAprobado = (Model.CodigoEstado.Equals("AC-APROB") || Model.CodigoEstado.Equals("AC-FIRM")) ? true : false;
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="EditAct" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "Actas")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Actas de Sesión
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Actas", "Inicio")" class="breadcrumb">Módulo de Actas</a>
+                    <a href="@Url.Action("Inicio", "Actas")" class="breadcrumb">Actas de Sesión</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+
+            @* Título y estado del acta que se está editando*@
+            <div class="row">
+                <div class="col s12 m6">
+                    <span class="fz-1-1r">
+                        Editar <span class="font-bold">Acta</span> de @Model.TipoSesion <span class="font-bold"> @Model.NumeroSesion - @Model.AnnoSesion</span>
+                    </span>
+                    <span class="grey-text display-block">@Html.LabelFor(ModeItem => Model.NombreEstado) <b>@Helpers.Estado(Model.CodigoEstado, Model.NombreEstado)</b></span>
+                </div>
+
+                <div class="col s12 m6">
+
+                </div>
+            </div>
+
+            @if ((Model.CodigoEstado.Equals("AC-TRANS") || Model.CodigoEstado.Equals("AC-VB")) && (User.IsInRole("Abogado Secretaría Técnica"))) {
+                // El acta se encuentra en transcripción y no puede ser accedida por el abogado técnico
+                <div class="row">
+                    <div class="col s12">
+                        <h6 class="font-bold grey-text">
+                            <i class="fa fa-info-circle yellow-text"></i>
+                            El Acta se encuentra en edición
+                        </h6>
+                    </div>
+                </div>
+            }
+            else {
+                // Formulario de edición del acta
+                <div class="row mb-0">
+                    @using (Html.BeginForm("Editar", "Actas", FormMethod.Post, htmlAttributes: new { onsubmit = "return SubmitFormEditarActa(this)", autocomplete = "off" })) {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "data-error" })
+
+                        @Html.HiddenFor(model => model.IdActa)
+                        @Html.HiddenFor(model => model.IdSesion)
+                        @Html.HiddenFor(model => model.IdTomo)
+                        @Html.HiddenFor(model => model.IdEstado)
+                        @Html.HiddenFor(model => model.CodigoEstado)
+                        @Html.HiddenFor(model => model.Encabezado)
+
+                        // Se guarda aqui los valores del campo para manipularlo y actualizarlo con los nuevos valores del
+                        // editor de texto antes de enviar a guardar los cambios
+                        @Html.HiddenFor(model => model.NotaVotosDisidentes)
+
+                        // Contenedor de encabezado del acta
+                        <div class="col s12 pb-1">
+                            <ul class="collapsible expandable z-depth-0">
+                                <li>
+                                    <div class="collapsible-header grey lighten-5 font-bold">
+                                        <i class="fa fa-caret-right"></i>
+                                        Encabezado y observaciones
+                                    </div>
+                                    <div class="collapsible-body">
+                                        <div class="row">
+                                            <div class="col s12 mb-1">
+                                                @Html.LabelFor(model => model.Encabezado, new { @class = "black-text font-bold" })
+                                                <div id="EditorEncabezado">
+                                                    @Html.Raw(Model.Encabezado)
+                                                </div>
+                                            </div>
+
+                                            <div class="col s12">
+                                                <div class="input-field">
+                                                    @Html.TextAreaFor(model => model.Observacion, new { @class = "validate materialize-textarea" })
+                                                    @Html.LabelFor(model => model.Observacion, new { @class = "black-text" })
+                                                </div>
+                                            </div>
+
+                                            @* Botón guardar Acta *@
+                                            <div class="col s12">
+                                                <button type="submit" class="btn-guardar-acta btn btn-small yellow waves-effect black-text font-bold">
+                                                    Guardar
+                                                </button>
+                                            </div>
+
+                                            @* Preloader guardar Actas *@
+                                            <div class="col s12 preloader-guardar-acta" hidden>
+                                                <div class="progress">
+                                                    <div class="indeterminate"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        // Contenedor de capítulos del acta
+                        <div class="col s12">
+                            <span class="blue-text">
+                                Capítulos del Acta
+                            </span>
+                            <div class="row mb-0">
+                                <div class="col s12">
+                                    <ul class="collapsible expandable z-depth-0">
+
+                                        @* Capítulo *@
+                                        @foreach (CapituloViewModel Capitulo in Model.Capitulos) {
+                                            <li>
+                                                <div class="collapsible-header teal lighten-5 font-bold">
+                                                    <i class="fa fa-caret-right"></i>
+                                                    @Html.DisplayFor(modelItem => Capitulo.Titulo)
+                                                </div>
+
+                                                <div class="collapsible-body">
+                                                    @if ((Model.CodigoEstado.Equals("AC-TRANS") || Model.CodigoEstado.Equals("AC-VB")) && (User.IsInRole("Administrador") || User.IsInRole("Administrador Datasoft") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas"))) {
+                                                        <div class="row">
+                                                            <div class="col s12">
+                                                                <button type="button" onclick="AbrirModalNuevoArticulo('@Capitulo.Titulo', '@Capitulo.IdCapitulo')" data-target="ModalAgregarArticulo" class="btn btn-small yellow black-text font-bold waves-effect modal-trigger">Agregar Articulo</button>
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    <div id="ContenedorCapitulo_@Capitulo.IdCapitulo">
+
+                                                        <ul class="collapsible expandable z-depth-0 lista-articulos">
+                                                            @* Artículos de capítulo *@
+                                                            @foreach (ArticuloViewModel Articulo in Capitulo.Articulos) {
+                                                                <li>
+                                                                    <div class="collapsible-header blue-grey lighten-5 font-bold">
+                                                                        <i class="fa fa-caret-right"></i>
+                                                                        @Html.DisplayFor(modelItem => Articulo.Titulo)
+                                                                    </div>
+                                                                    <div id="ContenedorArticulo_@Articulo.IdArticulo" class="collapsible-body">
+                                                                        <div class="row">
+                                                                            @* Título del artículo y resumen del articulo (Lo que se ingresó en tema) *@
+                                                                            <div class="col s12">
+                                                                                <p class="right">
+                                                                                    @Html.LabelFor(modelItem => Articulo.Confidencialidad, new { @class = "blue-text font-bold" })
+                                                                                    @Html.EditorFor(modelItem => Articulo.Confidencialidad, new { htmlAttributes = new { id = "ConfidencialidadArticulo_" + Articulo.IdArticulo } })
+                                                                                </p>
+                                                                                <p>
+                                                                                    @Html.Raw(Articulo.ResumenTema)
+                                                                                </p>
+                                                                            </div>
+
+                                                                            <div class="col s12 mb-1">
+                                                                                <ul class="tabs tabs-fixed-width z-depth-2">
+                                                                                    <li class="tab">
+                                                                                        <a class="black-text active font-bold" href="#TranscripcionArticulo_@Articulo.IdArticulo">
+                                                                                            <i class="fa fa-keyboard blue-text">&nbsp;</i>
+                                                                                            Transcripción
+                                                                                        </a>
+                                                                                    </li>
+                                                                                    <li class="tab">
+                                                                                        <a class="black-text " href="#ParticipantesArticulo_@Articulo.IdArticulo">
+                                                                                            <i class="fa fa-users blue-grey-text">&nbsp;</i>
+                                                                                            Participantes
+                                                                                        </a>
+                                                                                    </li>
+                                                                                    <li class="tab">
+                                                                                        <a class="black-text" href="#AcuerdoArticulo_@Articulo.IdArticulo">
+                                                                                            <i class="fa fa-clipboard-check deep-orange-text">&nbsp;</i>
+                                                                                            Acuerdo
+                                                                                        </a>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
+
+                                                                            @* Contenido de pestaña transcripción *@
+                                                                            <div class="col s12" id="TranscripcionArticulo_@Articulo.IdArticulo">
+                                                                                <div class="row">
+                                                                                    @* Transcripción del artículo *@
+                                                                                    <div class="col s12 mb-1">
+                                                                                        @Html.LabelFor(model => Articulo.Contenido, new { @class = "black-text font-bold" })
+                                                                                        <div id="EditorArticulo_@Articulo.IdArticulo">
+                                                                                            @Html.Raw(Articulo.Contenido)
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                    @* Observaciones al artículo *@
+                                                                                    @if (!Model.CodigoEstado.Equals("AC-CC") && !Model.CodigoEstado.Equals("AC-APROB") && !Model.CodigoEstado.Equals("AC-FIRM")) {
+                                                                                        <div class="col s12">
+                                                                                            <div class="input-field">
+                                                                                                @Html.TextAreaFor(modelItem => Articulo.Observacion, new { id = "ObservacionArticulo_" + Articulo.IdArticulo, @class = "validate materialize-textarea" })
+                                                                                                @Html.LabelFor(model => Articulo.Observacion, new { @class = "black-text" })
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    }
+
+                                                                                    <div class="col s12">
+                                                                                        @*<button type="button" title="Transcripciones" class="btn-seleccionar-transcripcion btn btn-small blue-text grey lighten-3 font-bold waves-effect modal-trigger" onclick="AbrirModalTranscripciones(@Model.IdActa, @Articulo.IdArticulo, '@Articulo.Titulo')" data-target="ModalTranscripciones">
+                                                                                                <i class="hide-on-med-and-up fas fa-times"></i>
+                                                                                                <span class="hide-on-small-and-down center">Seleccionar transcripción</span>
+                                                                                            </button>*@
+                                                                                        @if (!User.IsInRole("Archivo")) {
+                                                                                            <button type="button" title="Guardar" class="btn-actualizar-articulo btn btn-small blue white-text font-bold waves-effect" onclick="ActualizarArticulo(@Articulo.IdArticulo)">
+                                                                                                <i class="hide-on-med-and-up fas fa-save"></i>
+                                                                                                <span class="hide-on-small-and-down center">Guardar</span>
+                                                                                            </button>
+                                                                                        }
+                                                                                        <button type="button" title="Adjuntos" class="btn-adjuntos-tema btn btn-small grey lighten-3 black-text font-bold waves-effect modal-trigger" onclick="AbrirModalAdjuntosArticulo(@Articulo.IdArticulo, '@Articulo.Titulo')" data-target="ModalAdjuntos">
+                                                                                            <i class="hide-on-med-and-up fas fa-folder-open"></i>
+                                                                                            <span class="hide-on-small-and-down center">Adjuntos</span>
+                                                                                        </button>
+                                                                                        @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas")) {
+                                                                                            <button type="button" title="Excluir" class="btn-excluir-articulo btn btn-small red-text grey lighten-3 font-bold waves-effect" onclick="ExcluirArticulo(@Articulo.IdArticulo, '@Articulo.Titulo')">
+                                                                                                <i class="hide-on-med-and-up fas fa-times"></i>
+                                                                                                <span class="hide-on-small-and-down center">Excluir</span>
+                                                                                            </button>
+                                                                                        }
+
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            @* Fin de pestaña transcripción *@
+
+                                                                            @* Contenido de pestaña participantes *@
+                                                                            <div class="col s12" id="ParticipantesArticulo_@Articulo.IdArticulo">
+                                                                                <div class="row">
+                                                                                    @* Lista de selección de asistentes a la sesión *@
+                                                                                    <div class="col s12 m4 mb-1">
+                                                                                        <label class="po-relative display-block black-text font-bold">Asistentes a la Sesión</label>
+                                                                                        @Html.DropDownList("AsistentesSesion", new SelectList(ViewBag.AsistentesSesionSelect, "Value", "Text"), string.Empty, new { id = "SelectAsistentesArticulo_" + @Articulo.IdArticulo, @class = "select-asistentes browser-default", data_value = Articulo.IdArticulo })
+                                                                                    </div>
+
+                                                                                    @* Asistentes seleccionados *@
+                                                                                    <div class="col s12">
+                                                                                        <label class="po-relative display-block black-text font-bold mb-1">Asistentes que participaron en la discusión del tema</label>
+                                                                                        <div id="ContenedorChipsAsistentesArticulo_@Articulo.IdArticulo" class="chips">
+                                                                                            @foreach (var Usuario in Articulo.UsuariosArticulo) {
+                                                                                                <div class="chip blue-text">
+                                                                                                    @Usuario.Nombre
+                                                                                                    @if (!Model.CodigoEstado.Equals("AC-APROB") && !Model.CodigoEstado.Equals("AC-FIRM")) {
+                                                                                                        <i class="close red-text material-icons" onclick="EliminarUsuarioDeArticulo('@Usuario.IdUsuarioArticulo', '@Articulo.IdArticulo', '@Usuario.IdUsuario')">close</i>
+                                                                                                    }
+                                                                                                </div>
+                                                                                            }
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            @* Contenedor de pestaña Acuerdo *@
+                                                                            <div id="AcuerdoArticulo_@Articulo.IdArticulo" class="col s12">
+                                                                                @if (Articulo.AcuerdoArticulo.IdAcuerdo == 0) {
+                                                                                    <h6 class="center mb-1">Artículo sin Acuerdo</h6>
+                                                                                }
+                                                                                else {
+                                                                                    <div class="center mb-1">
+                                                                                        <span class="fz-1-2r font-bold blue-text display-block">
+                                                                                            @TituloAcuerdo(Articulo.AcuerdoArticulo.Titulo, Articulo.AcuerdoArticulo.NumeroVersion)
+                                                                                        </span>
+                                                                                        <span class="grey-text">
+                                                                                            <a href="@Url.Action("Detalles", "Acuerdo", new { id = Articulo.AcuerdoArticulo.IdAcuerdo })" target="_blank">Ver Acuerdo</a>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <h6 class="center font-bold">@Html.DisplayNameFor(modelitem => Articulo.AcuerdoArticulo.DetalleConsiderando)</h6>
+                                                                                    <div class="ql-editor text-justified">@Html.Raw(Articulo.AcuerdoArticulo.DetalleConsiderando)</div>
+                                                                                    <h6 class="center font-bold">@Html.DisplayNameFor(modelitem => Articulo.AcuerdoArticulo.DetallePortanto)</h6>
+                                                                                    <div class="ql-editor text-justified">@Html.Raw(Articulo.AcuerdoArticulo.DetallePortanto)</div>
+                                                                                }
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        // Contenedor de párrafo de cierre
+                        <div class="col s12">
+                            <ul class="collapsible expandable z-depth-0">
+                                <li>
+                                    <div class="collapsible-header grey lighten-5 font-bold">
+                                        <i class="fa fa-caret-right"></i>
+                                        Parrafo de cierre
+                                    </div>
+                                    <div class="collapsible-body">
+                                        <div class="row mb-0" id="ContenedorInfoActa">
+                                            <div class="col s12">
+                                                <div class="input-field">
+                                                    @Html.TextAreaFor(model => model.ParrafoCierre, new { @class = "validate materialize-textarea" })
+                                                    @Html.LabelFor(model => model.ParrafoCierre, new { @class = "black-text" })
+                                                    @Html.ValidationMessageFor(model => model.ParrafoCierre, "", new { @class = "helper-text" })
+                                                </div>
+                                            </div>
+
+                                            @* Botón guardar Acta *@
+                                            <div class="col s12">
+                                                <button type="submit" class="btn-guardar-acta btn btn-small yellow waves-effect black-text font-bold">
+                                                    Guardar
+                                                </button>
+                                            </div>
+
+                                            @* Preloader guardar parrafo de cierre *@
+                                            <div class="col s12 preloader-guardar-acta" hidden>
+                                                <div class="progress">
+                                                    <div class="indeterminate"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        // Contenedor de audios de sesión
+                        <div class="col s12">
+                            <ul class="collapsible expandable z-depth-0">
+                                <li>
+                                    <div class="collapsible-header grey lighten-5 font-bold">
+                                        <i class="fa fa-caret-right"></i>
+                                        Audios
+                                    </div>
+                                    <div class="collapsible-body">
+                                        @* Contenedor de los audios relacionados al acta *@
+                                        <div class="row">
+                                            <div class="col s12">
+                                                @* Tabla con archivos adjuntos relacionados al acuerdo *@
+                                                <table id="TablaAudios" class="table responsive display width-100 bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nombre</th>
+                                                            <th>Archivo</th>
+                                                            @*<th>Transcripción</th>*@
+                                                            <th>Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        @* Botón para abrir el contenedor para agregar un nuevo audio al acta *@
+                                        <div class="row">
+                                            <div class="col s12">
+                                                <button id="BtnCargarNuevoAudio" type="button" class="btnCargarAudio btn btn-small waves-effect waves-teal yellow black-text font-bold" title="Subir nuevo audio">
+                                                    Cargar nuevo audio
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        @* Contenedor para agregar un nuevo audio al acuerdo *@
+                                        <div class="row" id="SubirArchivoAudio" hidden>
+                                            @* Selección de archivo *@
+                                            <div class="col s12 m4">
+                                                <div class="file-field input-field">
+                                                    <div class="btn grey waves-effect waves-teal lighten-3 black-text">
+                                                        <span>Audio</span>
+                                                        <input type="file" id="Audio" name="Audio" required="required">
+                                                    </div>
+
+                                                    <div class="file-path-wrapper">
+                                                        <input class="file-path validate" type="text">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            @* Detalle / observación del audio *@
+                                            <div class="col s12 m6">
+                                                <div class="input-field">
+                                                    <input placeholder="Nombre del Audio" id="NombreAudio" type="text" class="black-text validate">
+                                                    <label for="NombreAudio" class="black-text">Nombre</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col s12 m2">
+                                                <label class="po-relative">Subir audio</label>
+                                                <button id="SubirAudio" type="button" class="btn waves-effect waves-teal yellow black-text font-bold width-100" title="Subir audio seleccionado">
+                                                    Subir
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        // Notas de votos Dicidentes
+                        if (Model.CodigoEstado.Equals("AC-CC")) {
+                            <div class="col s12">
+                                <ul class="collapsible expandable z-depth-0">
+                                    <li>
+                                        <div class="collapsible-header grey lighten-5 font-bold">
+                                            <i class="fa fa-caret-right"></i>
+                                            Notas
+                                        </div>
+                                        <div class="collapsible-body">
+                                            <div class="row">
+                                                <div class="col s12 mb-1">
+                                                    <div id="EditorVotosDisidentes">
+                                                        @Html.Raw(Model.NotaVotosDisidentes)
+                                                    </div>
+                                                </div>
+
+                                                @* Botón guardar Acta *@
+                                                <div class="col s12">
+                                                    <button type="submit" class="btn-guardar-acta btn btn-small yellow waves-effect black-text font-bold">
+                                                        Guardar
+                                                    </button>
+                                                </div>
+
+                                                @* Preloader guardar Actas *@
+                                                <div class="col s12 preloader-guardar-acta" hidden>
+                                                    <div class="progress">
+                                                        <div class="indeterminate"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+
+                        // Contenedor de aprobación del acta
+                        if (Model.CodigoEstado.Equals("AC-CC")) {
+                            <div class="col s12">
+                                <ul class="collapsible expandable z-depth-0">
+                                    <li>
+                                        <div class="collapsible-header font-bold">
+                                            <i class="liConsiderando fa fa-caret-right" id="ActaAprobada"></i>
+                                            Detalles adicionales
+                                        </div>
+
+                                        <div class="collapsible-body">
+                                            @* Botón para abrir el contenedor para agregar el acta aprobada *@
+                                            <div class="row">
+                                                @* Contenido de select presidente *@
+                                                <div class="col s12 m4">
+                                                    <label class="po-relative display-block black-text font-bold">Usuario que preside</label>
+                                                    @Html.DropDownListFor(model => model.IdUsuarioPreside, new SelectList(ViewBag.AsistentesSesionSelect, "Value", "Text", Model.IdUsuarioPreside), "Seleccione el usuario preside", new { @class = "browser-default" })
+                                                </div>
+
+                                                @* Contenido de select secretario *@
+                                                <div class="col s12 m4">
+                                                    <label class="po-relative display-block black-text font-bold">Usuario secretario</label>
+                                                    @Html.DropDownListFor(model => model.IdUsuarioSecretario, new SelectList(ViewBag.AsistentesSesionSelect, "Value", "Text", Model.IdUsuarioSecretario), "Seleccione el usuario secretario", new { @class = "browser-default" })
+                                                </div>
+
+                                                @* Contenido de select de la sesión en que se aprobo el acta *@
+                                                <div class="col s12 m4">
+                                                    <label class="po-relative display-block black-text font-bold">Sesión en que se aprobo el acta</label>
+                                                    @Html.DropDownListFor(model => model.IdSesionAprobada, new SelectList(ViewBag.SesionSelect, "Value", "Text", Model.IdSesionAprobada), "Seleccione la sesión", new { @class = "browser-default" })
+                                                </div>
+
+                                                @* Sección de botones *@
+                                                <div class="col s12 mt-2">
+                                                    @* Botón guardar Acta *@
+                                                    <button type="submit" class="btn-guardar-acta btn btn-small yellow waves-effect black-text font-bold">
+                                                        Guardar
+                                                    </button>
+                                                </div>
+
+                                                @* Preloader guardar Orden del Día *@
+                                                <div class="col s12 preloader-guardar-acta" hidden>
+                                                    <div class="progress">
+                                                        <div class="indeterminate"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                    }
+
+                    @* Carga el collapsible para que se muestren los botones para subir el acta firmado y poder descargarlo *@
+                    @if (Model.CodigoEstado.Equals("AC-APROB") || Model.CodigoEstado.Equals("AC-FIRM")) {
+                        @* Callapsible para subir el acta firmada *@
+                        <div class="col s12">
+                            <ul class="collapsible expandable z-depth-0">
+                                <li>
+                                    <div class="collapsible-header font-bold">
+                                        <i class="liConsiderando fa fa-caret-right" id="ActaFirmada"></i>
+                                        Acta firmada digitalmente(PDF)
+                                    </div>
+                                    <div class="collapsible-body">
+                                        @* Botón para abrir el contenedor para agregar el acta firmada *@
+                                        <div class="row">
+                                            <div class="col s12 m12">
+                                                @if (string.IsNullOrEmpty(Model.UrlActaFirmada)) {
+                                                    // Mostrar que no hay un acta firmada subida
+                                                    <a href="#" class="btn btn-small grey lighten-3 blue-text font-bold disabled">No hay acta firmada</a>
+                                                }
+                                                else {
+                                                    //Botón para ver el archivo con el acta firmada
+                                                    <a href="@Html.DisplayFor(model => model.UrlActaFirmada)" target="_blank" class="btn btn-small grey lighten-3 blue-text font-bold">Ver acta firmada</a>
+
+                                                    if (User.IsInRole("Administrador") || User.IsInRole("Administrador Datasoft") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas")) {
+
+                                                        // Botón para eliminar el acta firmada
+                                                        <button id="BtnEliminarActaFirmada" type="button" class="btn btn-small waves-effect grey lighten-3 blue-text font-bold" title="Subir nuevo archivo">
+                                                            Eliminar acta firmada
+                                                        </button>
+                                                    }
+                                                }
+                                                @if (User.IsInRole("Administrador") || User.IsInRole("Administrador Datasoft") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas")) {
+                                                    @* Boton para subir el acta firmada *@
+                                                    <button id="BtnCargarActaFirmada" type="button" class="btn btn-small waves-effect yellow black-text font-bold" title="Subir nuevo archivo">
+                                                        Cargar nuevo archivo
+                                                    </button>
+                                                }
+
+                                            </div>
+                                        </div>
+
+                                        @* Contenedor para agregar una nueva acta firmada *@
+                                        <div class="row" id="SubirActaFirmada" hidden>
+                                            @* Selección de archivo *@
+                                            <div class="col s12 m9">
+                                                <div class="file-field input-field">
+                                                    <div class="btn grey waves-effect waves-teal lighten-3 black-text">
+                                                        <span>Archivo</span>
+                                                        <input type="file" id="ArchivoActaFirmada" name="ArchivoActaFirmada" required="required">
+                                                    </div>
+
+                                                    <div class="file-path-wrapper">
+                                                        <input class="file-path validate" type="text">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @* Boton para subir el acta firmada *@
+                                            <div class="col s12 m3">
+                                                <label class="po-relative">Subir archivo</label>
+                                                <button id="BtnSubirActaFirmada" type="button" class="btn waves-effect waves-teal yellow black-text font-bold width-100" title="Subir archivo seleccionado">
+                                                    Subir
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div>
+                    }
+                </div>
+
+                if (Model.CodigoEstado.Equals("AC-CC")) {
+                    <div class="row mb-2">
+                        <div class="col s12 m12">
+                            <span class="blue-text">
+                                <i class="fa fa-info-circle"></i>
+                                Para aprobar el acta, debe especificar el usuario que preside, el usuario secretario y la sesión en la que se aprobó el Acta.
+                            </span>
+                        </div>
+                    </div>
+                }
+
+                if (Model.CodigoEstado.Equals("AC-APROB")) {
+                    <div class="row mb-2">
+                        <div class="col s12 m12">
+                            <span class="blue-text">
+                                <i class="fa fa-info-circle"></i>
+                                Al subir el Acta firmada digitalmente, el Acta cambiará a estado firmado.
+                            </span>
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col s12">
+                        <div class="row">
+                            <div class="col s12 m4">
+                                <label class="blue-text">Acta con artículos confidenciales</label>
+                                <div class="display-block">
+                                    @if (Model.CodigoEstado.Equals("AC-TRANS") || Model.CodigoEstado.Equals("AC-VB") || Model.CodigoEstado.Equals("AC-CC") || Model.CodigoEstado.Equals("AC-APROB") || Model.CodigoEstado.Equals("AC-FIRM")) {
+                                        @* Boton para ver Acta en vista detalle" *@
+                                        @Html.ActionLink("Ver Acta", "DetalleCompleto", "Actas", routeValues: new { Id = @Model.IdActa }, htmlAttributes: new { @class = "btn btn-small grey lighten-3 black-text font-bold waves-effect", target = "_blank" })
+                                    }
+
+                                    @if (Model.CodigoEstado.Equals("AC-TRANS") || Model.CodigoEstado.Equals("AC-VB") || Model.CodigoEstado.Equals("AC-CC") || Model.CodigoEstado.Equals("AC-APROB") || Model.CodigoEstado.Equals("AC-FIRM")) {
+                                        @* Botón para generar Acta de vista detalle en PDF *@
+                                        @Html.ActionLink("Descargar PDF", "GenerarPdfCompleto", "Actas", routeValues: new { Id = @Model.IdActa }, htmlAttributes: new { @class = "btn btn-small grey lighten-3 black-text font-bold waves-effect", target = "_blank" })
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col s12 m4">
+                                <label class="blue-text">Acta sin artículos confidenciales</label>
+                                <div class="display-block">
+                                    @if (Model.CodigoEstado.Equals("AC-TRANS") || Model.CodigoEstado.Equals("AC-VB") || Model.CodigoEstado.Equals("AC-CC") || Model.CodigoEstado.Equals("AC-APROB") || Model.CodigoEstado.Equals("AC-FIRM")) {
+                                        @* Boton para ver Acta en vista detalle" *@
+                                        @Html.ActionLink("Ver Acta", "Detalle", "Actas", routeValues: new { Id = @Model.IdActa }, htmlAttributes: new { @class = "btn btn-small grey lighten-3 black-text font-bold waves-effect", target = "_blank" })
+                                    }
+
+                                    @if (Model.CodigoEstado.Equals("AC-TRANS") || Model.CodigoEstado.Equals("AC-VB") || Model.CodigoEstado.Equals("AC-CC") || Model.CodigoEstado.Equals("AC-APROB") || Model.CodigoEstado.Equals("AC-FIRM")) {
+                                        @* Botón para generar Acta de vista detalle en PDF *@
+                                        @Html.ActionLink("Descargar PDF", "GenerarPDF", "Actas", routeValues: new { Id = @Model.IdActa }, htmlAttributes: new { @class = "btn btn-small grey lighten-3 black-text font-bold waves-effect", target = "_blank" })
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col s12 m4">
+                                <label>Acciones adicionales</label>
+                                <div class="display-block">
+                                    @if (User.IsInRole("Administrador") || User.IsInRole("Administrador Datasoft") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas")) {
+                                        <button type="button" onclick="EnviarNotificacionPorCorreo(@Model.IdActa)" class="btn btn-small grey lighten-3 black-text font-bold waves-effect mb-1">
+                                            Enviar por correo
+                                        </button>
+                                    }
+
+                                    @if (Model.CodigoEstado.Equals("AC-TRANS") && (User.IsInRole("Administrador") || User.IsInRole("Administrador Datasoft") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas"))) {
+                                        @*Boton para dar visto bueno" *@
+                                        <button title=" Dar visto bueno al Acta" value="VistoBueno" id="BtnVistoBueno" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold display-block mb-1">
+                                            Dar visto bueno
+                                        </button>
+                                    }
+                                    else if (Model.CodigoEstado.Equals("AC-VB") && (User.IsInRole("Administrador") || User.IsInRole("Administrador Datasoft") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas"))) {
+                                        @* Boton para dar visto bueno de control de calidad *@
+                                        <button title="Con control de calidad" value="ControlCalidad" id="BtnControlCalidad" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold display-block mb-1">
+                                            Enviar a C.C.
+                                        </button>
+                                    }
+                                    else if (Model.CodigoEstado.Equals("AC-CC") && (User.IsInRole("Administrador") || User.IsInRole("Administrador Datasoft") || User.IsInRole("Secretario Técnico") || User.IsInRole("Abogado Secretaría Técnica"))) {
+                                        @* Boton para aprobar *@
+                                        <button title="Aprobar acta" value="AprobarActa" id="BtnAprobarActa" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold display-block mb-1">
+                                            Aprobar Acta
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@helper TituloAcuerdo(string Titulo, int NumeroVersion) {
+    if (NumeroVersion > 1) {
+        <span class="blue-text">Acuerdo <b>@Titulo</b> V.@NumeroVersion</span>
+    }
+    else {
+        <span class="blue-text">Acuerdo <b>@Titulo</b></span>
+    }
+}
+
+@Html.Partial("_AgregarArticuloPartial")
+@Html.Partial("_AgregarTranscripcionPartial")
+@Html.Partial("_AdjuntosArticuloPartial")
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+@Styles.Render("~/Content/jqueryconfirm")
+@Styles.Render("~/Content/quill")
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryconfirm")
+    @Scripts.Render("~/bundles/quill")
+
+    @{
+        System.Web.Script.Serialization.JavaScriptSerializer Serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+        Serializer.MaxJsonLength = Int32.MaxValue;
+        var ActaModel = Serializer.Serialize(Model);
+    }
+
+    <script type="text/javascript">
+        var TablaAudios; // Tabla de audios
+        var TablaArchivosAdjuntos; // Tabla de archivos adjuntos
+
+        // Definición de objetos para cargar el editor de texto enriquecido WYSIWYG QuillJS
+        var EditorEncabezado = new Quill("#EditorEncabezado", OpcionesQuillJS);
+        var EditorVotosDisidentes = new Quill("#EditorVotosDisidentes", OpcionesQuillJS);
+
+        // Variables para artículos
+        var ArticuloAgregado;
+        var IdNuevoArticulo;
+
+        $(document).ready(function () {
+            //const Acta = @*@Html.Raw(Json.Encode(Model))*@; // Convertir y guardar el ViewModel en un objeto JSON
+            const Acta = @Html.Raw(ActaModel); // Convertir y guardar el ViewModel en un objeto JSON
+
+            // Inicializar editores QuillJS para transcripción y los select de asistentes
+            InicializarEditoresQuill(Acta, false, 0);
+
+            // Cargar ciertos valores cuando se carga la vista
+            CargarElementos(Acta.CodigoEstado);
+
+            // Cargar tabla con los audios del Acta
+            CargarAudios(Acta.IdActa, Acta.CodigoEstado);
+
+            // Cargar eventos de los botones para cambios de estado y envio de notificaciones
+            RegistrarEventos(Acta.IdActa, Acta.NombreObjeto);
+        });
+
+        function InicializarEditoresQuill(Acta, CargarCapituloEspecifico, IdCapitulo) {
+            // Recorrer todos los capitulos del acta
+            $.each(Acta.Capitulos, function (index, value) {
+                // Recorrer todos los artículos del capítulo
+                $.each(value.Articulos, function (index, value) {
+                    // Validar si se solicita cargar solo los editores de los articulos de un capitulo especifico
+                    // tambien validar el capitulo del articulo que se esta recorriendo para saber si no es necesario inicializar
+                    // el editor
+                    if (CargarCapituloEspecifico === true && value.IdCapitulo != IdCapitulo) {
+                        return false;
+                    }
+
+                    // Por cada articulo existe un editor, crear una variable con el nombre del editor y el id del artículo para inicializarlo con QuillJS y
+                    // crear una variable para almacenar el id del editor y el consecutivo de artículo y el símbolo # para inicializar QuellJS correctamente
+                    // Inicializar los editores de transcripción
+                    var EditorArticulo = 'EditorArticulo' + value.IdArticulo;
+                    var IdArticulo = "#EditorArticulo_" + value.IdArticulo;
+                    window[EditorArticulo] = new Quill(IdArticulo, OpcionesQuillJS);
+
+                    // Recorrer los asistentes
+                    $.each(value.UsuariosArticulo, function (index, value) {
+                        // Por cada articulo existe un selector de asistentes para registrar al artículo, crear una variable con el nombre del select y el id del artículo
+                        // y crear otra variable variable para almacenar el option que debe ser ocultado del select
+                        var SelectArticulo = "#SelectAsistentesArticulo_" + value.IdArticulo;
+                        var Option = "option[value='" + value.IdUsuario + "']";
+
+                        // Ocultar de los select de asistentes aquellos cuyo articulo ya posee registrados
+                        $(SelectArticulo + " " + Option).prop("hidden", true);
+                        $(SelectArticulo).val(0);
+                    });
+                });
+            });
+        }
+
+        function CargarElementos(CodigoEstado) {
+            // Si el estado del acta es aprobada y/o firmada se desabilitan todos los campos
+            if (CodigoEstado === "AC-APROB" || CodigoEstado === "AC-FIRM") {
+                // Entradas del usuario
+                $("input").prop('readonly', true);
+                $("select").attr("disabled", "disabled");
+                $("textarea").prop('readonly', true);
+                $(".ql-editor").removeAttr("contenteditable");
+
+                // Botones
+                $("#ControlAsistencia").remove();
+                $(".btn-guardar-acta").remove();
+                $(".btn-seleccionar-transcripcion").remove();
+                $(".btn-actualizar-articulo").remove();
+                $(".btn-excluir-articulo").remove();
+                $(".btnCargarAudio").remove();
+            }
+        }
+
+        //////////
+        // ARTÍCULOS
+        //////////
+        // Abrir modal para agregar un nuevo Articulo
+        function AbrirModalNuevoArticulo(Titulo, IdCapitulo) {
+            $("#Titulo").text(Titulo);
+            $("#IdCapitulo").val(IdCapitulo);
+        }
+
+        // Abrir modal para agregar nuevo articulo a un capitulo
+        function AgregarNuevoArticulo() {
+            MostrarCargandoPagina(); // Mostrar carga de página
+
+            var IdCapitulo = $("#IdCapitulo").val();
+
+            $.when(AgregarArticulo()).done(function () {
+                if (ArticuloAgregado === true) {
+                    //Recargar div que contiene los artículos del capítulo.
+                    $.when($.ajax($("#ContenedorCapitulo_" + IdCapitulo).load(location.href + " #ContenedorCapitulo_" + IdCapitulo + " ul.lista-articulos", ""))).done(function () {
+                        $("#TituloNuevoArticulo").val(''); //Limpiar campos modal AgregarArticuloPartial
+                        M.Modal.getInstance($(".modal")).close(); // Cerrar modal
+
+                        var CollapsiblesArticulo = $("#ContenedorCapitulo_" + IdCapitulo + " .collapsible");
+                        M.Collapsible.init(CollapsiblesArticulo, { accordion: true });
+
+                        var TabsArticulosCapitulo = $("#ContenedorCapitulo_" + IdCapitulo + " .tabs");
+                        M.Tabs.init(TabsArticulosCapitulo, {}); //. Recargar tabs
+
+                        // Inicializar nuevamente los editores y select de los artículos del capitulo recargado
+                        var ActaActualizada = @Html.Raw(ActaModel); // Convertir y guardar el ViewModel en un objeto JSON
+                        InicializarEditoresQuill(ActaActualizada, true, IdCapitulo);
+
+                        // Inicializar el editor de transcripción del nuevo artículo
+                        var EditorNuevoArticulo = 'EditorArticulo' + IdNuevoArticulo;
+                        var IdEditorNuevoArticulo = "#EditorArticulo_" + IdNuevoArticulo;
+                        window[EditorNuevoArticulo] = new Quill(IdEditorNuevoArticulo, OpcionesQuillJS);
+                        // Fin de inicializar los editores de transcripción
+
+                        MostrarMensajeExito("Articulo agregado");
+                        DesaparecerCargandoPagina(); // Ocultar carga de página
+                    }); //Recargar div que contiene cards.
+                }
+                else {
+                    DesaparecerCargandoPagina(); // Ocultar carga de página
+                    MostrarMensajeError(""); // Notificar error
+                }
+            });
+        }
+
+        // Abregar un nuevo artpiculo
+        function AgregarArticulo() {
+            // Crear objeto JSON para Articulo
+            const ArticuloJSON = {
+                IdCapitulo: $("#IdCapitulo").val(),
+                Titulo: $("#TituloNuevoArticulo").val(),
+                Contenido: "",
+                Confidencial: false
+            };
+
+            // Ejecutar petición para agregar el articulo
+            return $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("AgregarArticulo", "Actas")',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(),
+                    ArticuloJSON: JSON.stringify(ArticuloJSON),
+                    IdSesion: @Model.IdSesion,
+                    TituloCapitulo: $("#Titulo").text()
+                },
+                success: function (data) {
+                    if (data.success > 0) {
+                        ArticuloAgregado = true;
+                        IdNuevoArticulo = data.IdNuevoArticulo;
+                    }
+                    else {
+                        ArticuloAgregado = false;
+                        MostrarMensajeError("Error al agregar articulo"); // Notificar error
+                    }
+                },
+                error: function () {
+                    ArticuloAgregado = false;
+                    MostrarMensajeError(""); // Notificar error
+                }
+            });
+        }
+
+        // Actualizar la transcripción de un artículo
+        function ActualizarArticulo(IdArticulo) {
+            MostrarCargandoPagina(); // Mostrar carga de página
+
+            // Crear objeto JSON para Tema
+            var ArticuloJSON = {
+                Id: IdArticulo,
+                Contenido: $("#EditorArticulo_" + IdArticulo + " .ql-editor").html(),
+                Confidencial: $("#ConfidencialidadArticulo_" + IdArticulo).is(":checked"),
+                Observacion: $("#ObservacionArticulo_" + IdArticulo).val()
+            };
+
+            // Ejecutar petición para actualizar el tema
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("ActualizarArticulo", "Actas")',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                    ArticuloJSON: JSON.stringify(ArticuloJSON)
+                },
+                success: function (data) {
+                    if (data.success) {
+                        MostrarMensajeExito(data.message);
+                    }
+                    else {
+                        MostrarMensajeError("Error al actualizar el tema"); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError("Error al actualizar el tema"); // Notificar error
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina(); //Ocultar carga de página
+                }
+            });
+        }
+
+        // Excluir Articulo
+        function ExcluirArticulo(IdArticulo, TituloArticulo) {
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Eliminar artículo',
+                content: '¿Está seguro que desea eliminar el artículo ' + TituloArticulo + '?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Confirmar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina(); // Mostrar carga de página
+
+                            //Ejecuta la petición eliminar un artículo segun el id
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("EliminarArticulo", "Actas")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token,
+                                    IdArticulo: IdArticulo
+                                },
+                                success: function (data) {
+                                    if (data.success == true) {
+                                        MostrarMensajeExito(data.Message);
+                                        $("div#ContenedorArticulo_" + IdArticulo).parent().remove();
+                                    } else {
+                                        MostrarMensajeError(data.Message); // Notificar error
+                                    }
+                                },
+                                error: function () {
+                                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                },
+                                complete: function () {
+                                    DesaparecerCargandoPagina(); // Ocultar carga de página
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+        }
+
+        // Eliminar un usuario de un artículo
+        function EliminarUsuarioDeArticulo(IdUsuarioArticulo, IdArticulo, IdUsuario) {
+            // Ejecutar petición para eliminar el usuario del artículo
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("EliminarUsuarioArticulo", "Actas")',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(),
+                    IdUsuarioArticulo: IdUsuarioArticulo
+                },
+                success: function (data) {
+                    if (data.success) {
+                        MostrarMensajeExito("Asistente removido");
+
+                        // Mostrar en el select
+                        var SelectArticulo = "#SelectAsistentesArticulo_" + IdArticulo;
+                        var Option = "option[value='" + IdUsuario + "']";
+
+                        $(SelectArticulo + " " + Option).prop("hidden", false);
+                        $(SelectArticulo).val(0);
+                    }
+                    else {
+                        MostrarMensajeError(); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError(); // Notificar error
+                }
+            });
+        }
+        //////////
+        // Fin de Artículos
+        //////////
+
+        //////////
+        // AUDIOS
+        //////////
+        function CargarAudios(IdActa, CodigoEstado) {
+            //Parámetros AJAX para cargar DataTable
+            var parametrosAJAX = {
+                url: '@Url.Action("ObtenerAudiosActa", "Audio")',
+                type: "GET",
+                datatype: "json",
+                data: { IdActa: IdActa },
+                error: MensajeError
+            };
+
+            TablaAudios = $("#TablaAudios").DataTable({
+                ajax: parametrosAJAX,
+                columns: [
+                    { data: "Nombre", className: "no-wrap"},
+                    {
+                        data: "UrlAudio", className: "center", render: function (data) {
+                            return "<a class='btn btn-small blue waves-effect white-text font-bold' target='blank' title='Ver archivo' href=" + data + ">Escuchar</a>";
+                        }
+                    },
+                    // Columna para transcripción (Mostrar botón para transcribir si no existe una transcripción o mostrar botón para ver texto completo de transcripción)
+                    @*{
+                        className: "center", render: function (data, type, row) {
+                            const Transcripcion = row['ExtractoTranscripcion'];
+                            const IdAudio = row['IdAudio'];
+
+                            if (Transcripcion === "") {
+                                return "<a class='btn btn-small grey waves-effect lighten-3 blue-text font-bold' target='blank' title='Transcribir audio' onclick=TranscribirAudio(" + IdAudio + ")>Transcribir</a>";
+                            }
+                            else {
+                                return "<button type='button' class='btn btn-small grey waves-effect lighten-3 blue-text font-bold' title='Eliminar Audio' onclick=PopUpForm('@Url.Action("Detalles", "Audio")/" + IdAudio + "')>Ver transcripción</button>";
+                            }
+                        }
+                    },*@
+                    {
+                        className: "center", render: function (data, type, row) {
+                            const IdAudio = row['IdAudio'];
+                            // Se muestra el boton de eliminar segun el estado indicado
+                            if (CodigoEstado === "AC-TRANS" || CodigoEstado === "AC-VB" || CodigoEstado === "AC-CC") {
+                                    return "<button type='button' class='btn btn-small grey waves-effect waves-red lighten-3 red-text font-bold btn-eliminar-archivo' title='Eliminar Audio' onclick=PopUpForm('@Url.Action("Eliminar", "Audio")/" + IdAudio + "')>Eliminar</button>";
+                            } else {
+                                return "";
+                            }
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                responsive: true,
+                info: false,
+                pageLength: 10,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true
+            });
+        }
+
+        function TranscribirAudio(IdAudio) {
+            MostrarCargandoPagina(); // Mostrar carga de página
+
+            // Efectuar petición de transcribir audio
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("TranscribirAudio", "Audio")',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                    Id: IdAudio
+                },
+                success: function (data) {
+                    if (data.success) {
+                        TablaAudios.ajax.reload();
+                        MostrarMensajeExito(data.Message); // Notificar
+                    } else {
+                        MostrarMensajeError(data.Message); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError(""); //Notificar error
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina();
+                }
+            });
+        }
+
+        function AbrirModalTranscripciones(IdActa, IdArticulo, TituloArticulo) {
+            MostrarCargandoPagina();
+
+            // Ejecutar petición para obtener lista con audios y su transcripción
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                url: '@Url.Action("ObtenerAudiosActaConTranscripcion", "Audio")',
+                data: {
+                    IdActa: IdActa
+                },
+                success: function (data) {
+                    $("#AudiosTranscritos").empty();
+                    $.each(data, function (index, value) {
+                        AgregarAudioConTranscripcionEnCollapsible(index, value.Nombre, value.Transcripcion, IdArticulo, TituloArticulo);
+                    });
+                },
+                error: function () {
+                    MostrarMensajeError("Error al obtener los audios"); // Notificar error
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina(); //Ocultar carga de página
+                }
+            });
+        }
+
+        // Agregar o añadir collapsible de audios y li con un item, incluyenco collabsible header y collapsible body
+        function AgregarAudioConTranscripcionEnCollapsible(IndiceAudio, NombreAudio, Transcripcion, IdArticulo, TituloArticulo) {
+            $("#AudiosTranscritos").append(
+                // Título del tema
+                "<li>" +
+                "<div class='collapsible-header grey lighten-5 font-bold'>" +
+                "<i class='fa fa-caret-right'>&nbsp;</i>" +
+                "<i class='fa fa-microphone blue-text'>&nbsp;</i>" +
+                NombreAudio +
+                "</div>" +
+                "<div class='collapsible-body'>" +
+                "<button class='btn-agregar-transcripcion btn btn-small blue white-text waves-effect modal-close' onclick=InsertarTranscripcion(" + IndiceAudio + "&#44;" + IdArticulo + ")>" +
+                "Insertar transcripción en el editor de transcripción del artículo <b>" + TituloArticulo + "</b>" +
+                "</button>" +
+                "<p class='transcripcion-" + IndiceAudio + "'>" +
+                Transcripcion +
+                "</p>" +
+                "<button class='btn-agregar-transcripcion btn btn-small blue white-text waves-effect modal-close' onclick=InsertarTranscripcion(" + IndiceAudio + "&#44;" + IdArticulo + ")>" +
+                "Insertar transcripción en el editor de transcripción del artículo <b>" + TituloArticulo + "</b>" +
+                "</button>" +
+                "</div>" +
+                "</li>"
+            );
+        }
+
+        function InsertarTranscripcion(IndiceAudio, IdArticulo) {
+            $("#EditorArticulo_" + IdArticulo + " .ql-editor").append("<p>" + $(".transcripcion-" + IndiceAudio).text() + "</p>");
+        }
+        //////////
+        // Fin de Audios
+        //////////
+
+        //////////
+        // ADJUNTOS
+        //////////
+        // Abrir modal para ver y agregar los adjuntos de un articulo
+        function AbrirModalAdjuntosArticulo(IdArticulo, TituloArticulo) {
+            $("#IdArticulo").val(IdArticulo);
+            $("#TituloArticulo").text(TituloArticulo);
+
+            // Guardar el código de estado del Acta para validar si mostrar o no el botón de eliminar adjuntos
+            var CodigoEstado = $("#CodigoEstado").val();
+
+            //Parámetros AJAX para cargar DataTable
+            var parametrosAJAX = {
+                url: '@Url.Action("ObtenerArchivosArticulo", "Actas")',
+                type: "GET",
+                datatype: "json",
+                data: { IdArticulo: IdArticulo },
+                error: MensajeError
+            };
+
+            TablaArchivosAdjuntos = $("#TablaArchivosAdjuntos").DataTable();
+            TablaArchivosAdjuntos.destroy();
+
+            TablaArchivosAdjuntos = $("#TablaArchivosAdjuntos").DataTable({
+                ajax: parametrosAJAX,
+                columns: [
+                    {
+                        className: "no-wrap", render: function (data, type, row) {
+                            var Nombre = row['Observacion'];
+                            var URLArchivo = row['UrlArchivo'];
+                            var LinkArchivo = "<a href='" + URLArchivo + "' target='_blank'>" + Nombre + "</a>";
+                            return LinkArchivo;
+                        }
+                    },
+                    {
+                        className: "center", render: function (data, type, row) {
+                            var IdArchivo = row['IdArchivoAdjunto'];
+                            var NombreArchivo = row['Observacion'];
+                            const NombreObjeto = row['NombreObjeto'];
+
+                            if (CodigoEstado === "AC-TRANS" || CodigoEstado === "AC-VB" || CodigoEstado === "AC-CC") {
+                                //Comparar el nombre del objeto de cada adjunto con el nombre de la tabla de los artículos, para mostrar la acción Eliminar
+                                if (NombreObjeto === '@ViewBag.TipoObjetoArticulo') {
+                                    return "<a href='#' class='red-text font-bold btn-eliminar-archivo' title='Eliminar adjunto' data-value='" + IdArchivo + "' data-nombre='" + NombreArchivo + "' onclick='EliminarArchivoAdjunto(this)'><i class='fa fa-trash'>&nbsp;</i>Eliminar</button>";
+                                } else {
+                                    return "";
+                                }
+                            }
+                            else {
+                                return "";
+                            }
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                paging: false,
+                searching: false,
+                responsive: true,
+                info: false,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true
+            });
+        }
+
+        // Eliminar un adjunto de un tema
+        function EliminarArchivoAdjunto(button) {
+            var IdArchivo = $(button).data("value");
+            var NombreArchivo = $(button).data("nombre");
+
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Eliminar archivo adjunto',
+                content: '¿Está seguro que desea eliminar el archivo adjunto ' + NombreArchivo + '?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Confirmar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina(); // Mostrar carga de página
+
+                            var token = $('input[name="__RequestVerificationToken"]', this.form).val(); //Extraer el token
+
+                            //Ejecuta la petición eliminar un archivo adjunto segun el id
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("Eliminar", "ArchivoAdjunto")',
+                                data: {
+                                    __RequestVerificationToken: token,
+                                    IdArchivo: IdArchivo
+                                },
+                                success: function (data) {
+                                    if (data.success == true) {
+                                        MostrarMensajeExito(data.message);
+                                        TablaArchivosAdjuntos.ajax.reload();
+                                    } else {
+                                        MostrarMensajeError(data.message); // Notificar error
+                                    }
+                                },
+                                error: function () {
+                                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                },
+                                complete: function () {
+                                    DesaparecerCargandoPagina(); // Ocultar carga de página
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+        }
+        //////////
+        // Fin de adjuntos
+        //////////
+
+        // Cargar eventos
+        function RegistrarEventos(IdActa, NombreObjeto) {
+            // Cambiar la orientación de las flechas al abrir y cerrar un elemento del collapsible
+            $(".collapsible li div.collapsible-header").click(function () {
+                if ($(this).parent().attr("class") == "active") {
+                    $(this).find("i").removeClass("fa fa-caret-down").addClass("fa fa-caret-right");
+                }
+                else {
+                    $(this).find("i").removeClass("fa fa-caret-right").addClass("fa fa-caret-down");
+                }
+            });
+
+            // Agregar un participante al artículo a partir edel select de presentes
+            $(".select-asistentes").on("change", function () {
+                var IdArticulo = $(this).data("value");
+                var IdUsuario = $(this).val();
+                var Nombre = $(this).find('option:selected').text();
+
+                // Ejecutar petición para agregar asistente al artículo
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: '@Url.Action("AgregarUsuarioArticulo", "Actas")',
+                    data: {
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                        IdArticulo: IdArticulo,
+                        IdUsuario: IdUsuario
+                    },
+                    success: function (data) {
+                        if (data.success == true) {
+                            // Mostrar en el contenedor de chips
+                            $("#ContenedorChipsAsistentesArticulo_" + IdArticulo).append(
+                                "<div class='chip blue-text'>" +
+                                Nombre +
+                                "<i class='close red-text material-icons' onclick='EliminarUsuarioDeArticulo(" + data.IdNuevoUsuarioArticulo + ", " + IdArticulo + ", &#39;" + IdUsuario + "&#39;)'>close</i>" +
+                                "</div>"
+                            );
+
+                            // Quitar del select
+                            var SelectArticulo = "#SelectAsistentesArticulo_" + IdArticulo;
+                            var Option = "option[value='" + IdUsuario + "']";
+
+                            $(SelectArticulo + " " + Option).prop("hidden", true);
+                            $(SelectArticulo).val(0);
+
+                            MostrarMensajeExito("Asistente registrado");
+                        } else {
+                            MostrarMensajeError(); // Notificar error
+                        }
+                    },
+                    error: function () {
+                        MostrarMensajeError("Error al procesar la solicitud."); // Notificar error
+                    }
+                });
+            });
+
+            // Subir y agregar un archivo adjunto a un artículo
+            $("#SubirArchivo").click(function () {
+                // Validar si archivo adjunto ha sido seleccionado para subir
+                if ($("#ArchivoAdjunto").val() == "") {
+                    MostrarMensajeError("Debe seleccionar un archivo"); // Notificar error
+                    return false;
+                }
+
+                // Validar que detalle haya sido ingresado
+                if ($("#DetalleArchivo").val() == "") {
+                    MostrarMensajeError("Debe digitar el detalle del archivo"); // Notificar error
+                    return false;
+                }
+
+                MostrarCargandoPagina(); // Mostrar carga de página
+                // Crear un FormData para almacenar la información antes de enviarla al controlador
+                var formData = new FormData();
+                formData.append("__RequestVerificationToken", $('input[name="__RequestVerificationToken"]', this.form).val());
+                formData.append("IdObjeto", $("#IdArticulo").val());
+                formData.append("Detalle", $("#DetalleArchivo").val());
+                formData.append("Archivo", $("#ArchivoAdjunto")[0].files[0]);
+                formData.append("NombreObjeto", '');
+
+                $.ajax({
+                    url: '@Url.Action("AgregarArchivoAdjunto", "Actas")',
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.success) {
+                            $("#DetalleArchivo").val("");
+                            $("#ArchivoAdjunto").val("");
+                            $(".file-path").val("");
+                            MostrarMensajeExito(data.Message);
+                            TablaArchivosAdjuntos.ajax.reload();
+                        } else {
+                            MostrarMensajeError(data.Message); // Notificar error
+                        }
+                    }, error: function () {
+                        MostrarMensajeError("Error al subir el archivo"); // Notificar error
+                    },
+                    complete: function () {
+                        DesaparecerCargandoPagina(); // Ocultar carga de página
+                    }
+                });
+            });
+
+            // Mostrar el panel de carga una acta firmada al hacer click en el botón "Cargar"
+            $("#BtnCargarActaFirmada").click(function () {
+                $("#SubirActaFirmada").show("slide");
+                $("#BtnCargarActaFirmada").hide("slide");
+            });
+
+            // Subir el archivo con el acta firmada
+            $("#BtnSubirActaFirmada").click(function () {
+                // Validar si archivo adjunto ha sido seleccionado para subir
+                if ($("#ArchivoActaFirmada").val() == "") {
+                    MostrarMensajeError("Debe seleccionar un archivo"); // Notificar error
+                    return false;
+                }
+
+                MostrarCargandoPagina(); // Mostrar carga de página
+
+                // Crear un FormData para almacenar la información antes de enviarla al controlador
+                var formData = new FormData();
+                formData.append("__RequestVerificationToken", $('input[name="__RequestVerificationToken"]', this.form).val());
+                formData.append("IdActa", IdActa);
+                formData.append("Archivo", $("#ArchivoActaFirmada")[0].files[0]);
+                formData.append("NombreObjeto", NombreObjeto);
+
+                $.ajax({
+                    url: '@Url.Action("AgregarActaFirmada", "Actas")',
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.success) {
+                            $("#BtnCargarActaFirmada").show("slide");
+                            $("#SubirActaFirmada").hide("slide");
+                            $("#ArchivoActaFirmada").val("");
+                            $(".file-path").val("");
+                            MostrarMensajeExito(data.Message);
+                            location.reload(); // Refrescar la pagina
+                        } else {
+                            MostrarMensajeError(data.Message); // Notificar error
+                        }
+                    }, error: function () {
+                        MostrarMensajeError("Error al subir el archivo"); // Notificar error
+                    },
+                    complete: function () {
+                        DesaparecerCargandoPagina(); // Ocultar carga de página
+                    }
+                });
+            });
+
+            // Eliminar el Acta firmada
+            $("#BtnEliminarActaFirmada").click(function () {
+                // Solicitar confirmación
+                $.confirm({
+                    icon: 'fa fa-exclamation-circle yellow-text',
+                    title: 'Eliminar Acta firmada',
+                    content: '¿Desea Eliminar el acta firmado?',
+                    boxWidth: '25%',
+                    useBootstrap: false,
+                    buttons: {
+                        Confirmar: {
+                            btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                            action: function () {
+                                MostrarCargandoPagina(); // Mostrar carga de página
+                                var token = $('input[name="__RequestVerificationToken"]', this.form).val();  /*Extraer el token*/
+
+                                // Ejecutar petición para eliminar el acta firmada
+                                // Esta petición eliminar el archivo pdf del repositorio y establece la ruta del archivo en la tabla de actas como nula
+                                $.ajax({
+                                    type: "POST",
+                                    dataType: "json",
+                                    url: '@Url.Action("EliminarActaFirmada", "Actas")',
+                                    data: {
+                                        __RequestVerificationToken: token,
+                                        IdActa: IdActa
+                                    },
+                                    success: function (data) {
+                                        if (data.success == true) {
+                                            MostrarMensajeExito(data.message);
+                                            location.reload(); // Refrescar la pagina
+                                        } else {
+                                            MostrarMensajeError(data.message); // Notificar error
+                                        }
+                                    },
+                                    error: function () {
+                                        MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                    },
+                                    complete: function () {
+                                        DesaparecerCargandoPagina(); // Ocultar carga de página
+                                    }
+                                });
+                            }
+                        },
+                        Cancelar: {
+                            btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                        }
+                    }
+                });
+            });
+
+            // Mostrar el panel de carga de audios al hacer click en el botón "Cargar nuevo audio"
+            $("#BtnCargarNuevoAudio").click(function () {
+                $("#SubirArchivoAudio").show("slide");
+                $("#BtnCargarNuevoAudio").hide("slide");
+            });
+
+            // Subir y agregar un audio adjunto al acta
+            $("#SubirAudio").click(function () {
+                // Validar si el audio ha sido seleccionado para subir
+                if ($("#Audio").val() == "") {
+                    MostrarMensajeError("Debe seleccionar un audio"); // Notificar error
+                    return false;
+                }
+
+                // Validar que detalle haya sido ingresado
+                if ($("#NombreAudio").val() == "") {
+                    MostrarMensajeError("Debe digitar el nombre del audio"); // Notificar error
+                    return false;
+                }
+
+                MostrarCargandoPagina(); // Mostrar carga de página
+
+                // Crear un FormData para almacenar la información antes de enviarla al controlador
+                var formData = new FormData();
+                formData.append("__RequestVerificationToken", $('input[name="__RequestVerificationToken"]', this.form).val());
+                formData.append("IdActa", IdActa);
+                formData.append("Nombre", $("#NombreAudio").val());
+                formData.append("Audio", $("#Audio")[0].files[0]);
+                formData.append("NombreObjeto", NombreObjeto);
+
+                $.ajax({
+                    url: '@Url.Action("AgregarAudio", "Audio")',
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.success) {
+                            TablaAudios.ajax.reload();
+                            $("#BtnCargarNuevoAudio").show("slide");
+                            $("#SubirArchivoAudio").hide("slide");
+                            $("#NombreAudio").val("");
+                            $("#Audio").val("");
+                            $(".file-path").val("");
+                            MostrarMensajeExito(data.Message);
+                        } else {
+                            MostrarMensajeError(data.Message); // Notificar error
+                        }
+                    }, error: function () {
+                        MostrarMensajeError("Error al subir el archivo"); // Notificar error
+                    },
+                    complete: function () {
+                        DesaparecerCargandoPagina(); // Ocultar carga de página
+                    }
+                });
+            });
+
+            // Confirmación para cambiar el estado del acta de borrador a visto bueno
+            $("#BtnVistoBueno").click(function () {
+                DarVistoBueno(IdActa).done(function () {
+                    //Dar visto bueno fue completado, llamar a enviar notificación
+                    EnviarNotificacionPorCorreo(IdActa);
+                });
+            });
+
+            // Cambiar el estado del acta de visto bueno a control de calidad
+            $("#BtnControlCalidad").click(function () {
+                ControlCalidad(IdActa).done(function () {
+                    // Control de calidad fue completado, llamar a enviar notificación
+                    EnviarNotificacionPorCorreo(IdActa);
+                });
+            });
+
+            // Cambiar el estado del acta de control de calidad a aprobada
+            $("#BtnAprobarActa").click(function () {
+                Aprobar(IdActa).done(function () {
+                    // Aprobar el acta fue completado, llamar a enviar notificación
+                    EnviarNotificacionPorCorreo(IdActa);
+                });
+            });
+        }
+
+        // Guardar el Acta
+        function SubmitFormEditarActa(form) {
+            MostrarMensajeInformacion("Guardando información");
+
+            $(".btn-guardar-acta").hide();
+            $(".preloader-guardar-acta").show();
+
+            // Obtener el valor del editor, incluyendo formato HTML y guardarlo en los inputs establecidos en Razor
+            $("#Encabezado").val(EditorEncabezado.root.innerHTML);
+            $("#NotaVotosDisidentes").val(EditorVotosDisidentes.root.innerHTML);
+
+            // Validar que los campos del formulario estén llenos y tengan los valores correctos
+            $.validator.unobtrusive.parse(form);
+
+            if ($(form).valid()) {
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            MostrarMensajeExito(data.Mensaje); // Notificar
+                        } else {
+                            MostrarMensajeError(data.Mensaje); // Notificar error
+                        }
+                    },
+                    error: function () {
+                        MostrarMensajeError(""); //Notificar error
+                    },
+                    complete: function () {
+                        $(".btn-guardar-acta").show();
+                        $(".preloader-guardar-acta").hide();
+                    }
+                });
+            }
+            return false;
+        }
+
+        // Cambiar el estado del acta de transcripcion a visto bueno
+        function DarVistoBueno(IdActa) {
+            var Diferido = $.Deferred();
+
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Dar visto bueno al acta',
+                content: '¿Está seguro de dar el visto bueno al acta redactado?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Confirmar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                                MostrarCargandoPagina(); // Mostrar carga de página
+
+                            // Ejecutar la petición de dar visto bueno al acta segun el id
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("DarVistoBueno", "Actas")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                                    IdActa: IdActa
+                                },
+                                success: function (data) {
+                                    DesaparecerCargandoPagina(); //Oculta pantalla de carga
+
+                                    if (data.success == true) {
+                                        MostrarMensajeExito(data.Mensaje);
+                                    } else {
+                                        MostrarMensajeError(data.Mensaje); // Notificar error
+                                    }
+
+                                    Diferido.resolve();
+                                },
+                                error: function () {
+                                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+
+            return Diferido.promise();
+        }
+
+        // Cambiar el estado del acta de visto buseno a control de calidad
+        function ControlCalidad(IdActa) {
+            var Diferido = $.Deferred();
+
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Enviar el acta a control de calidad',
+                content: '¿Está seguro que desea enviar a control de calidad el acta redactado?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Confirmar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                                MostrarCargandoPagina(); // Mostrar carga de página
+
+                            // Ejecutar la petición de control de calidad del acta segun el id
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("ControlCalidad", "Actas")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                                    IdActa: IdActa
+                                },
+                                success: function (data) {
+                                    DesaparecerCargandoPagina(); //Oculta pantalla de carga
+
+                                    if (data.success == true) {
+                                        MostrarMensajeExito(data.Mensaje);
+                                    } else {
+                                        MostrarMensajeError(data.Mensaje); // Notificar error
+                                    }
+
+                                    Diferido.resolve();
+                                },
+                                error: function () {
+                                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+
+            return Diferido.promise();
+        }
+
+        // Cambiar el estado del acta de control de calidad a aprobada
+        function Aprobar(IdActa) {
+            var Diferido = $.Deferred();
+
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Aprobar el acta',
+                content: '¿Está seguro que desea aprobar el acta redactado?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Confirmar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina(); // Mostrar carga de página
+
+                            // Ejecutar petición de aprobar acta segun el id
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("AprobarActa", "Actas")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(),  //Extraer el token
+                                    IdActa: IdActa
+                                },
+                                success: function (data) {
+                                    DesaparecerCargandoPagina(); //Oculta pantalla de carga
+
+                                    if (data.success == true) {
+                                        MostrarMensajeExito(data.Mensaje);
+                                    } else {
+                                        MostrarMensajeError(data.Mensaje); // Notificar error
+                                    }
+
+                                    Diferido.resolve();
+                                },
+                                error: function () {
+                                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+
+            return Diferido.promise();
+        }
+
+        // Enviar notificacion por correo electronico
+        function EnviarNotificacionPorCorreo(IdActa) {
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Notificar',
+                content: '¿Desea enviar la notificación por correo electronico?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Enviar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina(); // Mostrar carga de página
+
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("EnviarCorreo", "Actas")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                                    IdActa: IdActa,
+                                },
+                                success: function (data) {
+                                    DesaparecerCargandoPagina(); // Ocultar carga de página
+
+                                    if (data.success == true) {
+                                        MostrarMensajeExito("Correo enviado");
+                                        location.reload(); // Refrescar la pagina
+                                    } else {
+                                        MostrarMensajeError(""); // Notificar error
+                                    }
+                                },
+                                error: function () {
+                                    DesaparecerCargandoPagina(); // Ocultar carga de página
+                                    MostrarMensajeError(""); // Notificar error
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text',
+                        action: function () {
+                            location.reload(); // Refrescar la pagina
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+    @Scripts.Render("~/bundles/quillextra")
+}

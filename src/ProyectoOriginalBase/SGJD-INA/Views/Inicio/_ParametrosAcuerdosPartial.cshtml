@@ -1,0 +1,44 @@
+﻿@* Parámetros de Acuerdos *@
+<div class="col s12 m4">
+    <div class="card">
+        <div class="card-image">
+            <img src="~/Content/Images/parametrosacuerdo.png" alt="Administración">
+        </div>
+        <ul class="collapsible expandable z-depth-0 m-0">
+            <li>
+                <div class="collapsible-header blue-text font-bold">
+                    <i class="fa fa-caret-right"></i>
+                    Parámetros de Acuerdos
+                </div>
+                <div class="collapsible-body p-0">
+                    <ul class="collection">
+                        <li class="collection-item">
+                            <a href="@Url.Action("Inicio", "CorreoUnidadAcuerdo")" class="blue-text">
+                                <i>&#45;&nbsp;</i>
+                                Correos de unidades para notificación de Acuerdos
+                            </a>
+                        </li>
+                        <li class="collection-item">
+                            <a href="@Url.Action("UnidadesPredeterminadas", "Acuerdo")" class="blue-text">
+                                <i>&#45;&nbsp;</i>
+                                Unidades predeterminadas para información de Acuerdos
+                            </a>
+                        </li>
+                        <li class="collection-item">
+                            <a href="@Url.Action("Inicio", "CorreoAdicional")" class="blue-text">
+                                <i>&#45;&nbsp;</i>
+                                Correos adicionales para notificación de Acuerdos
+                            </a>
+                        </li>
+                        <li class="collection-item">
+                            <a href="@Url.Action("InicioUsuarioAvisoAcuerdo", "ParametrosAcuerdos")" class="blue-text">
+                                <i>&#45;&nbsp;</i>
+                                Usuarios para notificación de avisos por estado del Acuerdo
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

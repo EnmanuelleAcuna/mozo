@@ -1,0 +1,1630 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model EditarAcuerdoViewModel
+
+@{
+    ViewBag.Title = "Editar Acuerdo";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="EditAcu" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "Acuerdo")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Acuerdos de Sesión
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Acuerdos", "Inicio")" class="breadcrumb">Modulo de Acuerdos</a>
+                    <a href="@Url.Action("Inicio", "Acuerdo")" class="breadcrumb">Acuerdos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            @using (Html.BeginForm("Editar", "Acuerdo", FormMethod.Post, htmlAttributes: new { onsubmit = "return SubmitFormEditarAcuerdo(this)", autocomplete = "off" })) {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "data-error" })
+
+                @Html.HiddenFor(model => model.IdAcuerdo)
+                @Html.HiddenFor(model => model.IdArticulo)
+                @Html.HiddenFor(model => model.IdEstado)
+
+                @Html.HiddenFor(model => model.NumeroAcuerdo)
+                @Html.HiddenFor(model => model.NumeroVersion)
+                @Html.HiddenFor(model => model.Titulo)
+                @Html.HiddenFor(model => model.CodigoEstado)
+
+                @Html.HiddenFor(model => model.FechaCreacion)
+
+                @Html.HiddenFor(model => model.Revision)
+                @Html.HiddenFor(model => model.TipoSeguimiento)
+
+                // Se guarda aqui los valores del campo para manipularlo y actualizarlo con los nuevos valores del
+                // editor de texto antes de enviar a guardar los cambios
+                @Html.HiddenFor(model => model.DetalleConsiderando)
+                @Html.HiddenFor(model => model.DetallePorTanto)
+
+                <div class="row">
+                    <div class="col s12 m6">
+                        @* Título y estado del acuerdo *@
+                        <span class="fz-1-1r">
+                            Editar <span class="font-bold">Acuerdo</span> <span class="font-bold blue-text"> @Titulo(Model.Titulo, Model.NumeroVersion)</span>
+                        </span>
+
+                        <span class="grey-text display-block">@Html.LabelFor(ModeItem => Model.NombreEstado) <b>@Helpers.Estado(Model.CodigoEstado, Model.NombreEstado)</b></span>
+                    </div>
+
+                    <div class="col s12 m6">
+
+                    </div>
+                </div>
+
+                <div class="row mb-0">
+                    @* Firmeza del acuerdo *@
+                    <div class="col s12 m5">
+                        <div class="row">
+                            @* Estado de firmeza del acuerdo *@
+                            <div class="col s12 m6">
+                                @* Si el acuerdo esta en firme se deshabilita el select *@
+                                @if (Model.Firme == true) {
+                                    @Html.LabelFor(model => model.Firme, new { @class = "black-text active" })
+                                    @Html.DropDownListFor(model => model.Firme, new SelectList(ViewBag.ListaTipoFirmeza, "Value", "Text", Model.Firme), new { @class = "browser-default", disabled = "disabled" })
+                                }
+                                @* si el acuerdo no esta en firme el select aparece habilitado*@
+                                else {
+                                    @Html.LabelFor(model => model.Firme, new { @class = "po-relative display-block black-text font-bold" })
+                                    @Html.DropDownListFor(model => model.Firme, new SelectList(ViewBag.ListaTipoFirmeza, "Value", "Text", Model.Firme), new { @class = "browser-default" })
+                                }
+                            </div>
+
+                            <div id="ContenedorFechaFirmeza" class="col s12 m6">
+                                <div class="input-field">
+                                    @Html.LabelFor(model => model.FechaFirmeza, new { @class = "active black-text" })
+                                    @Html.TextBoxFor(model => model.FechaFirmeza, string.Format("{0:d}", Model.FechaFirmeza), new { @class = "datepicker validate" })
+                                    @Html.ValidationMessageFor(model => model.FechaFirmeza, "", new { @class = "helper-text" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Aprobación del acuerdo *@
+                    <div class="col s12 m4">
+                        @* Tipo de aprobación del acuerdo *@
+                        @Html.LabelFor(model => model.IdTipoAprobacion, new { @class = "po-relative display-block black-text font-bold" })
+                        @Html.DropDownListFor(model => model.IdTipoAprobacion, new SelectList(ViewBag.ListaTipoAprobacion, "IdTipoAprobacion", "Nombre", Model.IdTipoAprobacion), new { @id = "IdTipoAprobacion", @class = "browser-default" })
+                    </div>
+
+                    <div class="col s12 m3">
+                        @Html.LabelFor(model => model.FechaNotificacion, new { @class = "active black-text" })
+                        @Html.TextBoxFor(model => model.FechaNotificacion, string.Format("{0:d}", Model.FechaNotificacion), new { @class = "datepicker validate", disabled = "disabled" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    @* Asunto del acuerdo *@
+                    <div class="col s12">
+                        <div class="input-field">
+                            @Html.TextAreaFor(model => model.Asunto, new { @class = "materialize-textarea width-100 validate" })
+                            @Html.LabelFor(model => model.Asunto, new { @class = "black-text font-bold" })
+                            @Html.ValidationMessageFor(model => model.Asunto, "", new { @class = "helper-text" })
+                        </div>
+                    </div>
+                </div>
+
+                @* Unidades para ejecución del acuerdo *@
+                <div class="row">
+                    <div class="col s12">
+                        <div class="row">
+                            @* Selección de unidades *@
+                            <div class="col s12 m4">
+                                <label class="po-relative display-block black-text">Unidades para ejecución del Acuerdo</label>
+                                @Html.DropDownList("UnidadesEjecucion", new SelectList(ViewBag.Unidades, "Value", "Text"), new { @class = "browser-default" })
+                            </div>
+
+                            @* Unidades para ejecución *@
+                            <div class="col s12 m8">
+                                <label class="po-relative display-block black-text font-bold">Unidades seleccionadas para la ejecución del Acuerdo</label>
+                                <div id="ContenedorChipsEjecucion" class="chips"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* Unidades para información del acuerdo *@
+                <div class="row">
+                    <div class="col s12">
+                        <div class="row">
+                            @* Selección de unidades *@
+                            <div class="col s12 m4">
+                                <label class="po-relative display-block black-text">Unidades para información de Acuerdo</label>
+                                @Html.DropDownList("UnidadesInformacion", new SelectList(ViewBag.Unidades, "Value", "Text"), new { @class = "browser-default" })
+                            </div>
+
+                            @* Unidades para información *@
+                            <div class="col s12 m8">
+                                <label class="po-relative display-block black-text font-bold">Unidades seleccionadas para ser informadas sobre el Acuerdo</label>
+                                <div id="ContenedorChipsInformacion" class="chips"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                if (Model.Firme && (!Model.CodigoEstado.Equals("ACU-BORR") || !Model.CodigoEstado.Equals("ACU-VB"))) {
+                    @* Correos Adicionales para Notificación de Acuerdos *@
+                    <div class="row">
+                        <div class="col s12">
+                            <div class="row">
+                                <div class=" col s12 m4">
+                                    <label class="po-relative display-block black-text">Correos adicionales para notificación del Acuerdo</label>
+                                    @Html.DropDownList("CorreosAdicionales", new SelectList(ViewBag.CorreosAdicionales, "Value", "Text"), new { @class = "browser-default" })
+                                </div>
+
+                                @* Correos Adicionales *@
+                                <div class="col s12 m8">
+                                    <label class="po-relative display-block black-text font-bold">Correos adicionales seleccionados para notificación del Acuerdo</label>
+                                    <div id="ContenedorChipsCorreoAdicional" class="chips chips-initial"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @* Detalle, considerando, por tanto, observaciones, archivos adjuntos y acuerdo firmado *@
+                <div class="row mb-0">
+                    <div class="col s12">
+                        <ul class="collapsible expandable">
+                            @* Detalle *@
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="fa fa-caret-right"></i>
+                                    Detalle
+                                </div>
+                                <div class="collapsible-body">
+                                    @Html.TextAreaFor(model => model.Detalle, new { @class = "materialize-textarea validate" })
+                                </div>
+                            </li>
+
+                            @* Considerando *@
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="fa fa-caret-right"></i>
+                                    Considerando
+                                </div>
+                                <div class="collapsible-body">
+                                    <div id="EditorConsiderando">@Html.Raw(Model.DetalleConsiderando)</div>
+                                </div>
+                            </li>
+
+                            @* Por tanto *@
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="fa fa-caret-right"></i>
+                                    Por Tanto
+                                </div>
+                                <div class="collapsible-body">
+                                    <div id="EditorPorTanto">@Html.Raw(Model.DetallePorTanto)</div>
+                                </div>
+                            </li>
+
+                            @* Observaciones del acuerdo *@
+                            @if (Model.CodigoEstado.Equals("ACU-BORR") || Model.CodigoEstado.Equals("ACU-VB") || Model.CodigoEstado.Equals("ACU-FIRM")) {
+                                <li>
+                                    <div class="collapsible-header">
+                                        <i class="fa fa-caret-right"></i>
+                                        Observaciones
+                                    </div>
+                                    <div class="collapsible-body">
+                                        @Html.TextAreaFor(model => model.Observaciones, new { @class = "materialize-textarea validate" })
+                                    </div>
+                                </li>
+                            }
+
+                            @* Votaciones del acuerdo *@
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="fa fa-caret-right"></i>
+                                    Votaciones
+                                </div>
+                                <div class="collapsible-body">
+                                    <div class="row">
+                                        <div class="col s12">
+                                            <table id="TablaVotaciones" class="table responsive display width-100 bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>@Html.DisplayNameFor(model => model.Votaciones.FirstOrDefault().Nombre)</th>
+                                                        <th>@Html.DisplayNameFor(model => model.Votaciones.FirstOrDefault().TipoVotacion)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var Votacion in Model.Votaciones) {
+                                                        if (Model.NombreTipoAprobacion.Equals("Aprobado por unanimidad")) {
+                                                            <tr>
+                                                                <td>
+                                                                    @Html.DisplayFor(modelItem => Votacion.Nombre)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DropDownListFor(model => Votacion.TipoVotacion, new SelectList(ViewBag.ListaTipoVotacion, "Value", "Text", Votacion.TipoVotacion), new { @class = "select-votacion browser-default fz-0-8r", @disabled = "disabled", data_value = Votacion.IdVoto })
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                        else {
+                                                            <tr>
+                                                                <td>
+                                                                    @Html.DisplayFor(modelItem => Votacion.Nombre)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DropDownListFor(model => Votacion.TipoVotacion, new SelectList(ViewBag.ListaTipoVotacion, "Value", "Text", Votacion.TipoVotacion), new { @class = "select-votacion browser-default fz-0-8r", data_value = Votacion.IdVoto })
+                                                                </td>
+                                                            </tr>
+                                                        }
+
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="col s12 mt-1">
+                                            @Html.LabelFor(model => model.ObservacionVotaciones, new { @class = "black-text font-bold" })
+                                            @Html.TextAreaFor(model => model.ObservacionVotaciones, new { @class = "materialize-textarea validate" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            @* Archivos adjuntos relacionados del acuerdo *@
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="fa fa-caret-right"></i>
+                                    Archivos adjuntos
+                                </div>
+                                <div class="collapsible-body">
+                                    @* Contenedor de los archivos adjuntos relacionados al acuerdo *@
+                                    <div class="row">
+                                        <div class="col s12">
+                                            @* Tabla con archivos adjuntos relacionados al acuerdo *@
+                                            <table id="TablaArchivosAdjuntos" class="table responsive display width-100 bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Descripción</th>
+                                                        <th>Archivo</th>
+                                                        <th>Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    @* Botón para abrir el contenedor para agregar un nuevo archivo adjunto al acuerdo *@
+                                    <div class="row">
+                                        <div class="col s12">
+                                            <button id="BtnCargarNuevoArchivo" type="button" class="btn btn-small waves-effect waves-teal yellow black-text font-bold" title="Subir nuevo archivo">
+                                                Cargar nuevo archivo
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    @* Contenedor para agregar un nuevo archivo adjunto al acuerdo *@
+                                    <div class="row" id="SubirArchivoAdjunto" hidden>
+                                        @* Selección de archivo *@
+                                        <div class="col s12 m4">
+                                            <div class="file-field input-field">
+                                                <div class="btn grey waves-effect waves-teal lighten-3 black-text">
+                                                    <span>Archivo</span>
+                                                    <input type="file" id="ArchivoAdjunto" name="ArchivoAdjunto" required="required">
+                                                </div>
+
+                                                <div class="file-path-wrapper">
+                                                    <input class="file-path validate" type="text">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        @* Detalle / observación del archivo *@
+                                        <div class="col s12 m6">
+                                            <div class="input-field">
+                                                <input placeholder="Detalle del archivo" id="DetalleArchivo" type="text" class="black-text validate">
+                                                <label for="DetalleArchivo" class="black-text">Detalle</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col s12 m2">
+                                            <label class="po-relative">Subir archivo</label>
+                                            <button id="SubirArchivo" type="button" class="btn waves-effect waves-teal yellow black-text font-bold width-100" title="Subir archivo seleccionado">
+                                                Subir
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            @* Acuerdo firmado *@
+                            @* Carga el collapsible para que se muestren los botones para subir el acuerdo firmado y poder descargarlo *@
+                            @if (Model.CodigoEstado.Equals("ACU-VB") || Model.CodigoEstado.Equals("ACU-FIRM") || Model.CodigoEstado.Equals("ACU-NOTI") || Model.CodigoEstado.Equals("ACU-EE") || Model.CodigoEstado.Equals("ACU-EJEC") || Model.CodigoEstado.Equals("ACU-REV")) {
+                                <li>
+                                    <div class="collapsible-header">
+                                        <i class="liConsiderando fa fa-caret-right" id="AcuerdoFirmado"></i>
+                                        Acuerdo firmado digitalmente (PDF)
+                                    </div>
+                                    <div class="collapsible-body">
+                                        @* Botón para abrir el contenedor para agregar un nuevo archivo adjunto al acuerdo *@
+                                        <div class="row">
+                                            <div class="col s12 m12">
+                                                @if (string.IsNullOrEmpty(Model.UrlAcuerdoFirmado)) {
+                                                    // Mostrar que no hay un acuerdo firmado subido
+                                                    <a href="#" class="btn btn-small grey lighten-3 blue-text font-bold disabled">No hay acuerdo firmado</a>
+                                                }
+                                                else {
+                                                    //Botón para ver el archivo con el acuerdo firmado
+                                                    <a href="@Html.DisplayFor(model => model.UrlAcuerdoFirmado)" target="_blank" class="btn btn-small grey lighten-3 blue-text font-bold">Ver acuerdo firmado</a>
+
+                                                    // Botón para eliminar el acuerdo firmado
+                                                    <button id="BtnEliminarAcuerdoFirmado" type="button" class="btn btn-small waves-effect grey lighten-3 blue-text font-bold" title="Subir nuevo archivo">
+                                                        Eliminar acuerdo firmado
+                                                    </button>
+                                                }
+
+                                                @*@if (Model.IdEstado == 1017 || Model.IdEstado == 1020 && (User.IsInRole("Director Tecnico") || User.IsInRole("Administrador"))) {*@
+                                                @if (Model.CodigoEstado.Equals("ACU-VB") || Model.CodigoEstado.Equals("ACU-FIRM")) {
+                                                    <button id="BtnCargarAcuerdoFirmado" type="button" class="btn btn-small waves-effect yellow black-text font-bold" title="Subir nuevo archivo">
+                                                        Cargar nuevo archivo
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        @*@if (Model.IdEstado == 1017 || Model.IdEstado == 1020 && (User.IsInRole("Director Tecnico") || User.IsInRole("Administrador"))) {*@
+                                        @if (Model.CodigoEstado.Equals("ACU-VB") || Model.CodigoEstado.Equals("ACU-FIRM")) {
+                                            @* Contenedor para agregar un nuevo archivo adjunto al acuerdo *@
+                                            <div class="row" id="SubirAcuerdoFirmado" hidden>
+                                                @* Selección de archivo *@
+                                                <div class="col s12 m9">
+                                                    <div class="file-field input-field">
+                                                        <div class="btn grey waves-effect waves-teal lighten-3 black-text">
+                                                            <span>Archivo</span>
+                                                            <input type="file" id="ArchivoAcuerdoFirmado" name="ArchivoAcuerdoFirmado" required="required">
+                                                        </div>
+
+                                                        <div class="file-path-wrapper">
+                                                            <input class="file-path validate" type="text">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @* Boton para subir el acuerdo firmado *@
+                                                <div class="col s12 m3">
+                                                    <label class="po-relative">Subir archivo</label>
+                                                    <button id="BtnSubirAcuerdoFirmado" type="button" class="btn waves-effect waves-teal yellow black-text font-bold width-100" title="Subir archivo seleccionado">
+                                                        Subir
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+                if (Model.CodigoEstado.Equals("ACU-VB") || Model.CodigoEstado.Equals("ACU-FIRM")) {
+                    <div class="row mb-2">
+                        <div class="col s12 m12">
+                            <span class="blue-text">
+                                <i class="fa fa-info-circle"></i>
+                                Al subir el Acuerdo firmado digitalmente, el Acuerdo cambiará a estado firmado.
+                            </span>
+                        </div>
+                    </div>
+                }
+
+                @* Contenedor de botones de acción *@
+                <div class="row">
+                    <div class="col s12 m5 mb-1">
+                        <button type="submit" title="Guardar" id="GuardarAcuerdo" class="btn btn-small yellow black-text waves-effect waves-light font-bold mb-1">
+                            Guardar
+                        </button>
+
+                        <a title="Regresar" id="Cancelar" href="@Url.Action("Inicio", "Acuerdo")" class="btn btn-small grey lighten-3 black-text font-bold waves-effect mb-1">
+                            Regresar
+                        </a>
+
+                        @* Boton para generar vista o ver detalles del acuerdo *@
+                        @Html.ActionLink("Ver Acuerdo", "Detalles", "Acuerdo", routeValues: new { Id = Model.IdAcuerdo }, htmlAttributes: new { @class = "btn btn-small grey lighten-3 blue-text font-bold waves-effect mb-1", target = "_blank" })
+
+                        @* Botón para generar PDF de Acuerdo segun vista detalle *@
+                        @Html.ActionLink("Generar PDF", "GenerarPDF", "Acuerdo", routeValues: new { Id = @Model.IdAcuerdo }, htmlAttributes: new { @class = "btn btn-small grey lighten-3 black-text font-bold waves-effect mb-1", target = "_blank" })
+                    </div>
+
+                    <div class="col s12 m7 text-right">
+                        @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador")) {
+                            <button type="button" onclick="EnviarNotificacionPorCorreo(@Model.IdAcuerdo)" class="btn btn-small grey lighten-3 black-text font-bold waves-effect mb-1 right">
+                                Enviar por correo
+                            </button>
+                        }
+
+                        @* Si el estado del acuerdo es [Borrador] se da la opcion de enviar a revisión para obtener el visto bueno por parte del secretario técnico *@
+                        @if (Model.CodigoEstado.Equals("ACU-BORR")) {
+                            <button type="button" title="Visto Bueno" value="Visto bueno acuerdo" id="BtnVistoBueno" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold mb-1">
+                                Dar visto bueno
+                            </button>
+                        }
+
+                        @if (Model.CodigoEstado.Equals("ACU-FIRM") && @Model.Firme == true) {
+                            @* Boton para notificar Acuerdo *@
+                            <button type="button" title="Notificar" value="Notificar" id="BtnNotificar" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold mb-1">
+                                Notificar
+                            </button>
+                        }
+
+                        @* Si el estado del acuerdo es [Notificado o en ejecucion] se da la opcion de revocar o generar nueva versión o marcarlo como ejecutado *@
+                        @if (Model.CodigoEstado.Equals("ACU-NOTI") || Model.CodigoEstado.Equals("ACU-EE")) {
+                            <button type="button" title="Generar nueva version" id="BtnGenerarNuevaVersion" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold mb-1">
+                                Generar nueva versión
+                            </button>
+
+                            <button type="button" title="Revocar Acuerdo" id="BtnRevocarAcuerdo" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold mb-1">
+                                Revocar
+                            </button>
+
+                            <button type="button" title="Acuerdo Ejecutado" id="BtnAcuerdoEjecutado" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold mb-1">
+                                Ejecutado
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@helper Titulo(string Titulo, int NumeroVersion) {
+    if (NumeroVersion > 1) {
+        <span class="font-bold">@Titulo</span> <span>V.@NumeroVersion</span>
+    }
+    else {
+        <span class="font-bold">@Titulo</span>
+    }
+}
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+@Styles.Render("~/Content/jqueryconfirm")
+@Styles.Render("~/Content/quill")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryconfirm")
+    @Scripts.Render("~/bundles/quill")
+
+    @{
+        System.Web.Script.Serialization.JavaScriptSerializer Serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+        Serializer.MaxJsonLength = Int32.MaxValue;
+        var AcuerdoModel = Serializer.Serialize(Model);
+    }
+
+    <script type="text/javascript">
+        // Definición de objetos para cargar el editor de texto enriquecido WYSIWYG QuillJS
+        var EditorConsiderando = new Quill('#EditorConsiderando', OpcionesQuillJS);
+        var EditorPorTanto = new Quill('#EditorPorTanto', OpcionesQuillJS);
+
+        var Extensiones = new Array(); // Variable para almacenar la lista de extensiones permitidas que se pueden subir en los archivos adjuntos
+        var TablaArchivosAdjuntos; // Tabla de archivos adjuntos
+        var TablaMiembrosPresentes;  // Tabla de miembros presentes en una sesion
+
+        $(document).ready(function () {
+            const Acuerdo = @Html.Raw(AcuerdoModel); // Convertir y guardar el ViewModel en un objeto JSON
+
+            // Mostrar las unidades de ejecución e información en la sección de unidades seleccionadas en el control chips de MaterializeCSS
+            CargarUnidadesAcuerdo(Acuerdo.IdAcuerdo, Acuerdo.CodigoEstado);
+
+            // Mostrar los correos adicionales para información del Acuerdo
+            CargarCorreosAdicionales(Acuerdo.IdAcuerdo, Acuerdo.CodigoEstado);
+
+            //Cargar la tabla con los archivos adjuntos relacionados al acuerdo
+            CargarArchivosAdjuntos(Acuerdo.IdAcuerdo, Acuerdo.CodigoEstado);
+
+            // Cargar y restringir las extensiones de archivos que se permiten subir como adjuntos del acuerdo
+            CargarExtensiones(Extensiones);
+
+            // Cargar ciertos valores cuando se carga la vista
+            CargarElementos(Acuerdo.CodigoEstado);
+
+            // Cargar eventos de los botones para cambios de estado y envio de notificaciones
+            RegistrarEventos(Acuerdo.IdAcuerdo, Acuerdo.NombreObjeto);
+
+            // Sobreescribir validador de jQuery para que verifique el formato de fecha
+            // Se coloca acá ya que para que funcione, en la vista se debe cargar primero jqueryval
+            $.validator.addMethod('date', function (value, element) {
+                if (this.optional(element)) {
+                    return true;
+                }
+                var valid = true;
+                try {
+                    $.datepicker.parseDate('dd/mm/yy', value);
+                }
+                catch (err) {
+                    valid = false;
+                }
+                return valid;
+            });
+        });
+
+        // Cambiar la orientación de las flechas al abrir y cerrar un elemento del collapsible
+        $(".collapsible").on("click", "li div.collapsible-header", function () {
+            $(this).parent().siblings().not("active").find("div.collapsible-header i").removeClass("fa fa-caret-down").addClass("fa fa-caret-right");
+
+            if ($(this).parent().attr("class") == "active") {
+                $(this).find("i").removeClass("fa fa-caret-down").addClass("fa fa-caret-right");
+            }
+            else {
+                $(this).find("i").removeClass("fa fa-caret-right").addClass("fa fa-caret-down");
+            }
+        });
+
+        // Cargar ciertos valores en los controles HTML cuando se carga la vista
+        function CargarElementos(CodigoEstado) {
+            // Datepicker
+            var DatePickers = document.querySelectorAll('.datepicker');
+            M.Datepicker.init(DatePickers, { format: 'dd/mm/yyyy', i18n: parametrosi18n, autoClose: true, container: ".main-container" });
+
+            ValidarFirmeza();
+
+            ValidarTipoVotacion();
+
+            // Si el estado del acuerdo es notificado o version anterior se desabilitan todos los campos
+            if (CodigoEstado === "ACU-NOTI" || CodigoEstado === "ACU-VA" || CodigoEstado === "ACU-EE" || CodigoEstado === "ACU-EJEC" || CodigoEstado === "ACU-REV") {
+                // Entradas del usuario
+                $("input").attr("disabled", "disabled");
+                $("select").attr("disabled", "disabled");
+                $("textarea").attr("disabled", "disabled");
+                $(".ql-editor").removeAttr("contenteditable");
+
+                // Botones
+                $("#BtnCargarNuevoArchivo").attr("disabled", "disabled");
+                $("#GuardarAcuerdo").remove();
+                $("#Cancelar").remove();
+                $("#BtnEliminarAcuerdoFirmado").remove();
+            }
+
+            $("#TablaVotaciones").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                responsive: true,
+                info: false,
+                paging: false,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true
+            });
+        }
+
+        //////////
+        // UNIDADES
+        //////////
+        // Obtener las unidades de ejecución e información del acuerdo y mostrarlas en la sección de unidades seleccionadas en el control chips de MaterializeCSS
+        function CargarUnidadesAcuerdo(IdAcuerdo, CodigoEstado) {
+            // Obtener las unidades de ejecución y de información del modelo
+            var UnidadesEjecucion = @Html.Raw(Json.Encode(Model.UnidadesEjecucion));
+            var UnidadesInformacion = @Html.Raw(Json.Encode(Model.UnidadesInformacion));
+
+            // Unidades de ejecución
+            $.each(UnidadesEjecucion, function (index, Unidad) {
+                // Etiquetas de apertura
+                var divChip = GenerarHtml("div", "UnidadEjecucion", "chip blue-text font-bold", "", "", "", "", "", "", "", "", "cursor:pointer");
+                var ElementoI = GenerarHtml("i", "CerrarUnidadEjecucion" + Unidad.IdUnidad, "red-text", "", "", "", "", "", "", "", "EliminarUnidadEjecucion(this," + IdAcuerdo + " ," + Unidad.IdUnidad + ")", "");
+                // Etiquetas de cierre
+                var cerrarDiv = GenerarCerrarHtml("div");
+                var cerrarElementoI = GenerarCerrarHtml("i");
+
+                if (CodigoEstado === "ACU-BORR" || CodigoEstado === "ACU-VB" || CodigoEstado === "ACU-FIRM") {
+                    AdjuntarHtml($("#ContenedorChipsEjecucion"), divChip + Unidad.Nombre + ElementoI + "  X  " + cerrarElementoI + cerrarDiv);
+                } else {
+                    AdjuntarHtml($("#ContenedorChipsEjecucion"), divChip + Unidad.Nombre + cerrarDiv);
+                }
+
+                // Ocultar las opciones del select de unidades de ejecución
+                $("#UnidadesEjecucion option[value='" + Unidad.IdUnidad + "']").prop("hidden", true);
+                $("#UnidadesInformacion option[value='" + Unidad.IdUnidad + "']").prop("hidden", true);
+            });
+
+            // Unidades de información
+            $.each(UnidadesInformacion, function (index, Unidad) {
+                // Etiquetas de apertura
+                var divChip = GenerarHtml("div", "UnidadInformacion", "chip blue-text font-bold", "", "", "", "", "", "", "", "", "cursor:pointer");
+                var ElementoI = GenerarHtml("i", "CerrarUnidadInformacion" + Unidad.IdUnidad, "cerrar red-text", "", "", "", "", "", "", "", "EliminarUnidadInformacion(this," + IdAcuerdo + " ," + Unidad.IdUnidad + ")", "");
+                // Etiquetas de cierre
+                var cerrarDiv = GenerarCerrarHtml("div");
+                var cerrarElementoI = GenerarCerrarHtml("i");
+
+                if (CodigoEstado === "ACU-BORR" || CodigoEstado === "ACU-VB" || CodigoEstado === "ACU-FIRM") {
+                    AdjuntarHtml($("#ContenedorChipsInformacion"), divChip + Unidad.Nombre + ElementoI + "  X  " + cerrarElementoI + cerrarDiv);
+                } else {
+                    AdjuntarHtml($("#ContenedorChipsInformacion"), divChip + Unidad.Nombre + cerrarDiv);
+                }
+
+                // Ocultar las opciones del select de unidades de información
+                $("#UnidadesEjecucion option[value='" + Unidad.IdUnidad + "']").prop("hidden", true);
+                $("#UnidadesInformacion option[value='" + Unidad.IdUnidad + "']").prop("hidden", true);
+            });
+
+            // Establecer los valores seleccionados del select de unidades de información al por defecto
+            $("#UnidadesEjecucion").val(0);
+            $("#UnidadesInformacion").val(0);
+        }
+
+        // Eliminar una unidad de ejecución
+        function EliminarUnidadEjecucion(elemento, IdAcuerdo, IdUnidad) {
+            MostrarMensajeInformacion("Quitando unidad.");
+
+            // Ejecutar petición de quitar la unidad seleccionada del acuerdo
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("EliminarUnidad", "Acuerdo")',
+                async: false,
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                    IdAcuerdo: IdAcuerdo,
+                    IdUnidad: IdUnidad,
+                    Tipo: "E"
+                },
+                success: function (data) {
+                    $(elemento).parent().remove();
+
+                    $("#UnidadesEjecucion option[value='" + IdUnidad + "']").prop("hidden", false);
+                    $("#UnidadesInformacion option[value='" + IdUnidad + "']").prop("hidden", false);
+                    $("#UnidadesInformacion").val(0);
+
+                    MostrarMensajeExito("Unidad eliminada");
+                },
+                error: function () {
+                    MostrarMensajeError(data.Message); // Notificar error
+                }
+            });
+        }
+
+        function EliminarUnidadInformacion(elemento, IdAcuerdo, IdUnidad) {
+            MostrarMensajeInformacion("Quitando unidad.");
+
+            // Ejecutar petición de quitar la unidad seleccionada del acuerdo
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("EliminarUnidad", "Acuerdo")',
+                async: false,
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                    IdAcuerdo: IdAcuerdo,
+                    IdUnidad: IdUnidad,
+                    Tipo: "I"
+                },
+                success: function (data) {
+                    $(elemento).parent().remove();
+
+                    $("#UnidadesEjecucion option[value='" + IdUnidad + "']").prop("hidden", false);
+                    $("#UnidadesInformacion option[value='" + IdUnidad + "']").prop("hidden", false);
+                    $("#UnidadesInformacion").val(0);
+
+                    MostrarMensajeExito("Unidad quitada del Acuerdo");
+                },
+                error: function () {
+                    MostrarMensajeError(); // Notificar error
+                }
+            });
+        }
+
+        //////////
+        // FIN DE UNIDADES
+        //////////
+
+        //////////
+        // CORREOS ADICIONALES
+        //////////
+        function CargarCorreosAdicionales(IdAcuerdo, CodigoEstado) {
+            var CorreosAdicionales = @Html.Raw(Json.Encode(Model.CorreosAdicionales));
+
+            // Unidades de información
+            $.each(CorreosAdicionales, function (index, Correo) {
+                // Etiquetas de apertura
+                var divChip = GenerarHtml("div", "CorreoAdicional", "chip blue-text font-bold", "", "", "", "", "", "", "", "", "cursor:pointer");
+                var ElementoI = GenerarHtml("i", "CerrarCorreoAdicional" + Correo.IdCorreoAdicional, "cerrar red-text", "", "", "", "", "", "", "", "QuitarCorreoAdicional(this," + IdAcuerdo + ", " + Correo.IdCorreoAdicional + ")", "");
+                // Etiquetas de cierre
+                var cerrarDiv = GenerarCerrarHtml("div");
+                var cerrarElementoI = GenerarCerrarHtml("i");
+
+                if (CodigoEstado === "ACU-BORR" || CodigoEstado === "ACU-VB" || CodigoEstado === "ACU-FIRM") {
+                    AdjuntarHtml($("#ContenedorChipsCorreoAdicional"), divChip + Correo.Nombre + " (" + Correo.Correo + ")" + ElementoI + "  X  " + cerrarElementoI + cerrarDiv);
+                } else {
+                    AdjuntarHtml($("#ContenedorChipsCorreoAdicional"), divChip + Correo.Nombre + " (" + Correo.Correo + ")" + cerrarDiv);
+                }
+
+                // Ocultar las opciones del select de unidades de información
+                $("#CorreosAdicionales option[value='" + Correo.IdCorreoAdicional + "']").prop("hidden", true);
+            });
+
+            // Establecer los valores seleccionados del select de unidades de información al por defecto
+            $("#CorreosAdicionales").val(0);
+        }
+
+        function QuitarCorreoAdicional(elemento, IdAcuerdo, IdCorreoAdicional) {
+            MostrarMensajeInformacion("Quitando correo adicional.");
+
+            // Ejecutar petición de quitar la unidad seleccionada del acuerdo
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("QuitarCorreoAdicional", "Acuerdo")',
+                async: false,
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                    IdAcuerdo: IdAcuerdo,
+                    IdCorreoAdicional: IdCorreoAdicional
+                },
+                success: function (data) {
+                    $(elemento).parent().remove();
+
+                    $("#CorreosAdicionales option[value='" + IdCorreoAdicional + "']").prop("hidden", false);
+                    $("#CorreosAdicionales").val(0);
+
+                    MostrarMensajeExito("Correo quitado del Acuerdo");
+                },
+                error: function () {
+                    MostrarMensajeError(); // Notificar error
+                }
+            });
+        }
+        //////////
+        // FIN DE CORREOS ADICIONALES
+        //////////
+
+        //////////
+        // ADJUNTOS
+        //////////
+        // Carga todos los archivos adjuntos relacionados con un acuerdo
+        function CargarArchivosAdjuntos(IdAcuerdo, CodigoEstado) {
+            //Parámetros AJAX para cargar DataTable
+            var parametrosAJAX = {
+                url: '@Url.Action("ObtenerArchivosAcuerdo", "Acuerdo")',
+                type: "GET",
+                datatype: "json",
+                data: { IdAcuerdo: IdAcuerdo},
+                error: MensajeError
+            };
+
+            TablaArchivosAdjuntos = $("#TablaArchivosAdjuntos").DataTable({
+                ajax: parametrosAJAX,
+                columns: [
+                    { data: "Observacion", className: "no-wrap" },
+                    // Botones
+                    {
+                        data: "UrlArchivo", className: "center", render: function (data) {
+                            return "<a class='btn btn-small grey waves-effect waves-red lighten-3 mx-1 blue-text font-bold' target='blank' title='Ver archivo' href=" + data + ">Ver</a>";
+                        }
+                    },
+                    {
+                        className: "center", render: function (data, type, row) {
+                            const IdArchivo = row['IdArchivoAdjunto'];
+                            const NombreObjeto = row['NombreObjeto'];
+
+                            // Se muestra el boton de eliminar segun el estado indicado
+                            if (CodigoEstado === "ACU-BORR" || CodigoEstado === "ACU-VB" || CodigoEstado === "ACU-FIRM") {
+                                // Se muestra el boton cuando este pertenece al objeto
+                                if (NombreObjeto === '@Model.NombreObjeto') {
+                                    return "<button type='button' class='btn btn-small grey waves-effect waves-red lighten-3 mx-1 blue-text font-bold btn-eliminar-archivo' title='Eliminar Archivo' onclick=PopUpForm('@Url.Action("Eliminar", "ArchivoAdjunto")/" + IdArchivo + "')>Eliminar</button>";
+                                } else {
+                                    return "";
+                                }
+                            } else {
+                                return "";
+                            }
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                responsive: true,
+                info: false,
+                pageLength: 10,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true
+            });
+        }
+        //////////
+        // Fin de adjuntos
+        //////////
+
+        // Guardar el acuerdo
+        function SubmitFormEditarAcuerdo(form) {
+            // Obtener el valor del editor, incluyendo formato HTML y guardarlo en los inputs establecidos en Razor
+            $("#DetalleConsiderando").val(EditorConsiderando.root.innerHTML);
+            $("#DetallePorTanto").val(EditorPorTanto.root.innerHTML);
+            $("#Firme").attr('disabled', false); // Habilita el select de firmeza para que el valor pase al post, por que el [disabled = true] pasa el valor null
+
+            // Validar que los campos del formulario estén llenos y tengan los valores correctos
+            $.validator.unobtrusive.parse(form);
+
+            if ($(form).valid()) {
+                MostrarCargandoPagina(); // Mostrar carga de página
+
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            console.log(form.action);
+                            MostrarMensajeExito(data.Mensaje); // Notificar
+                            ValidarFirmeza(); // Valida si la firmeza es true desactiva el select
+                        } else {
+                            MostrarMensajeError(data.Mensaje); // Notificar el error
+                        }
+                    },
+                    error: function () {
+                        MostrarMensajeError("Error al procesar la información."); //Notificar error
+                    },
+                    complete: function () {
+                        DesaparecerCargandoPagina(); // Ocultar carga de página
+                    }
+                });
+            }
+
+            return false;
+        }
+
+        // Cambiar el estado del acuerdo de borrador a visto bueno
+        function DarVistoBueno(IdAcuerdo) {
+            var Diferido = $.Deferred();
+
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Dar visto bueno al acuerdo',
+                content: '¿Esta seguro de dar el visto bueno al acuerdo redactado?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Confirmar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina(); // Mostrar carga de página
+
+                            // Ejecutar la petición de dar el visto bueno al acuerdo segun el id
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("VistoBueno", "Acuerdo")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(),  //Extraer el token
+                                    IdAcuerdo: IdAcuerdo
+                                },
+                                success: function (data) {
+                                    DesaparecerCargandoPagina(); //Oculta pantalla de carga
+
+                                    if (data.success == true) {
+                                        MostrarMensajeExito(data.Mensaje);
+                                    } else {
+                                        MostrarMensajeError(data.Mensaje); // Notificar error
+                                    }
+
+                                    Diferido.resolve();
+                                },
+                                error: function () {
+                                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+
+            return Diferido.promise();
+        }
+
+        // Cambiar el estado de firmado a notificado
+        function Notificar(IdAcuerdo) {
+            var Diferido = $.Deferred();
+
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Notificar un acuerdo',
+                content: '¿Esta seguro que desea notificar el acuerdo?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Confirmar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina(); // Mostrar carga de página
+
+                             // Ejecutar la petición de notificar el acuerdo segun el id
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("Notificar", "Acuerdo")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                                    IdAcuerdo: IdAcuerdo
+                                },
+                                success: function (data) {
+                                    DesaparecerCargandoPagina(); // Ocultar carga de página
+
+                                    if (data.success === true) {
+                                        MostrarMensajeExito(data.Mensaje);
+                                         location.reload(); // Refrescar la pagina
+                                    } else {
+                                        MostrarMensajeError(data.Mensaje); // Notificar error
+                                    }
+
+                                    Diferido.resolve();
+                                },
+                                error: function () {
+                                    DesaparecerCargandoPagina(); // Ocultar carga de página
+                                    MostrarMensajeError(); // Notificar error
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+
+            return Diferido.promise();
+        }
+
+        // Cargar eventos de los botones para cambios de estado y envio de notificaciones
+        function RegistrarEventos(IdAcuerdo, NombreObjeto) {
+            // Habilitar el input de fecha firmeza si la firmeza del acuerdo cambia a [En firme]
+            $("#Firme").change(function () {
+                ValidarFirmeza();
+            });
+
+            $("#FechaFirmeza").change(function () {
+                if ($("#FechaFirmeza").val()) {
+                    $('#Firme').prop('disabled', true);
+                }
+            });
+
+            // Habilita en votaciones que se pueda cambiar el tipo de voto de los asistentes
+            $("#IdTipoAprobacion").change(function () {
+                ValidarTipoVotacion();
+            });
+
+            // Evento para añadir unidades para ejecución
+            $("#UnidadesEjecucion").on('change', function () {
+                MostrarMensajeInformacion("Agregando unidad.");
+
+                var IdUnidad = this.value;
+                var NombreUnidad = $(this).children('option:selected').text();
+
+                // Ejecutar petición AJAX para agregar la unidad al acuerdo
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: '@Url.Action("AgregarUnidad", "Acuerdo")',
+                    data: {
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                        IdUnidad: IdUnidad,
+                        IdAcuerdo: IdAcuerdo,
+                        Tipo: "E"
+                    },
+                    success: function (data) {
+                        if (data.success === true) {
+                            var divChip = GenerarHtml("div", "UnidadEjecucion", "chip blue-text font-bold", "", "", "", "", "", "", "", "", "cursor:pointer");
+                            var ElementoI = GenerarHtml("i", "CerrarUnidadEjecucion" + IdUnidad, "red-text", "", "", "", "", "", "", "", "EliminarUnidadEjecucion(this," + IdAcuerdo + " ," + IdUnidad + ")", "");
+                            var cerrarDiv = GenerarCerrarHtml("div");
+                            var cerrarElementoI = GenerarCerrarHtml("i");
+                            AdjuntarHtml($("#ContenedorChipsEjecucion"), divChip + NombreUnidad + ElementoI + "  X  " + cerrarElementoI + cerrarDiv);
+
+                            $("#UnidadesEjecucion option[value='" + IdUnidad + "']").prop("hidden", true); // Mostrar la opción nuevamente en el select
+                            $("#UnidadesInformacion option[value='" + IdUnidad + "']").prop("hidden", true); // Mostrar la opción nuevamente en el select
+                            $("#UnidadesEjecucion").val(0);
+
+                            MostrarMensajeExito(NombreUnidad + " agregado.");
+                        }
+                        else {
+                            MostrarMensajeError(); // Notificar error
+                        }
+                    },
+                    error: function (data) {
+                        MostrarMensajeError(); // Notificar error
+                    }
+                });
+            });
+
+            // Evento para añadir unidades para información
+            $("#UnidadesInformacion").on('change', function () {
+                MostrarMensajeInformacion("Agregando unidad.");
+
+                var IdUnidad = this.value;
+                var NombreUnidad = $(this).children('option:selected').text();
+
+                // Ejecutar petición AJAX para agregar la unidad al acuerdo
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: '@Url.Action("AgregarUnidad", "Acuerdo")',
+                    data: {
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                        IdUnidad: IdUnidad,
+                        IdAcuerdo: IdAcuerdo,
+                        Tipo: "I"
+                    },
+                    success: function (data) {
+                        if (data.success === true) {
+                            var divChip = GenerarHtml("div", "UnidadInformacion", "chip blue-text font-bold", "", "", "", "", "", "", "", "", "cursor:pointer");
+                            var ElementoI = GenerarHtml("i", "CerrarUnidadInformacion" + IdUnidad, "red-text", "", "", "", "", "", "", "", "EliminarUnidadInformacion(this," + IdAcuerdo + " ," + IdUnidad + ")", "");
+                            var cerrarDiv = GenerarCerrarHtml("div");
+                            var cerrarElementoI = GenerarCerrarHtml("i");
+                            AdjuntarHtml($("#ContenedorChipsInformacion"), divChip + NombreUnidad + ElementoI + "  X  " + cerrarElementoI + cerrarDiv);
+
+                            $("#UnidadesEjecucion option[value='" + IdUnidad + "']").prop("hidden", true); // Mostrar la opción nuevamente en el select
+                            $("#UnidadesInformacion option[value='" + IdUnidad + "']").prop("hidden", true); // Mostrar la opción nuevamente en el select
+                            $("#UnidadesInformacion").val(0);
+
+                            MostrarMensajeExito(NombreUnidad + " agregado.");
+                        }
+                        else {
+                            MostrarMensajeError(); // Notificar error
+                        }
+                    },
+                    error: function (data) {
+                        MostrarMensajeError(); // Notificar error
+                    }
+                });
+            });
+
+            // Evento para añadir correos adicionales
+            $("#CorreosAdicionales").on('change', function () {
+                MostrarMensajeInformacion("Agregando correo adicional.");
+
+                var IdCorreoAdicional = this.value;
+                var Nombre = $(this).children('option:selected').text();
+
+                // Ejecutar petición AJAX para agregar la unidad al acuerdo
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: '@Url.Action("AgregarCorreoAdicional", "Acuerdo")',
+                    data: {
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                        IdCorreoAdicional: IdCorreoAdicional,
+                        IdAcuerdo: IdAcuerdo
+                    },
+                    success: function (data) {
+                        if (data.success === true) {
+                            var divChip = GenerarHtml("div", "CorreoAdicional", "chip blue-text font-bold", "", "", "", "", "", "", "", "", "cursor:pointer");
+                            var ElementoI = GenerarHtml("i", "CerrarCorreoAdicional" + IdCorreoAdicional, "red-text", "", "", "", "", "", "", "", "QuitarCorreoAdicional(this," + IdAcuerdo + ", " + IdCorreoAdicional + ")", "");
+                            var cerrarDiv = GenerarCerrarHtml("div");
+                            var cerrarElementoI = GenerarCerrarHtml("i");
+                            AdjuntarHtml($("#ContenedorChipsCorreoAdicional"), divChip + Nombre + ElementoI + "  X  " + cerrarElementoI + cerrarDiv);
+
+                            $("#CorreosAdicionales option[value='" + IdCorreoAdicional + "']").prop("hidden", true); // Mostrar la opción nuevamente en el select
+                            $("#CorreosAdicionales").val(0);
+
+                            MostrarMensajeExito(Nombre + " agregado.");
+                        }
+                        else {
+                            MostrarMensajeError(); // Notificar error
+                        }
+                    },
+                    error: function () {
+                        MostrarMensajeError(); // Notificar error
+                    }
+                });
+            });
+
+            // Evento para actualizar el voto de un director
+            $(".select-votacion").change(function (e) {
+                let ObjVoto = {
+                    Id: $(this).data('value'),
+                    IdAsistente: '0',
+                    IdAcuerdo: IdAcuerdo,
+                    TipoVotacion: $(this).children("option:selected").text()
+                };
+
+                // Ejecutar petición para actualizar voto
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: '@Url.Action("ActualizarVoto", "Acuerdo")',
+                    data: { VotacionJSON: JSON.stringify(ObjVoto) },
+                    success: function (data) {
+                        MostrarMensajeExito(data.message);
+                    },
+                    error: function (data) {
+                        MostrarMensajeError(); // Notificar error
+                    }
+                });
+            });
+
+            // Mostrar el panel de carga de archivo al hacer click en el botón "Cargar nuevo archivo"
+            $("#BtnCargarNuevoArchivo").click(function () {
+                $("#SubirArchivoAdjunto").show("slide");
+                $("#BtnCargarNuevoArchivo").hide("slide");
+            });
+
+            // Subir un archivo al acuerdo
+            $("#SubirArchivo").click(function () {
+                // Validar si archivo adjunto ha sido seleccionado para subir
+                if ($("#ArchivoAdjunto").val() == "") {
+                    MostrarMensajeError("Debe seleccionar un archivo"); // Notificar error
+                    return false;
+                }
+
+                // Validar que detalle haya sido ingresado
+                if ($("#DetalleArchivo").val() == "") {
+                    MostrarMensajeError("Debe digitar el detalle del archivo"); // Notificar error
+                    return false;
+                }
+
+                MostrarCargandoPagina(); // Mostrar carga de página
+
+                // Crear un FormData para almacenar la información antes de enviarla al controlador
+                var formData = new FormData();
+                formData.append("__RequestVerificationToken", $('input[name="__RequestVerificationToken"]', this.form).val());
+                formData.append("IdObjeto", IdAcuerdo);
+                formData.append("Detalle", $("#DetalleArchivo").val());
+                formData.append("Archivo", $("#ArchivoAdjunto")[0].files[0]);
+                formData.append("NombreObjeto", NombreObjeto);
+
+                $.ajax({
+                    url: '@Url.Action("AgregarArchivoAdjunto", "Acuerdo")',
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.success) {
+                            TablaArchivosAdjuntos.ajax.reload();
+                            $("#BtnCargarNuevoArchivo").show("slide");
+                            $("#SubirArchivoAdjunto").hide("slide");
+                            $("#DetalleArchivo").val("");
+                            $("#ArchivoAdjunto").val("");
+                            $(".file-path").val("");
+                            MostrarMensajeExito(data.Message);
+                        } else {
+                            MostrarMensajeError(data.Message); // Notificar error
+                            location.reload(); // Refrescar pagina
+                        }
+                    }, error: function () {
+                        MostrarMensajeError("Error al subir el archivo"); // Notificar error
+                    },
+                    complete: function () {
+                        DesaparecerCargandoPagina(); //Oculta pantalla de carga
+                    }
+                });
+            });
+
+            // Mostrar el panel de carga un acuerdo firmado al hacer click en el botón "Cargar"
+            $("#BtnCargarAcuerdoFirmado").click(function () {
+                $("#SubirAcuerdoFirmado").show("slide");
+                $("#BtnCargarAcuerdoFirmado").hide("slide");
+            });
+
+            // Subir el archivo con el acuerdo firmado
+            $("#BtnSubirAcuerdoFirmado").click(function () {
+                // Validar si archivo adjunto ha sido seleccionado para subir
+                if ($("#ArchivoAcuerdoFirmado").val() == "") {
+                    MostrarMensajeError("Debe seleccionar un archivo"); // Notificar error
+                    return false;
+                }
+
+                MostrarCargandoPagina(); // Mostrar carga de página
+
+                // Crear un FormData para almacenar la información antes de enviarla al controlador
+                var formData = new FormData();
+                formData.append("__RequestVerificationToken", $('input[name="__RequestVerificationToken"]', this.form).val());
+                formData.append("IdAcuerdo", IdAcuerdo);
+                formData.append("Archivo", $("#ArchivoAcuerdoFirmado")[0].files[0]);
+                formData.append("NombreObjeto", NombreObjeto);
+
+                $.ajax({
+                    url: '@Url.Action("AgregarAcuerdoFirmado", "Acuerdo")',
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.success) {
+                            $("#BtnCargarAcuerdoFirmado").show("slide");
+                            $("#SubirAcuerdoFirmado").hide("slide");
+                            $("#ArchivoAcuerdoFirmado").val("");
+                            $(".file-path").val("");
+                            MostrarMensajeExito(data.Message);
+                            location.reload(); // Refrescar la pagina
+                        } else {
+                            MostrarMensajeError(data.Message); // Notificar error
+                        }
+                    }, error: function () {
+                        MostrarMensajeError("Error al subir el archivo"); // Notificar error
+                    },
+                    complete: function () {
+                         DesaparecerCargandoPagina(); //Oculta pantalla de carga
+                    }
+                });
+            });
+
+            // Eliminar el acuerdo firmado
+            $("#BtnEliminarAcuerdoFirmado").click(function () {
+                // Solicitar confirmación
+                $.confirm({
+                    icon: 'fa fa-exclamation-circle yellow-text',
+                    title: 'Eliminar Acuerdo',
+                    content: '¿Desea eliminar el acuerdo firmado?',
+                    boxWidth: '25%',
+                    useBootstrap: false,
+                    buttons: {
+                        Confirmar: {
+                            btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                            action: function () {
+                                MostrarCargandoPagina(); // Mostrar carga de página
+
+                                // Ejecutar petición para eliminar el acuerdo firmado
+                                // Esta petición eliminar el archivo pdf del repositorio y establece la ruta del archivo en la tabla de acuerdos como nula
+                                $.ajax({
+                                    type: "POST",
+                                    dataType: "json",
+                                    url: '@Url.Action("EliminarFirmado", "Acuerdo")',
+                                    data: {
+                                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), // Extraer el token
+                                        IdAcuerdo: IdAcuerdo
+                                    },
+                                    success: function (data) {
+                                        DesaparecerCargandoPagina();
+
+                                        if (data.success == true) {
+                                            MostrarMensajeExito(data.message);
+                                            location.reload(); // Refrescar la pagina
+                                        } else {
+                                            MostrarMensajeError(data.message); // Notificar error
+                                        }
+                                    },
+                                    error: function () {
+                                        DesaparecerCargandoPagina(); //Oculta pantalla de carga
+                                        MostrarMensajeError(); // Notificar error
+                                    }
+                                });
+                            }
+                        },
+                        Cancelar: {
+                            btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                        }
+                    }
+                });
+            });
+
+            // Confirmación para cambiar el estado del acuerdo de borrador a visto bueno
+            $("#BtnVistoBueno").click(function () {
+                DarVistoBueno(IdAcuerdo).done(function () {
+                    // Dar visto bueno fue completado, llamar a enviar notificación
+                    EnviarNotificacionPorCorreo(IdAcuerdo);
+                });
+            });
+
+            // Se cambia el estado del acuerdo de borrador a revisión
+            $("#BtnNotificar").click(function () {
+                Notificar(IdAcuerdo).done(function () {
+                    // Notificar fue completado, llamar a enviar notificación
+                    EnviarNotificacionPorCorreo(IdAcuerdo);
+                });
+            });
+
+            // Generar una nueva version del acuerdo
+            $("#BtnGenerarNuevaVersion").click(function () {
+                // Solicitar confirmación
+                $.confirm({
+                    icon: 'fa fa-exclamation-circle yellow-text',
+                    title: 'Generar nueva versión del acuerdo',
+                    content: '¿Está seguro que desea generar una nueva versión del acuerdo?',
+                    boxWidth: '25%',
+                    useBootstrap: false,
+                    buttons: {
+                        Confirmar: {
+                            btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                            action: function () {
+                                MostrarCargandoPagina(); // Mostrar carga de página
+
+                                var token = $('input[name="__RequestVerificationToken"]', this.form).val(); //Extraer el token
+
+                                //Ejecuta la petición de generar una nueva versión
+                                $.ajax({
+                                    type: "POST",
+                                    dataType: "json",
+                                    url: '@Url.Action("AgregarNuevaVersion", "Acuerdo")',
+                                    data: {
+                                        __RequestVerificationToken: token,
+                                        IdAcuerdo: IdAcuerdo
+                                    },
+                                    success: function (data) {
+                                        if (data.success == true) {
+                                            window.location.href = '/Acuerdo/Editar/' + data.IdNuevoAcuerdo;
+                                        } else {
+                                            MostrarMensajeError(data.Mensaje); // Notificar error
+                                        }
+                                    },
+                                    error: function () {
+                                        MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                    },
+                                    complete: function () {
+                                        DesaparecerCargandoPagina(); //Oculta pantalla de carga
+                                    }
+                                });
+                            }
+                        },
+                        Cancelar: {
+                            btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                        }
+                    }
+                });
+            });
+
+            // Revocar un acuerdo notificado
+            $("#BtnRevocarAcuerdo").click(function () {
+                // Solicitar confirmación
+                $.confirm({
+                    icon: 'fa fa-exclamation-circle red-text',
+                    title: 'Revocar acuerdo',
+                    content: '¿Está seguro que desea revocar el acuerdo?',
+                    boxWidth: '25%',
+                    useBootstrap: false,
+                    buttons: {
+                        Confirmar: {
+                            btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                            action: function () {
+                                MostrarCargandoPagina(); // Mostrar carga de página
+
+                                var token = $('input[name="__RequestVerificationToken"]', this.form).val(); //Extraer el token
+
+                                $.ajax({
+                                    type: "POST",
+                                    dataType: "json",
+                                    url: '@Url.Action("RevocarAcuerdo", "Acuerdo")',
+                                    data: {
+                                        __RequestVerificationToken: token,
+                                        IdAcuerdo: IdAcuerdo
+                                    },
+                                    success: function (data) {
+                                        if (data.success == true) {
+                                            MostrarMensajeExito(data.Mensaje)
+                                            location.reload(); // Refrescar la pagina
+                                        }
+                                        else {
+                                            MostrarMensajeError(data.Mensaje); // Notificar error
+                                        }
+                                    },
+                                    error: function () {
+                                        MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                    },
+                                    complete: function () {
+                                        DesaparecerCargandoPagina(); //Oculta pantalla de carga
+                                    }
+                                });
+                            }
+                        },
+                        Cancelar: {
+                            btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                        }
+                    }
+                });
+            });
+
+            // Acuerdo ejecutado
+            $("#BtnAcuerdoEjecutado").click(function () {
+                // Solicitar confirmación
+                $.confirm({
+                    icon: 'fa fa-exclamation-circle red-text',
+                    title: 'Cambiar Acuerdo a ejecutado',
+                    content: '¿Está seguro que desea marcar el acuerdo como ejecutado?',
+                    boxWidth: '25%',
+                    useBootstrap: false,
+                    buttons: {
+                        Confirmar: {
+                            btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                            action: function () {
+                                MostrarCargandoPagina(); // Mostrar carga de página
+
+                                var token = $('input[name="__RequestVerificationToken"]', this.form).val(); //Extraer el token
+
+                                $.ajax({
+                                    type: "POST",
+                                    dataType: "json",
+                                    url: '@Url.Action("AcuerdoEjecutado", "Acuerdo")',
+                                    data: {
+                                        __RequestVerificationToken: token,
+                                        IdAcuerdo: IdAcuerdo
+                                    },
+                                    success: function (data) {
+                                        if (data.success == true) {
+                                            MostrarMensajeExito(data.Mensaje)
+                                            location.reload(); // Refrescar la pagina
+                                        }
+                                        else {
+                                            MostrarMensajeError(data.Mensaje); // Notificar error
+                                        }
+                                    },
+                                    error: function () {
+                                        MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                    },
+                                    complete: function () {
+                                         DesaparecerCargandoPagina(); //Oculta pantalla de carga
+                                    }
+                                });
+                            }
+                        },
+                        Cancelar: {
+                            btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                        }
+                    }
+                });
+            });
+        }
+
+        function ValidarFirmeza() {
+            // Mostrar o nó el input de [FechaFirmeza] en base a la [Firmeza] del acuerdo
+            if ($("#Firme").val() === "True") {
+                $("#FechaFirmeza").prop('required', true);
+                $("#ContenedorFechaFirmeza").show("slideUp");
+                $("#Firme").attr('disabled', true);
+            }
+            else {
+                $("#FechaFirmeza").val("");
+                $("#FechaFirmeza").prop('required', false);
+                $("#ContenedorFechaFirmeza").hide("slideDown");
+            }
+        }
+
+        function ValidarTipoVotacion() {
+            // Activa y desactiva el select de tipo de votacion segun el tipo de aprobacion, si el tipo de aprobacion es por unanimidad,
+            // deshabilita la opcion de tipo de votacion y si es otra de las opciones se habilita el poder cambiar el tipo de votacion.
+            if ($("#IdTipoAprobacion").val() == 1) {
+                $(".select-votacion").prop('disabled', true);
+                ActualizarTipoVotacion(IdAcuerdo);
+                $(".select-votacion").val('A favor');
+            }
+            else {
+                $(".select-votacion").prop('disabled', false);
+            }
+        }
+
+        function ActualizarTipoVotacion() {
+            // Ejecutar petición para establecer la aprobacion del acuerdo por unanimidad actualizando los registros de los votantes a favor
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("EstablecerAprobacionPorUnanimidad", "Acuerdo")',
+                data: { IdAcuerdo: @Model.IdAcuerdo },
+                success: function (data) {
+                    // No se muestra ningun tipo de mensaje positivo al usuario
+                },
+                error: function () {
+                    MostrarMensajeError("Error al actualizar la votación"); // Notificar error
+                }
+            });
+        }
+
+        // Enviar notificacion por correo electronico
+        function EnviarNotificacionPorCorreo(IdAcuerdo) {
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Notificar',
+                content: '¿Desea enviar la notificación por correo electronico?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Enviar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina(); // Mostrar carga de página
+
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("EnviarCorreo", "Acuerdo")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                                    IdAcuerdo: IdAcuerdo,
+                                },
+                                success: function (data) {
+                                     DesaparecerCargandoPagina(); //Oculta pantalla de carga
+
+                                    if (data.success == true) {
+                                        MostrarMensajeExito("Correo enviado.");
+                                        location.reload(); // Refrescar la pagina
+                                    } else {
+                                        MostrarMensajeError(""); // Notificar error
+                                    }
+                                },
+                                error: function () {
+                                    DesaparecerCargandoPagina(); //Oculta pantalla de carga
+                                    MostrarMensajeError(""); // Notificar error
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text',
+                        action: function () {
+                            location.reload(); // Refrescar la pagina
+                        }
+                    }
+                }
+            });
+        }
+
+        // Cargar las extensiones de archivos permitidos para subir adjuntos al acuerdo
+        function CargarExtensiones(Extensiones) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("ObtenerDatos", "TipoArchivo")',
+                success: function (data) {
+                    // Variable que contiene las restricciones que se le añadiran a la propiedad accept del input file #ArchivoAdjunto
+                    var Accept = "";
+
+                    // Llenar la variable con las extensiones que el input dejará seleccionar
+                    for (var j = 0; j < data.data.length; j++) {
+                        Accept += data.data[j].Nombre + ", ";
+                        Extensiones.push(data.data[j]);
+                    }
+
+                    // Aadir propiedad al input file ArchivoAdjunto
+                    $("#ArchivoAdjunto").prop("accept", Accept);
+                },
+                error: function () {
+                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                }
+            });
+
+            // Verificar la extensión del archivo, cuando se selecciona en el input file ArchivoAdjunto y ArchivoAcuerdoFirmado
+            $("#ArchivoAdjunto, #ArchivoAcuerdoFirmado").change(function () {
+                // Extraer la extensión del archivo seleccionado en el input file para verificar que sea correcta
+                var Archivo = $(this).val();
+                var Extension = Archivo.substr((Archivo.lastIndexOf('.'))).toLowerCase();
+
+                // Recorrer las extensiones permitidas para saber si la extensión del archivo subido es permitido
+                let ArchivoPermitido = false;
+                $.each(Extensiones, function (i, val) {
+                    if (Extension === val.Nombre) {
+                        ArchivoPermitido = true;
+                    }
+                });
+
+                if (!ArchivoPermitido) {
+                    MostrarMensajeError("Archivo no permitido"); // Notificar error
+                    $(this).val(""); // Borrar valor del input
+                }
+            });
+
+            return Extensiones;
+        }
+    </script>
+
+    @Scripts.Render("~/bundles/quillextra")
+}

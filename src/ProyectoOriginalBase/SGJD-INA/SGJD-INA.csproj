@@ -1,0 +1,1430 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.0.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.0.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" />
+  <Import Project="..\packages\Microsoft.NetFramework.Analyzers.3.0.0\build\Microsoft.NetFramework.Analyzers.props" Condition="Exists('..\packages\Microsoft.NetFramework.Analyzers.3.0.0\build\Microsoft.NetFramework.Analyzers.props')" />
+  <Import Project="..\packages\Microsoft.NetCore.Analyzers.3.0.0\build\Microsoft.NetCore.Analyzers.props" Condition="Exists('..\packages\Microsoft.NetCore.Analyzers.3.0.0\build\Microsoft.NetCore.Analyzers.props')" />
+  <Import Project="..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\build\Microsoft.CodeQuality.Analyzers.props" Condition="Exists('..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\build\Microsoft.CodeQuality.Analyzers.props')" />
+  <Import Project="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" />
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BB5D4486-6534-43C4-9DB6-61CAB0D9CF37}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SGJD_INA</RootNamespace>
+    <AssemblyName>SGJD-INA</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress>
+    </Use64BitIISExpress>
+    <IISExpressSSLPort>44398</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <MvcBuildViews>false</MvcBuildViews>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FilesToIncludeForPublish>AllFilesInTheProject</FilesToIncludeForPublish>
+    <ExcludeGeneratedDebugSymbol>false</ExcludeGeneratedDebugSymbol>
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptModuleKind />
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile />
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <PublishDatabases>false</PublishDatabases>
+    <LegacyPublishPropertiesPageEnabled>true</LegacyPublishPropertiesPageEnabled>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <MvcBuildViews>false</MvcBuildViews>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ExcludeGeneratedDebugSymbol>false</ExcludeGeneratedDebugSymbol>
+    <FilesToIncludeForPublish>AllFilesInTheProject</FilesToIncludeForPublish>
+    <PublishDatabases>true</PublishDatabases>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <LegacyPublishPropertiesPageEnabled>true</LegacyPublishPropertiesPageEnabled>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.2.0.35\lib\net461\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zip, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ionic.Zip.1.9.1.8\lib\Ionic.Zip.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.1, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.13.1\lib\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.3\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.3\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.3\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.4.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.4.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.4.1.0\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.4.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <HintPath>..\packages\Oracle.ManagedDataAccess.19.7.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Oracle.ManagedDataAccess.EntityFramework, Version=6.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <HintPath>..\packages\Oracle.ManagedDataAccess.EntityFramework.19.7.0\lib\net45\Oracle.ManagedDataAccess.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Rotativa, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rotativa.1.7.3\lib\net461\Rotativa.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Unity.Abstractions, Version=5.11.5.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Abstractions.5.11.5\lib\net46\Unity.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Container, Version=5.11.7.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Container.5.11.7\lib\net46\Unity.Container.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mvc, Version=5.11.1.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Mvc.5.11.1\lib\net46\Unity.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\ApplicationEmailService.cs" />
+    <Compile Include="App_Start\ApplicationRoleManager.cs" />
+    <Compile Include="App_Start\AuthorizeConfig.cs" />
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\ApplicationSignInManager.cs" />
+    <Compile Include="App_Start\ApplicationUserManager.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\SIRHDBContext.cs" />
+    <Compile Include="App_Start\SGJDDBContext.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\UnityConfig.cs" />
+    <Compile Include="App_Start\UnityMvcActivator.cs" />
+    <Compile Include="Controllers\ActasController.cs" />
+    <Compile Include="Controllers\AcuerdoController.cs" />
+    <Compile Include="Controllers\ArchivoAdjuntoController.cs" />
+    <Compile Include="Controllers\AsistenteSesionController.cs" />
+    <Compile Include="Controllers\AudioController.cs" />
+    <Compile Include="Controllers\AuditoriaController.cs" />
+    <Compile Include="Controllers\AyudaUsuarioController.cs" />
+    <Compile Include="Controllers\CorreoAdicionalController.cs" />
+    <Compile Include="Controllers\CorreoUnidadAcuerdoController.cs" />
+    <Compile Include="Controllers\OrdenDiaNController.cs" />
+    <Compile Include="Controllers\ParametrosAcuerdosController.cs" />
+    <Compile Include="Controllers\ReportesSesionesController.cs" />
+    <Compile Include="Controllers\ReportesActasController.cs" />
+    <Compile Include="Controllers\ReportesAcuerdosController.cs" />
+    <Compile Include="Controllers\SeccionController.cs" />
+    <Compile Include="Controllers\SeguimientoController.cs" />
+    <Compile Include="Controllers\SesionController.cs" />
+    <Compile Include="Controllers\TranscripcionActasController.cs" />
+    <Compile Include="Controllers\UsuarioSIRHController.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Models\Core\Implementation\Acta\AudioLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Acta\TranscripcionActaCore.cs" />
+    <Compile Include="Models\Core\Implementation\Acuerdo\CorreoUnidadAcuerdoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Acuerdo\UnidadPredeterminada.cs" />
+    <Compile Include="Models\Core\Implementation\Acuerdo\VotoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Acuerdo\CorreoAdicionalLogic.cs" />
+    <Compile Include="Models\Core\Implementation\AyudaUsuarioLogic.cs" />
+    <Compile Include="Models\Core\Implementation\ReportesActasLogic.cs" />
+    <Compile Include="Models\Core\Implementation\ReportesSesionesLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Seguimiento\ElementosRelacionadosLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Acta\IAudioLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Acta\ITranscripcionActaCore.cs" />
+    <Compile Include="Models\Core\Interfaces\Acuerdo\ICorreoUnidadAcuerdoLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Acuerdo\IUnidadPredeterminada.cs" />
+    <Compile Include="Models\Core\Interfaces\Acuerdo\IVotoLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Acuerdo\ICorreoAdicionalLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IAyudaUsuarioLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IReportesActasLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IReportesSesionesLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Seguimiento\IElementosRelacionadosLogic.cs" />
+    <Compile Include="Models\DA\DAO\ActaDAO.cs" />
+    <Compile Include="Models\DA\DAO\RespaldoDAO.cs" />
+    <Compile Include="Models\DA\DAO\SesionDAO.cs" />
+    <Compile Include="Models\DA\DAO\SeguimientosDAO.cs" />
+    <Compile Include="Models\DA\DAO\TipoObjetoDAO.cs" />
+    <Compile Include="Models\DA\DAO\AcuerdoDAO.cs" />
+    <Compile Include="Models\DA\DAO\BitacoraDAO.cs" />
+    <Compile Include="Models\DA\DTO\ActasAcuersoftDTO.cs" />
+    <Compile Include="Models\DA\DTO\ActasAcuersoftPorPalablaClaveDTO.cs" />
+    <Compile Include="Models\DA\DTO\ActasDetalleAcuersoftDTO.cs" />
+    <Compile Include="Models\DA\DTO\ContarRegistrosActasAcuersoftPorPalabraDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeAsistenciaSesionDirectoresDetalladoDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeAsistenciaSesionDirectoresDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeVotacionesAcuerdosDirectoresDetalladoDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeVotacionesAcuerdosDirectoresDTO.cs" />
+    <Compile Include="Models\DA\DTO\UnidadesEjecucionSeguimientoDTO.cs" />
+    <Compile Include="Models\DA\DTO\VotosDesidentesAcuerdosDTO.cs" />
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACT_TAB_ACTAS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACT_TAB_ACTAS_ACUERSOFT.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACT_TAB_ACTAS_DETALLE_ACUERSOFT.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACT_TAB_ARTICULOS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACT_TAB_CAPITULOS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACT_TAB_TEMAS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_AYUDA_USUARIO.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_ERRORES.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SIRH\ModeloSIRH.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModeloSIRH.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SIRH\ModeloSIRH.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModeloSIRH.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SIRH\ModeloSIRH.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModeloSIRH.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SIRH\V_SIRH_FUNC_SIRIA.cs">
+      <DependentUpon>ModeloSIRH.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\Implementation\AudioRepository.cs" />
+    <Compile Include="Models\DA\Implementation\AyudaUsuarioRepository.cs" />
+    <Compile Include="Models\DA\Implementation\BitacoraRepository.cs" />
+    <Compile Include="Models\DA\Implementation\ParametroGeneralRepository.cs" />
+    <Compile Include="Models\DA\Implementation\UsuarioSIRHRepository.cs" />
+    <Compile Include="Models\DA\Implementation\TipoObjetoRepository.cs" />
+    <Compile Include="Models\DA\Implementation\TomoRepository.cs" />
+    <Compile Include="Models\DA\Implementation\TipoSesionRepository.cs" />
+    <Compile Include="Models\DA\Implementation\SeccionRepository.cs" />
+    <Compile Include="Models\DA\Implementation\VistaPerfilRepository.cs" />
+    <Compile Include="Models\DA\Interfaces\IAudioRepository.cs" />
+    <Compile Include="Models\DA\Interfaces\IAyudaUsuarioRepository.cs" />
+    <Compile Include="Models\DA\Interfaces\IBitacoraRepository.cs" />
+    <Compile Include="Models\DA\Interfaces\IParametroGeneralRepository.cs" />
+    <Compile Include="Models\DA\Interfaces\IUsuarioSIRHRepository.cs" />
+    <Compile Include="Models\DA\Interfaces\ITipoObjetoRepository.cs" />
+    <Compile Include="Models\DA\Interfaces\ITomoRepository.cs" />
+    <Compile Include="Models\DA\Interfaces\ISeccionRepository.cs" />
+    <Compile Include="Models\DA\Interfaces\IVistaPerfilRepository.cs" />
+    <Compile Include="Models\DA\Interfaces\ITipoSesionRepository.cs" />
+    <Compile Include="Models\DA\EntityFramework\SGJD\ModeloSGJD.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModeloSGJD.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\ModeloSGJD.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\ModeloSGJD.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModeloSGJD.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACT_TAB_ASISTENTES_SESION.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACT_TAB_MIEMBROS_JUNTA_DIRECTIVA.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACT_TAB_ORDENES_DIA.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACT_TAB_OTROS_ASISTENTES_SESION.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACT_TAB_SESIONES.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACT_TAB_TOMOS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACT_TAB_USUARIOS_ARTICULO.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACU_TAB_ACUERDOS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACU_TAB_AVANCES.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACU_TAB_CORREOS_ADICIONALES.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACU_TAB_CORREOS_UNIDADES_ACUERDO.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACU_TAB_ELEMENTOS_RELACIONADOS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACU_TAB_SEGUIMIENTOS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACU_TAB_UNIDADES_INFORMACION_PREDETERMINADAS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ACU_TAB_VOTACIONES_ACUERDO.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_ARCHIVOS_ADJUNTOS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_AUDIOS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_AVISOS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_BITACORA.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_CORREOS_USUARIO.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_ENCABEZADO_PIEPAGINA.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_ESTADOS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_PARAMETROS_EDICION.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_PARAMETROS_GENERALES.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_REPOSITORIOS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_RESPALDOS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_ROLES.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_SECCIONES.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_TELEFONOS_USUARIO.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_TIPOS_APROBACION.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_TIPOS_ARCHIVO.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_TIPOS_OBJETO.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_TIPOS_SESION.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_TIPOS_USUARIO.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_UNIDADES.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_USUARIOS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_VISTAS.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\EntityFramework\SGJD\SGJD_ADM_TAB_VISTAS_PERFIL.cs">
+      <DependentUpon>ModeloSGJD.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DA\DTO\ActasPorPalabraClaveDTO.cs" />
+    <Compile Include="Models\DA\DTO\AcuerdosPorPalabraClaveDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeGraficoActasDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeGraficoSesionesDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeGraficoAcuerdosDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeAcuerdosDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeAcuerdosResumidoDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeResumenEjecucionAcuerdosDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeSeguimientosDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeSeguimientosResumidoDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeSeguimientosSinFechaVencimientoDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeSeguimientosVencidosDTO.cs" />
+    <Compile Include="Models\DA\DTO\InformeTotalAcuerdosDTO.cs" />
+    <Compile Include="Models\DA\DTO\RespaldoDTO.cs" />
+    <Compile Include="Models\DA\DTO\TablaBDDTO.cs" />
+    <Compile Include="Models\DA\DTO\AcuerdoParaSeguimientoDTO.cs" />
+    <Compile Include="Models\DA\DTO\MiembrosPresentesPorIdAcuerdoDTO.cs" />
+    <Compile Include="Models\DA\DTO\SesionesConArticulosSinAcuerdoDTO.cs" />
+    <Compile Include="Models\DA\DTO\SesionesConArticulosParaNuevoAcuerdoDTO.cs" />
+    <Compile Include="Models\DA\DTO\ArticulosSinAcuerdoDTO.cs" />
+    <Compile Include="Models\DA\DTO\BitacoraDTO.cs" />
+    <Compile Include="Models\Entities\Acta\ActaAcuersoft.cs" />
+    <Compile Include="Models\Entities\Acta\DetalleAcuersoft.cs" />
+    <Compile Include="Models\Entities\Acuerdo\CorreoUnidadAcuerdo.cs" />
+    <Compile Include="Models\Entities\Acuerdo\TipoAprobacion.cs" />
+    <Compile Include="Models\Entities\Audio.cs" />
+    <Compile Include="Models\Entities\Aviso\TipoDestinatario.cs" />
+    <Compile Include="Models\Entities\Aviso\TipoAviso.cs" />
+    <Compile Include="Models\Entities\Acuerdo\Votacion.cs" />
+    <Compile Include="Models\Entities\Acuerdo\UnidadPredeterminada.cs" />
+    <Compile Include="Models\Entities\Acuerdo\CorreoAdicional.cs" />
+    <Compile Include="Models\Entities\AyudaUsuario.cs" />
+    <Compile Include="Models\Entities\Errores.cs" />
+    <Compile Include="Models\Entities\Seguimiento\ElementoRelacionado.cs" />
+    <Compile Include="Models\Helpers\CustomHttpPostedFile.cs" />
+    <Compile Include="Models\Helpers\Funciones.cs" />
+    <Compile Include="Models\ViewModels\Acta\ActasAcuersoft\ActaAcuersoftPorPalabraClaveViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\ActasAcuersoft\ActaAcuersoftViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\ActasPorPalabraClaveViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\ActaTranscritaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\AgregarActaFirmadaViewModels.cs" />
+    <Compile Include="Models\ViewModels\Acta\Articulo\AcuerdoArticuloViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\Articulo\UsuarioArticuloViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\Articulo\ArticuloViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\Capitulo\CapituloViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\ActasAcuersoft\DetalleActaAcuersoftViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\DetalleActaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\EditarActaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\ClasificarTemasOrdenDiaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\ActasAcuersoft\InicioActasAcuersoftViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\EliminarActaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\InicioActaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\PiePaginaActaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\ReportesActas\DatosAsistenciaSesionDetalladoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\ReportesActas\DatosAsistenciaSesionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\ReportesActas\DatosVotacionesAcuerdosDetalladoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\ReportesActas\DatosVotacionesAcuerdosViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\ReportesActas\InformeGestionDetalladoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\ReportesActas\InformeGestionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\ReportesActas\InformeGraficoActasViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\UsuarioArticulo\EliminarUsuarioArticuloViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\AgregarAcuerdoFirmadoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\CorreosUnidadesAcuerdos\AgregarCorreoUnidadAcuerdoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\CorreosUnidadesAcuerdos\EditarCorreoUnidadAcuerdoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\CorreosUnidadesAcuerdos\EliminarCorreoUnidadAcuerdoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\CorreosUnidadesAcuerdos\InicioCorreoUnidadAcuerdoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\DetalleAcuerdoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\EliminarAcuerdoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\DatosInformeAcuerdosResumidoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\InformeAcuerdosResumidoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\AcuerdosPorPalabraClaveViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\DatosInformeAcuerdosViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\InformeGraficoAcuerdosViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\InformeAcuerdosViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\InformeResumenEjecucionAcuerdosViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\DatosInformeSeguimientosResumidoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\InformeSeguimientosResumidoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\InformeSeguimientosSinFechaVencimientoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\InformeSeguimientosVencidosViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\DatosInformeSeguimientosViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\InformeSeguimientosViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\ResumenEjecucionAcuerdosViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ReportesAcuerdos\TotalAcuerdosViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\UnidadesPredeterminadas\InicioUnidadesPredViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\UnidadesPredeterminadas\UnidadesPreViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\UsuarioAvisoAcuerdo\InicioUsuarioAvisoAcuerdoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\VotacionesAcuerdoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\Articulo\DetalleArticuloViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\VotosDesidentesAcuerdosViewModel.cs" />
+    <Compile Include="Models\ViewModels\Audio\AgregarAudioViewModel.cs" />
+    <Compile Include="Models\ViewModels\Audio\InicioAudioViewModel.cs" />
+    <Compile Include="Models\ViewModels\Audio\TranscripcionAudioViewModel.cs" />
+    <Compile Include="Models\ViewModels\AyudaUsuario\DetalleAyudaUsuarioViewModel.cs" />
+    <Compile Include="Models\ViewModels\AyudaUsuario\EditarAyudaUsuarioViewModel.cs" />
+    <Compile Include="Models\ViewModels\AyudaUsuario\InicioAyudaUsuarioViewModel.cs" />
+    <Compile Include="Models\ViewModels\Bitacora\ErroresViewModel.cs" />
+    <Compile Include="Models\ViewModels\CorreoAdicional\AgregarCorreoAdicionalViewModel.cs" />
+    <Compile Include="Models\ViewModels\CorreoAdicional\EliminarCorreoAdicionalViewModel.cs" />
+    <Compile Include="Models\ViewModels\CorreoAdicional\InicioCorreoAdicionalViewModel.cs" />
+    <Compile Include="Models\ViewModels\ParametrosGenerales\ParametroGeneralViewModel.cs" />
+    <Compile Include="Models\ViewModels\Respaldo\InicioRespaldoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seccion\EliminarSeccionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seguimiento\Elemento Relacionado\AgregarElementoRelacionadoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seguimiento\Elemento Relacionado\InicioElementoRelacionadoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seguimiento\EliminarSeguimientoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seguimiento\InformeSeguimientoPorUnidadViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seguimiento\InicioGestionTipoSeguimientoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Sesion\AsistenteSesion\AgregarOtroAsistenteSesionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Sesion\AsistenteSesion\EditarOtroAsistenteViewModel.cs" />
+    <Compile Include="Models\ViewModels\Sesion\AsistenteSesion\EliminarOtroAsistenteviewModel.cs" />
+    <Compile Include="Models\ViewModels\Sesion\AsistenteSesion\InicioAsistenciaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Sesion\AsistenteSesion\InicioAsistenteSesionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Sesion\AsistenteSesion\InicioOtroAsistenteSesionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Aviso\AgregarAvisoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Aviso\DetallesAvisoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Aviso\EliminarAvisoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Aviso\InicioAvisoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Bitacora\DetalleBitacoraViewModel.cs" />
+    <Compile Include="Models\ViewModels\Bitacora\InicioBitacoraViewModel.cs" />
+    <Compile Include="Models\ViewModels\Sesion\AsistenteSesion\EditarHoraViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\Capitulo\DetalleCapituloViewModel.cs" />
+    <Compile Include="Models\ViewModels\Estado\DetallesEstadoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Estado\EditarEstadoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Estado\InicioEstadoViewModel.cs" />
+    <Compile Include="Models\ViewModels\ParametrosGenerales\EditarParametroGeneralViewModel.cs" />
+    <Compile Include="Models\ViewModels\ParametrosGenerales\InicioParametrosGeneralesViewModel.cs" />
+    <Compile Include="Models\ViewModels\Rol\EditarRolViewModel.cs" />
+    <Compile Include="Models\ViewModels\Rol\InicioRolViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seccion\AgregarSeccionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seccion\EditarSeccionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seccion\InicioSeccionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seguimiento\Avance\DetalleSeguimientoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Sesion\DetalleSesionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Sesion\AgregarSesionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Sesion\EditarSesionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Sesion\EliminarSesionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Sesion\InicioSesionViewModel.cs" />
+    <Compile Include="Models\ViewModels\Sesion\ReportesSesiones\InformeGraficoSesionesViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoArchivo\EliminarTipoArchivoViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoObjeto\DetallesTipoObjetoViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoObjeto\EliminarTipoObjetoViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoSesion\EliminarTipoSesionViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoUsuario\EliminarTipoUsuarioViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoUsuario\InicioTipoUsuarioViewModel.cs" />
+    <Compile Include="Models\ViewModels\Tomo\ActaTomoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Tomo\SubirOficioFirmadoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Tomo\CierreTomoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Tomo\DetalleCierreTomoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Tomo\DetalleAperturaTomoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Tomo\DetalleTomoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Tomo\InicioTomoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Unidad\InicioUnidadViewModel.cs" />
+    <Compile Include="Models\ViewModels\Unidad\UnidadViewModel.cs" />
+    <Compile Include="Models\ViewModels\ArchivoAdjunto\AgregarArchivoViewModel.cs" />
+    <Compile Include="Models\ViewModels\ArchivoAdjunto\InicioArchivoAdjuntoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\ArticuloParaNuevoAcuerdoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\EditarAcuerdoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\AgregarAcuerdoViewModel.cs" />
+    <Compile Include="Models\Core\Implementation\Seguimiento\DetalleSeguimientoLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Seguimiento\IDetalleSeguimientoLogic.cs" />
+    <Compile Include="Models\Entities\Seguimiento\SeguimientoAcuerdo.cs" />
+    <Compile Include="Models\Entities\Seguimiento\DetalleSeguimiento.cs" />
+    <Compile Include="Models\Entities\Acuerdo\Acuerdo.cs" />
+    <Compile Include="Models\Entities\Acta\UsuarioArticulo.cs" />
+    <Compile Include="Models\Entities\Acta\Acta.cs" />
+    <Compile Include="Models\Entities\ArchivoAdjunto.cs" />
+    <Compile Include="Models\Entities\Acta\Articulo.cs" />
+    <Compile Include="Models\Entities\Sesion\AsistenteSesion.cs" />
+    <Compile Include="Models\Entities\Acta\Capitulo.cs" />
+    <Compile Include="Models\Entities\OrdenDia\OrdenDia.cs" />
+    <Compile Include="Models\Entities\Sesion\OtroAsistenteSesion.cs" />
+    <Compile Include="Models\Entities\Seccion.cs" />
+    <Compile Include="Models\Entities\Sesion\Sesion.cs" />
+    <Compile Include="Models\Entities\OrdenDia\Tema.cs" />
+    <Compile Include="Models\Entities\TamanoLetra.cs" />
+    <Compile Include="Models\Entities\Tomo.cs" />
+    <Compile Include="Models\Core\Interfaces\Acta\IActaLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IReportesAcuerdosLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Seguimiento\ISeguimientoLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Acuerdo\IAcuerdoLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Acta\IArticuloLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\OrdenDia\ITemaLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\ITamanoLetraLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\OrdenDia\IOrdenDiaLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Sesion\ISesionLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\ISeccionLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Sesion\IAsistenteSesionLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IArchivoAdjuntoLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Acta\IUsuarioArticuloLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\ITomoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Acta\ActaLogic.cs" />
+    <Compile Include="Models\Core\Implementation\ReportesAcuerdosLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Seguimiento\SeguimientoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Acuerdo\AcuerdoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Acta\ArticuloLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Sesion\AsistenteSesionLogic.cs" />
+    <Compile Include="Models\Core\Implementation\OrdenDia\TemaLogic.cs" />
+    <Compile Include="Models\Core\Implementation\TamanoLetraLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IEncabezadoPiePaginaLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IAvisosLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IMiembrosJDLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IPerfilLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IRespaldoLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IRepositorioLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IParametrosGeneralesLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Usuario\IUsuarioTelefonoLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Usuario\IUsuarioCorreoLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IVistaPerfilLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\ITipoArchivoLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\ITipoSesionLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IVistaLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IBitacoraLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IUsuarioSIRHLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\ITipoUsuarioLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\Usuario\IUsuarioLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IUnidadLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\IEstadoLogic.cs" />
+    <Compile Include="Models\Core\Interfaces\ITipoObjetoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\BitacoraLogic.cs" />
+    <Compile Include="Models\Core\Implementation\OrdenDia\OrdenDiaLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Sesion\SesionLogic.cs" />
+    <Compile Include="Models\Core\Implementation\SeccionLogic.cs" />
+    <Compile Include="Models\Core\Implementation\PerfilLogic.cs" />
+    <Compile Include="Models\Core\Implementation\ArchivoAdjuntoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Acta\UsuarioArticuloLogic.cs" />
+    <Compile Include="Models\Core\Implementation\TomoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\UsuarioSIRHLogic.cs" />
+    <Compile Include="Models\Core\Implementation\TipoUsuarioLogic.cs" />
+    <Compile Include="Models\Core\Implementation\UnidadLogic.cs" />
+    <Compile Include="Models\Core\Implementation\TipoObjetoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Usuario\UsuarioLogic.cs" />
+    <Compile Include="Models\Core\Implementation\AvisosLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Usuario\UsuarioCorreoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\EncabezadoPiePaginaLogic.cs" />
+    <Compile Include="Models\Core\Implementation\ParametrosGeneralesLogic.cs" />
+    <Compile Include="Models\Core\Implementation\RespaldoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\Usuario\UsuarioTelefonoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\TipoArchivoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\MiembrosJDLogic.cs" />
+    <Compile Include="Controllers\BitacoraController.cs" />
+    <Compile Include="Controllers\UsuarioCorreoController.cs" />
+    <Compile Include="Controllers\EncabezadoPiePaginaController.cs" />
+    <Compile Include="Controllers\EstadoController.cs" />
+    <Compile Include="Controllers\AvisosController.cs" />
+    <Compile Include="Controllers\CuentaController.cs" />
+    <Compile Include="Controllers\MiembrosJDController.cs" />
+    <Compile Include="Controllers\ParametrosGeneralesController.cs" />
+    <Compile Include="Controllers\RepositorioController.cs" />
+    <Compile Include="Controllers\RespaldoController.cs" />
+    <Compile Include="Controllers\PerfilController.cs" />
+    <Compile Include="Controllers\UsuarioTelefonoController.cs" />
+    <Compile Include="Controllers\TipoArchivoController.cs" />
+    <Compile Include="Controllers\TipoSesionController.cs" />
+    <Compile Include="Controllers\TipoUsuarioController.cs" />
+    <Compile Include="Controllers\TipoObjetoController.cs" />
+    <Compile Include="Controllers\InicioController.cs" />
+    <Compile Include="Controllers\UnidadController.cs" />
+    <Compile Include="Controllers\UsuarioController.cs" />
+    <Compile Include="Controllers\VistaController.cs" />
+    <Compile Include="Controllers\VistaPerfilController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\ClaimsPrincipalConfig.cs" />
+    <Compile Include="Models\Entities\Bitacora.cs" />
+    <Compile Include="Models\Core\Implementation\EstadoLogic.cs" />
+    <Compile Include="Models\Core\Implementation\RepositorioLogic.cs" />
+    <Compile Include="Models\Core\Implementation\TipoSesionLogic.cs" />
+    <Compile Include="Models\Core\Implementation\VistaLogic.cs" />
+    <Compile Include="Models\Core\Implementation\VistaPerfilLogic.cs" />
+    <Compile Include="Models\Entities\EncabezadoPiePagina.cs" />
+    <Compile Include="Models\Entities\MiembrosJD.cs" />
+    <Compile Include="Models\Entities\Usuario\UsuarioCorreo.cs" />
+    <Compile Include="Models\Entities\Usuario\UsuarioTelefono.cs" />
+    <Compile Include="Models\Entities\TipoArchivo.cs" />
+    <Compile Include="Models\ViewModels\Aviso\EditarAvisoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Usuario\UsuarioParaSelectViewModel.cs" />
+    <Compile Include="Models\ViewModels\OrdenDia\DetallesOrdenDiaViewModel.cs" />
+    <Compile Include="Models\ViewModels\OrdenDia\EditarOrdenDiaViewModel.cs" />
+    <Compile Include="Models\ViewModels\OrdenDia\InicioOrdenDiaViewModel.cs" />
+    <Compile Include="Models\ViewModels\OrdenDia\Seccion\SeccionViewModel.cs" />
+    <Compile Include="Models\ViewModels\OrdenDia\Tema\TemaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Rol\AgregarRolViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seguimiento\SeguimientoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seguimiento\InicioSeguimientoViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoArchivo\AgregarTipoArchivoViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoArchivo\EditarTipoArchivoViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoObjeto\AgregarTipoObjetoViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoObjeto\EditarTipoObjetoViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoObjeto\InicioTipoObjetoViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoSesion\AgregarTipoSesionViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoSesion\EditarTipoSesionViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoSesion\InicioTipoSesionViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoUsuario\AgregarTipoUsuarioViewModel.cs" />
+    <Compile Include="Models\ViewModels\TipoUsuario\EditarTipoUsuarioViewModel.cs" />
+    <Compile Include="Models\ViewModels\Tomo\AgregarTomoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Tomo\EditarTomoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Acta\UsuarioArticulo\AgregarUsuarioArticuloViewModel.cs" />
+    <Compile Include="Models\ViewModels\Usuario\CambiarContrasenaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Usuario\DetalleUsuarioViewModel.cs" />
+    <Compile Include="Models\ViewModels\Usuario\HabilitarInhabilitarUsuarioViewModel.cs" />
+    <Compile Include="Models\ViewModels\Usuario\InicioTelefonoCorreoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Usuario\CorreoUsuarioViewModel.cs" />
+    <Compile Include="Models\ViewModels\Usuario\TelefonoUsuarioViewModel.cs" />
+    <Compile Include="Models\ViewModels\Usuario\InicioUsuarioViewModel.cs" />
+    <Compile Include="Models\ViewModels\Cuenta\OlvidoContrasenaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Cuenta\RestablecerContrasenaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Usuario\CrearUsuarioViewModel.cs" />
+    <Compile Include="Models\ViewModels\Usuario\EditarUsuarioViewModel.cs" />
+    <Compile Include="Models\Entities\Estado.cs" />
+    <Compile Include="Models\ViewModels\Cuenta\IniciarSesionViewModel.cs" />
+    <Compile Include="Models\Entities\Aviso\Aviso.cs" />
+    <Compile Include="Models\Entities\ParametrosGenerales.cs" />
+    <Compile Include="Models\Entities\Repositorio.cs" />
+    <Compile Include="Models\Entities\Respaldo.cs" />
+    <Compile Include="Models\Entities\Usuario\ApplicationUser.cs" />
+    <Compile Include="Models\Entities\UsuarioSIRH.cs" />
+    <Compile Include="Models\Entities\Vista.cs" />
+    <Compile Include="Models\Entities\VistaPerfil.cs" />
+    <Compile Include="Models\Entities\ApplicationRole.cs" />
+    <Compile Include="Models\Entities\TipoSesion.cs" />
+    <Compile Include="Models\Entities\TipoUsuario.cs" />
+    <Compile Include="App_Start\IdentityDBContext.cs" />
+    <Compile Include="Models\Entities\TipoObjeto.cs" />
+    <Compile Include="Models\Entities\Unidad.cs" />
+    <Compile Include="Models\ViewModels\Acuerdo\InicioAcuerdoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seguimiento\AgregarSeguimientoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Seguimiento\EditarSeguimientoViewModel.cs" />
+    <Compile Include="Models\ViewModels\Unidad\EditarUnidadViewModel.cs" />
+    <Compile Include="Models\ViewModels\Unidad\AgregarUnidadViewModel.cs" />
+    <Compile Include="Models\ViewModels\VistasPerfil\AgregarVistaPerfilViewModel.cs" />
+    <Compile Include="Models\ViewModels\VistasPerfil\EditarVistaPerfilViewModel.cs" />
+    <Compile Include="Models\ViewModels\Vista\AgregarVistaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Vista\EditarVistaViewModel.cs" />
+    <Compile Include="Models\ViewModels\Vista\InicioVistaViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\buttons.bootstrap.css" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\buttons.bootstrap.min.css" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\buttons.bootstrap4.css" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\buttons.bootstrap4.min.css" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\buttons.dataTables.css" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\buttons.dataTables.min.css" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\buttons.foundation.css" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\buttons.foundation.min.css" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\buttons.jqueryui.css" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\buttons.jqueryui.min.css" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\buttons.semanticui.css" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\buttons.semanticui.min.css" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.bootstrap.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.bootstrap.min.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.bootstrap4.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.bootstrap4.min.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.colVis.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.colVis.min.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.flash.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.flash.min.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.foundation.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.foundation.min.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.html5.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.html5.min.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.jqueryui.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.jqueryui.min.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.print.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.print.min.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.semanticui.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\buttons.semanticui.min.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\dataTables.buttons.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\JS\dataTables.buttons.min.js" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\SWF\flashExport.swf" />
+    <Content Include="Content\DataTables\JSZip-2.5.0\jszip.js" />
+    <Content Include="Content\DataTables\JSZip-2.5.0\jszip.min.js" />
+    <Content Include="Content\DataTables\pdfmake-0.1.36\pdfmake.js" />
+    <Content Include="Content\DataTables\pdfmake-0.1.36\pdfmake.min.js" />
+    <Content Include="Content\DataTables\pdfmake-0.1.36\vfs_fonts.js" />
+    <Content Include="Content\Images\cog_settings.png" />
+    <Content Include="Content\Images\INA-Logo.jpg" />
+    <Content Include="Content\Images\parametrosacuerdo.png" />
+    <Content Include="Content\Images\pdf.png" />
+    <Content Include="Content\JQuery-Confirm\CSS\jquery-confirm.css" />
+    <Content Include="Content\JQuery-Confirm\CSS\jquery-confirm.min.css" />
+    <Content Include="Content\JQuery-Confirm\JS\jquery-confirm.js" />
+    <Content Include="Content\JQuery-Confirm\JS\jquery-confirm.min.js" />
+    <Content Include="Content\MaterializeCSS\CSS\material-icons.css" />
+    <Content Include="Content\QuillJS\CSS\quill.core.css" />
+    <Content Include="Content\QuillJS\JS\quill.core.js" />
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery-ui.min.css" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="Images\sort_asc.png" />
+    <Content Include="Images\sort_asc_disabled.png" />
+    <Content Include="Images\sort_both.png" />
+    <Content Include="Images\sort_desc.png" />
+    <Content Include="Images\sort_desc_disabled.png" />
+    <Content Include="Images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Images\ui-icons_222222_256x240.png" />
+    <Content Include="Images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Images\ui-icons_444444_256x240.png" />
+    <Content Include="Images\ui-icons_454545_256x240.png" />
+    <Content Include="Images\ui-icons_555555_256x240.png" />
+    <Content Include="Images\ui-icons_777620_256x240.png" />
+    <Content Include="Images\ui-icons_777777_256x240.png" />
+    <Content Include="Images\ui-icons_888888_256x240.png" />
+    <Content Include="Images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Models\DA\EntityFramework\SGJD\ModeloSGJD.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ModeloSGJD.edmx</DependentUpon>
+      <LastGenOutput>ModeloSGJD.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\DA\EntityFramework\SGJD\ModeloSGJD.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ModeloSGJD.edmx</DependentUpon>
+      <LastGenOutput>ModeloSGJD.cs</LastGenOutput>
+    </Content>
+    <Content Include="Rotativa\help-wkhtmltoimage.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Rotativa\help-wkhtmltopdf.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Rotativa\wkhtmltoimage.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Rotativa\wkhtmltopdf.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ScriptsSQL\AspNetUserClaims.sql" />
+    <Content Include="ScriptsSQL\AspNetUserLogIns.sql" />
+    <Content Include="ScriptsSQL\AspNetUserRoles.sql" />
+    <EntityDeploy Include="Models\DA\EntityFramework\SIRH\ModeloSIRH.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ModeloSIRH.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\DA\EntityFramework\SIRH\ModeloSIRH.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ModeloSIRH.edmx</DependentUpon>
+      <LastGenOutput>ModeloSIRH.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\DA\EntityFramework\SIRH\ModeloSIRH.edmx.diagram">
+      <DependentUpon>ModeloSIRH.edmx</DependentUpon>
+    </Content>
+    <Content Include="Models\DA\EntityFramework\SIRH\ModeloSIRH.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ModeloSIRH.edmx</DependentUpon>
+      <LastGenOutput>ModeloSIRH.cs</LastGenOutput>
+    </Content>
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\common.scss" />
+    <Content Include="Content\DataTables\Buttons-1.6.2\CSS\mixins.scss" />
+    <Content Include="Content\QuillJS\JS\quill.min.js.map" />
+    <None Include="Scripts\jquery-3.5.1.intellisense.js" />
+    <Content Include="Scripts\chart.min.js" />
+    <Content Include="Scripts\jquery-3.5.1.js" />
+    <Content Include="Scripts\jquery-3.5.1.min.js" />
+    <Content Include="Scripts\jquery-3.5.1.slim.js" />
+    <Content Include="Scripts\jquery-3.5.1.slim.min.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\jspdf.debug.js" />
+    <Content Include="ScriptsSQL\Procedimientos Almacenados.sql" />
+    <Content Include="ScriptsSQL\ScriptsEA.sql" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Startup.cs" />
+    <Content Include="Views\ReportesActas\InformeGestion.cshtml" />
+    <Content Include="Views\Shared\E404.cshtml" />
+    <Content Include="Views\ReportesActas\InformeGestionDetallado.cshtml" />
+    <Content Include="Views\TranscripcionActas\Inicio.cshtml" />
+    <Content Include="Views\Seccion\Eliminar.cshtml" />
+    <Content Include="Views\Sesion\Eliminar.cshtml" />
+    <Content Include="Views\Acuerdo\Eliminar.cshtml" />
+    <Content Include="Views\Seguimiento\Eliminar.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\DataTables\CSS\dataTables.jqueryui.css" />
+    <Content Include="Content\DataTables\CSS\dataTables.jqueryui.min.css" />
+    <Content Include="Content\DataTables\CSS\jquery.dataTables.css" />
+    <Content Include="Content\DataTables\CSS\jquery.dataTables.min.css" />
+    <Content Include="Content\DataTables\JS\dataTables.jqueryui.js" />
+    <Content Include="Content\DataTables\JS\dataTables.jqueryui.min.js" />
+    <Content Include="Content\DataTables\Responsive\CSS\responsive.dataTables.css" />
+    <Content Include="Content\DataTables\Responsive\CSS\responsive.dataTables.min.css" />
+    <Content Include="Content\DataTables\Images\sort_asc.png" />
+    <Content Include="Content\DataTables\Images\sort_asc_disabled.png" />
+    <Content Include="Content\DataTables\Images\sort_both.png" />
+    <Content Include="Content\DataTables\Images\sort_desc.png" />
+    <Content Include="Content\DataTables\Images\sort_desc_disabled.png" />
+    <Content Include="Content\DataTables\Responsive\JS\dataTables.responsive.js" />
+    <Content Include="Content\DataTables\Responsive\JS\dataTables.responsive.min.js" />
+    <Content Include="Content\DataTables\JS\jquery.dataTables.js" />
+    <Content Include="Content\DataTables\JS\jquery.dataTables.min.js" />
+    <Content Include="Content\DataTables\Responsive\CSS\responsive.jqueryui.css" />
+    <Content Include="Content\DataTables\Responsive\CSS\responsive.jqueryui.min.css" />
+    <Content Include="Content\DataTables\Responsive\JS\responsive.jqueryui.js" />
+    <Content Include="Content\DataTables\Responsive\JS\responsive.jqueryui.min.js" />
+    <Content Include="Content\FontAwesome\CSS\all.css" />
+    <Content Include="Content\FontAwesome\CSS\all.min.css" />
+    <Content Include="Content\FontAwesome\JS\all.js" />
+    <Content Include="Content\FontAwesome\JS\all.min.js" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-brands-400.svg" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-regular-400.svg" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-solid-900.svg" />
+    <Content Include="Content\Images\acta.png" />
+    <Content Include="Content\Images\INA_48.png" />
+    <Content Include="Content\Images\INA_64.png" />
+    <Content Include="Content\Images\INA_SGJD.png" />
+    <Content Include="Content\Images\seguimiento.png" />
+    <Content Include="Content\Images\sesiones.png" />
+    <Content Include="Content\MaterializeCSS\CSS\materialize.min.css" />
+    <Content Include="Content\MaterializeCSS\JS\materialize.min.js" />
+    <Content Include="Content\normalize.css" />
+    <Content Include="Content\QuillJS\CSS\quill.bubble.css" />
+    <Content Include="Content\QuillJS\CSS\quill.snow.css" />
+    <Content Include="Content\QuillJS\JS\quill.js" />
+    <Content Include="Content\QuillJS\JS\quill.min.js" />
+    <Content Include="Content\QuillJS\JS\_quilljs.js" />
+    <Content Include="Content\_estilosimpresion.css" />
+    <Content Include="Content\_global.css" />
+    <Content Include="Content\_helpers.css" />
+    <Content Include="Content\Images\INA.jpg" />
+    <Content Include="Content\DataTables\CSS\_jquerydatatables.css" />
+    <Content Include="Content\_jqueryui.css" />
+    <Content Include="Content\_login.css" />
+    <Content Include="Content\Mail\mail.css" />
+    <Content Include="Content\Mail\Mail.html" />
+    <Content Include="Content\MaterializeCSS\CSS\_materializecss.css" />
+    <Content Include="Content\_oops.css" />
+    <Content Include="Content\_pageloader.css" />
+    <Content Include="Content\Images\acuerdo.png" />
+    <Content Include="Content\Images\auditoria_INA.jpg" />
+    <Content Include="Content\Images\bg-login.png" />
+    <Content Include="Content\Images\checked.png" />
+    <Content Include="Content\Images\config.png" />
+    <Content Include="Content\Images\controls.png" />
+    <Content Include="Content\Images\informe.png" />
+    <Content Include="Content\Images\libro.png" />
+    <Content Include="Content\Images\list.png" />
+    <Content Include="Content\Images\ordenDia.png" />
+    <Content Include="Content\Images\reunion.png" />
+    <Content Include="Content\Images\settings.png" />
+    <Content Include="Content\Images\shield.png" />
+    <Content Include="ScriptsSQL\Script_Base_Datos_v1.sql" />
+    <Content Include="ScriptsSQL\Script_Base_Datos_v2.sql" />
+    <Content Include="ScriptsSQL\Script_Base_Datos_v3.sql" />
+    <Content Include="ScriptsSQL\Script_Base_Datos_v4.sql" />
+    <Content Include="ScriptsSQL\Script_Base_Datos_v5.sql" />
+    <Content Include="ScriptsSQL\Script_Base_Datos_v6.sql" />
+    <Content Include="ScriptsSQL\Script_Base_Datos_v7.sql" />
+    <Content Include="Scripts\additional-methods.min.js" />
+    <Content Include="Scripts\additional-methods.js" />
+    <Content Include="Scripts\jquery.inputmask.min.js" />
+    <Content Include="Scripts\userway.js" />
+    <Content Include="Scripts\_firmadigital.js" />
+    <Content Include="Scripts\_funciones.js" />
+    <Content Include="Scripts\images\ui-icons_444444_256x240.png" />
+    <Content Include="Scripts\images\ui-icons_555555_256x240.png" />
+    <Content Include="Scripts\images\ui-icons_777620_256x240.png" />
+    <Content Include="Scripts\images\ui-icons_777777_256x240.png" />
+    <Content Include="Scripts\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Scripts\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Scripts\jquery-ui.min.js" />
+    <Content Include="Scripts\_datepickers.js" />
+    <Content Include="Scripts\_modals.js" />
+    <Content Include="Scripts\_notificaciones.js" />
+    <Content Include="Scripts\swapsies.js" />
+    <Content Include="Content\QuillJS\JS\_scriptseditor.js" />
+    <Content Include="Views\Actas\PiePagina.cshtml" />
+    <Content Include="Views\Actas\DetallePDF.cshtml" />
+    <Content Include="Views\Actas\DetalleCompleto.cshtml" />
+    <Content Include="Views\Actas\DetallePDFCompleto.cshtml" />
+    <Content Include="Scripts\jquery-3.5.1.slim.min.map" />
+    <Content Include="Scripts\jquery-3.5.1.min.map" />
+    <Content Include="Views\Actas\DetalleActasAcuersoft.cshtml" />
+    <Content Include="Views\Actas\Eliminar.cshtml" />
+    <None Include="Views\Actas\Encabezado.cshtml" />
+    <Content Include="Views\Shared\E500.cshtml" />
+    <Content Include="Views\Shared\E400.cshtml" />
+    <Content Include="Views\Shared\E403.cshtml" />
+    <Content Include="Views\Avisos\Detalles.cshtml" />
+    <Content Include="Views\MiembrosJD\Inicio.cshtml" />
+    <Content Include="Views\EncabezadoPiePagina\Editar.cshtml" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-brands-400.eot" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-brands-400.ttf" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-brands-400.woff" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-brands-400.woff2" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-regular-400.eot" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-regular-400.ttf" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-regular-400.woff" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-regular-400.woff2" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-solid-900.eot" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-solid-900.ttf" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-solid-900.woff" />
+    <Content Include="Content\FontAwesome\WebFonts\fa-solid-900.woff2" />
+    <EntityDeploy Include="Models\DA\EntityFramework\SGJD\ModeloSGJD.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ModeloSGJD.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\DA\EntityFramework\SGJD\ModeloSGJD.edmx.diagram">
+      <DependentUpon>ModeloSGJD.edmx</DependentUpon>
+    </Content>
+    <Content Include="Views\EncabezadoPiePagina\Inicio.cshtml" />
+    <Content Include="Views\Actas\Editar.cshtml" />
+    <Content Include="Views\Actas\Inicio.cshtml" />
+    <Content Include="Views\Actas\Agregar.cshtml" />
+    <Content Include="Views\AsistenteSesion\Inicio.cshtml" />
+    <Content Include="Views\AsistenteSesion\EditarHora.cshtml" />
+    <Content Include="Views\ArchivoAdjunto\Inicio.cshtml" />
+    <Content Include="Views\ArchivoAdjunto\Eliminar.cshtml" />
+    <Content Include="Views\Actas\_AgregarArticuloPartial.cshtml" />
+    <Content Include="Views\Auditoria\Tomos.cshtml" />
+    <Content Include="Views\Auditoria\AperturaTomo.cshtml" />
+    <Content Include="Views\Auditoria\CierreTomo.cshtml" />
+    <Content Include="Views\Bitacora\Log.cshtml" />
+    <Content Include="Views\Acuerdo\Inicio.cshtml" />
+    <Content Include="Views\Acuerdo\Editar.cshtml" />
+    <Content Include="Views\Acuerdo\Detalles.cshtml" />
+    <Content Include="Views\Auditoria\DetalleTomo.cshtml" />
+    <Content Include="Views\Acuerdo\Agregar.cshtml" />
+    <Content Include="Views\Avisos\UsuariosAviso.cshtml" />
+    <Content Include="Views\Acuerdo\UnidadesPredeterminadas.cshtml" />
+    <Content Include="Views\CorreoAdicional\Inicio.cshtml" />
+    <Content Include="Views\CorreoAdicional\Agregar.cshtml" />
+    <Content Include="Views\CorreoAdicional\Eliminar.cshtml" />
+    <Content Include="Views\CorreoUnidadAcuerdo\Inicio.cshtml" />
+    <Content Include="Views\CorreoUnidadAcuerdo\Agregar.cshtml" />
+    <Content Include="Views\CorreoUnidadAcuerdo\Editar.cshtml" />
+    <Content Include="Views\CorreoUnidadAcuerdo\Eliminar.cshtml" />
+    <Content Include="Views\Inicio\_ParametrosActasPartial.cshtml" />
+    <Content Include="Views\Inicio\_ParametrosAcuerdosPartial.cshtml" />
+    <Content Include="Views\Auditoria\DetalleAperturaTomo.cshtml" />
+    <Content Include="Views\Audio\Eliminar.cshtml" />
+    <Content Include="Views\Actas\Detalle.cshtml" />
+    <Content Include="App_Code\Helpers.cshtml" />
+    <Content Include="App_Browsers\qt.browser" />
+    <Content Include=".editorconfig" />
+    <Content Include="Views\Actas\_AdjuntosArticuloPartial.cshtml" />
+    <Content Include="Views\Auditoria\DetalleAperturaTomoPDF.cshtml" />
+    <Content Include="Views\Auditoria\DetalleCierreTomo.cshtml" />
+    <Content Include="Views\Auditoria\DetalleCierreTomoPDF.cshtml" />
+    <Content Include="Views\Acuerdo\DetallesPDF.cshtml" />
+    <Content Include="Views\Actas\InicioActasAcuersoft.cshtml" />
+    <Content Include="Views\AyudaUsuario\Inicio.cshtml" />
+    <Content Include="Views\AyudaUsuario\Editar.cshtml" />
+    <Content Include="Views\Actas\_AgregarTranscripcionPartial.cshtml" />
+    <Content Include="Views\AyudaUsuario\Detalle.cshtml" />
+    <Content Include="Views\Bitacora\LogErrores.cshtml" />
+    <Content Include="Global.asax" />
+    <Content Include="Content\_site.css" />
+    <Content Include="favicon.ico" />
+    <Content Include="Content\Images\bg-master.jpg" />
+    <Content Include="Content\Images\INA.png" />
+    <Content Include="Content\Images\INA_Azul.png" />
+    <Content Include="Content\Images\INA_Trans.png" />
+    <Content Include="Content\Images\laptop.png" />
+    <Content Include="Content\Images\printer.png" />
+    <Content Include="Log.txt" />
+    <Content Include="Content\Fonts\optima.ttf" />
+    <Content Include="Content\Fonts\optima_bold.ttf" />
+    <Content Include="Content\Fonts\optima_bold_italic.ttf" />
+    <Content Include="Content\Fonts\optima_italic.ttf" />
+    <Content Include="Content\Fonts\optima_thin.ttf" />
+    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Inicio\Inicio.cshtml" />
+    <Content Include="Views\Cuenta\IniciarSesion.cshtml" />
+    <Content Include="Views\Shared\_Footer.cshtml" />
+    <Content Include="Views\Shared\_LayoutLogIn.cshtml" />
+    <Content Include="Views\TipoObjeto\Agregar.cshtml" />
+    <Content Include="Views\TipoObjeto\Eliminar.cshtml" />
+    <Content Include="Views\TipoObjeto\Editar.cshtml" />
+    <Content Include="Views\TipoObjeto\Inicio.cshtml" />
+    <Content Include="Views\Inicio\Administracion.cshtml" />
+    <Content Include="Views\Inicio\Actas.cshtml" />
+    <Content Include="Views\Inicio\Acuerdos.cshtml" />
+    <Content Include="Views\Estado\Editar.cshtml" />
+    <Content Include="Views\Estado\Inicio.cshtml" />
+    <Content Include="Views\Shared\_LayoutEmpty.cshtml" />
+    <Content Include="Views\Unidad\Agregar.cshtml" />
+    <Content Include="Views\Unidad\EditarEliminar.cshtml" />
+    <Content Include="Views\Unidad\Inicio.cshtml" />
+    <Content Include="Views\Perfil\Agregar.cshtml" />
+    <Content Include="Views\Perfil\Editar.cshtml" />
+    <Content Include="Views\Perfil\Inicio.cshtml" />
+    <Content Include="Views\TipoUsuario\Inicio.cshtml" />
+    <Content Include="Views\TipoUsuario\Agregar.cshtml" />
+    <Content Include="Views\TipoUsuario\Editar.cshtml" />
+    <Content Include="Views\Usuario\Agregar.cshtml" />
+    <Content Include="Views\Usuario\Editar.cshtml" />
+    <Content Include="Views\Usuario\Inicio.cshtml" />
+    <Content Include="Views\TipoSesion\Agregar.cshtml" />
+    <Content Include="Views\TipoSesion\Eliminar.cshtml" />
+    <Content Include="Views\TipoSesion\Editar.cshtml" />
+    <Content Include="Views\TipoSesion\Inicio.cshtml" />
+    <Content Include="Views\Vista\Inicio.cshtml" />
+    <Content Include="Views\Vista\Agregar.cshtml" />
+    <Content Include="Views\Vista\Eliminar.cshtml" />
+    <Content Include="Views\Vista\Editar.cshtml" />
+    <Content Include="Views\Bitacora\Inicio.cshtml" />
+    <Content Include="Views\Usuario\Inhabilitar.cshtml" />
+    <Content Include="Views\VistaPerfil\Inicio.cshtml" />
+    <Content Include="Views\VistaPerfil\Agregar.cshtml" />
+    <Content Include="Views\VistaPerfil\Editar.cshtml" />
+    <Content Include="Views\VistaPerfil\Eliminar.cshtml" />
+    <Content Include="Views\Repositorio\Inicio.cshtml" />
+    <Content Include="Views\Repositorio\Agregar.cshtml" />
+    <Content Include="Views\Repositorio\Editar.cshtml" />
+    <Content Include="Views\Repositorio\Eliminar.cshtml" />
+    <Content Include="Views\Respaldo\Inicio.cshtml" />
+    <Content Include="Views\TipoUsuario\Eliminar.cshtml" />
+    <Content Include="Views\Usuario\CambiarContrasena.cshtml" />
+    <Content Include="Views\Bitacora\Detalles.cshtml" />
+    <Content Include="Views\Usuario\Habilitar.cshtml" />
+    <Content Include="Views\Cuenta\OlvidoContrasena.cshtml" />
+    <Content Include="Views\Cuenta\RestablecerContrasena.cshtml" />
+    <Content Include="Views\Cuenta\RestablecerContrasenaConfirmacion.cshtml" />
+    <Content Include="Views\Cuenta\OlvidoContrasenaConfirmacion.cshtml" />
+    <Content Include="Views\ParametrosGenerales\Inicio.cshtml" />
+    <Content Include="Views\Usuario\_UsuariosSIRHModal.cshtml" />
+    <Content Include="Views\Avisos\Inicio.cshtml" />
+    <Content Include="Views\Avisos\Editar.cshtml" />
+    <Content Include="Views\Avisos\Agregar.cshtml" />
+    <Content Include="Views\Avisos\Eliminar.cshtml" />
+    <Content Include="Views\TipoArchivo\Inicio.cshtml" />
+    <Content Include="Views\TipoArchivo\Agregar.cshtml" />
+    <Content Include="Views\TipoArchivo\Editar.cshtml" />
+    <Content Include="Views\TipoArchivo\Eliminar.cshtml" />
+    <Content Include="Views\Usuario\Detalles.cshtml" />
+    <Content Include="Views\ParametrosGenerales\Editar.cshtml" />
+    <Content Include="Views\EncabezadoPiePagina\Agregar.cshtml" />
+    <Content Include="Views\Unidad\UsuariosUnidad.cshtml" />
+    <Content Include="Views\TipoUsuario\UsuariosTipoUsuario.cshtml" />
+    <Content Include="Views\Vista\PerfilesVista.cshtml" />
+    <Content Include="Views\Perfil\UsuariosPerfil.cshtml" />
+    <Content Include="Views\Otros\FiltroColumnas.cshtml" />
+    <Content Include="Views\TipoObjeto\Detalles.cshtml" />
+    <Content Include="Views\Sesion\Inicio.cshtml" />
+    <Content Include="Views\Sesion\Agregar.cshtml" />
+    <Content Include="Views\Seccion\Inicio.cshtml" />
+    <Content Include="Views\Seccion\Agregar.cshtml" />
+    <Content Include="Views\Seccion\Editar.cshtml" />
+    <Content Include="Views\Sesion\Editar.cshtml" />
+    <Content Include="Views\Sesion\Detalles.cshtml" />
+    <Content Include="Views\OrdenDiaN\_AgregarTemaPartial.cshtml" />
+    <Content Include="Views\AsistenteSesion\AgregarOtroAsistente.cshtml" />
+    <Content Include="Views\AsistenteSesion\EditarOtroAsistente.cshtml" />
+    <Content Include="Views\AsistenteSesion\EliminarOtroAsistente.cshtml" />
+    <Content Include="Views\Seguimiento\Inicio.cshtml" />
+    <Content Include="Views\Seguimiento\Editar.cshtml" />
+    <Content Include="Views\Seguimiento\Agregar.cshtml" />
+    <Content Include="Views\ReportesAcuerdos\InformeAcuerdos.cshtml" />
+    <Content Include="Views\ReportesAcuerdos\InformeAcuerdosResumido.cshtml" />
+    <Content Include="Views\ReportesAcuerdos\InformeSeguimientos.cshtml" />
+    <Content Include="Views\ReportesAcuerdos\InformeSeguimientosResumido.cshtml" />
+    <Content Include="Views\ReportesAcuerdos\ResumenEjecucionAcuerdos.cshtml" />
+    <Content Include="Views\OrdenDiaN\EditarN.cshtml" />
+    <Content Include="Views\OrdenDiaN\DetalleN.cshtml" />
+    <Content Include="Views\Shared\_Header.cshtml" />
+    <Content Include="Views\Usuario\TelefonosCorreos.cshtml" />
+    <Content Include="Views\Estado\Detalles.cshtml" />
+    <Content Include="Views\OrdenDiaN\_AdjuntosTemaPartial.cshtml" />
+    <Content Include="Views\Seguimiento\_AgregarAvancePartial.cshtml" />
+    <Content Include="Views\Seguimiento\GestorTipoSeguimiento.cshtml" />
+    <Content Include="Views\Shared\_LayoutInformes.cshtml" />
+    <Content Include="Views\ReportesAcuerdos\InformeSeguimientosVencidos.cshtml" />
+    <Content Include="Views\ReportesAcuerdos\InformeSeguimientosSinFechaVencimiento.cshtml" />
+    <Content Include="Views\ParametrosAcuerdos\InicioUsuarioAvisoAcuerdo.cshtml" />
+    <Content Include="Views\OrdenDiaN\DetalleAprobado.cshtml" />
+    <Content Include="Views\Shared\_LayoutPDF.cshtml" />
+    <Content Include="Views\Seguimiento\_ElementosRelacionadosPartial.cshtml" />
+    <Content Include="Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Properties\PublishProfiles\" />
+    <Folder Include="Scripts\esm\" />
+    <Folder Include="Scripts\umd\" />
+    <Folder Include="Views\ReportesSesiones\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.VersionCheckAnalyzer.resources.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\analyzers\dotnet\cs\Humanizer.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.CodeQuality.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.CodeQuality.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.NetCore.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.NetCore.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.NetCore.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.NetCore.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Transcripcion\Transcripcion.csproj">
+      <Project>{ddf9f4b4-1081-4b9c-bac3-4d7afe4efe2c}</Project>
+      <Name>Transcripcion</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>59899</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>https://localhost:44398/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\build\Microsoft.CodeQuality.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\build\Microsoft.CodeQuality.Analyzers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.NetCore.Analyzers.3.0.0\build\Microsoft.NetCore.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NetCore.Analyzers.3.0.0\build\Microsoft.NetCore.Analyzers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.NetFramework.Analyzers.3.0.0\build\Microsoft.NetFramework.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NetFramework.Analyzers.3.0.0\build\Microsoft.NetFramework.Analyzers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.0.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.0.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

@@ -1,0 +1,62 @@
+﻿@using SGJD_INA.Models.ViewModels;
+
+@model DetalleAperturaTomoViewModel
+
+@{
+    Layout = "~/Views/Shared/_LayoutPDF.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <div class="row">
+                <div class="col s12">                   
+                </div>             
+            </div>
+            <div class="row">
+                <div class="col s12 m7">
+                    <span class="fz-1-2r font-bold">Razón de Apertura de @Model.NombreTomo </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <div class="row">
+                        <div class="col s12">
+                            <p class="text-justified">
+                                La Auditoría Interna del Instituto Nacional de Aprendizaje, cumpliendo con lo
+                                dispuesto en el Art. 22 literal el de la Ley General de Control Interno No. 8292
+                                hace constar que aquí inicia el tomo No. <span class="font-strong">@Html.DisplayFor(model => model.NumeroTomo)</span> del libro
+                                <span class="font-strong">@Html.DisplayFor(model => model.NombreLibro)</span>
+                                utilizado por <span class="font-strong">@Html.DisplayFor(model => model.UnidadEjecutora)</span>.
+                            </p>
+                            <p>
+                                <span class="font-strong">Observaciones de apertura: </span> @Html.Raw(Model.ObservacionApertura)<br />
+                            </p>
+                            <p>
+                                San José, <span class="font-strong">@Html.DisplayFor(model => model.FechaApertura.Day)</span> de <span class="font-strong">@Html.Raw(Model.FechaApertura.ToString("MMMM"))</span> del <span class="font-strong">@Html.DisplayFor(model => model.FechaApertura.Year)</span><br />
+                            </p>
+                            <p>
+                                Auditor(a) Interno(a): <span class="font-strong">@Html.DisplayFor(model => model.UsuarioApertura)</span>
+                            </p>
+                        </div>
+                    </div>
+                    @* Espacio para firma del documento *@
+                    <div class="row">
+                        <div class="col s12 mt-6">
+                            <p class="font-bold">
+                                __________________________________________________
+                                <br />
+                                @Html.DisplayFor(model => model.UsuarioApertura) 
+                                <br />
+                                Auditor(a) Interno(a)
+                            </p>                                                      
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/estilosimpresion")
+@Styles.Render("~/Content/quill")

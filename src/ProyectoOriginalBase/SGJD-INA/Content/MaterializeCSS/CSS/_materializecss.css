@@ -1,0 +1,110 @@
+﻿/* Date picker */
+.datepicker-date-display, /* Color del encabezado */
+.datepicker-table td.is-selected /* Color del dia seleccionado */ {
+    background-color: black !important;
+}
+
+    .datepicker-date-display .year-text, /* Color del texto del año */
+    .datepicker-date-display .date-text /* Color del texto de los dias del año */ {
+        color: #eba93a !important;
+    }
+/* Fin de Date picker */
+
+/* Toasts personalizados para mensajes de exito, de error o de información */
+#toast-container {
+    top: 1.5rem !important;
+    right: 50% !important;
+    transform: translateX(50%);
+}
+
+    #toast-container .toast {
+        font-weight: bold;
+    }
+
+.toast-exito {
+    color: #468847 !important;
+    background-color: #DFF0D8 !important;
+}
+
+.toast-error {
+    color: #f44336 !important;
+    background-color: #ffcdd2 !important;
+}
+
+.toast-informacion {
+    color: #1F5098 !important;
+    background-color: #bbdefb !important;
+}
+/* Fin de Toasts personalizados */
+
+/* Tabs */
+.tabs .tab a.active {
+    background-color: #eaf1fb !important;
+}
+
+.tabs .indicator {
+    background-color: #1f5098 !important;
+}
+/* Fin de Tabs */
+
+/* Sobreescribir colores para ajustarse a los de INA */
+.blue {
+    background-color: #1F5098 !important;
+}
+
+.blue-text {
+    color: #1F5098 !important;
+}
+
+.yellow {
+    background-color: #eba93a !important;
+}
+
+.yellow-text {
+    color: #eba93a !important;
+}
+/* Fin de sobreescritura de colores */
+
+/* Breadcrumb */
+.breadcrumb {
+    height: 40px;
+    line-height: 40px;
+    font-size: 1rem;
+}
+/* Fin de breadcrumb */
+
+/* Sobreescritura de la etiqueta strong ya que materialize le aplica un font-weight de 500 */
+strong {
+    font-weight: bolder !important;
+}
+
+/* Sobreescribir ancho de input numéricos */
+input[type="number"] {
+    width: 64px !important;
+}
+
+/* Sobreescribir input checkbox para usar el original con @Html.EditorFor */
+[type="checkbox"]:checked, [type="checkbox"]:not(:checked) {
+    position: relative !important;
+    top: 2px;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: all !important;
+}
+
+/* Utilizado en agregar acuerdo */
+.collection .collection-item.avatar {
+    min-height: 64px !important;
+}
+
+/* Estilos para móviles */
+@media only screen and (max-width : 600px) {
+}
+
+/* Estilos para móviles y tablets */
+@media only screen and (max-width: 992px) {
+}
+
+/* Estilos para escritorio */
+@media only screen and (min-width: 993px) {
+}

@@ -1,0 +1,12 @@
+﻿.ui-dialog {
+    z-index: 998;
+}
+
+.ui-dialog-titlebar,
+.ui-dialog-titlebar-close {
+    font-weight: 600;
+    background-color: white;
+    border: none;
+    color: black;
+    display: none;
+}

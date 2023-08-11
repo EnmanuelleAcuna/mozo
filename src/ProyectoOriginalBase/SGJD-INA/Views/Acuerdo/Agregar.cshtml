@@ -1,0 +1,146 @@
+﻿@using Microsoft.AspNet.Identity
+@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<AgregarAcuerdoViewModel>
+
+@{
+    ViewBag.Title = "Agregar Acuerdo";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="AgreAcu" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "Acuerdo")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Acuerdos de Sesión
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Acuerdos", "Inicio")" class="breadcrumb">Modulo de Acuerdos</a>
+                    <a href="@Url.Action("Inicio", "Acuerdo")" class="breadcrumb">Acuerdos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row mb-1">
+                <div class="col s12">
+                    <span class="fz-1-2r font-bold">Agregar nuevo Acuerdo</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <span class="blue-text">
+                        <i class="fa fa-info-circle"></i>
+                        Lista de temas discutidos en Sesión con Acta en transcripción
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    @* Recorrer cada Sesión *@
+                    @foreach (var Item in Model) {
+                        if (Item.CodigoEstadoActa.Equals("AC-TRANS")) {
+
+                            <ul class="collapsible expandable">
+                                <li>
+                                    @* Encabezado del collasible *@
+                                    <div class="collapsible-header">
+                                        <i class="fa fa-users"></i>
+                                        <span class="font-semibold blue-text">
+                                            @Html.DisplayFor(ModelItem => Item.NombreSesion) (@Html.DisplayFor(ModelItem => Item.FechaSesion))
+                                        </span>
+                                    </div>
+
+                                    @* Contenido del collasible *@
+                                    <div class="collapsible-body py-0">
+
+                                        <ul class="collection with-header">
+
+                                            @* Encabezado de collection *@
+                                            <li class="collection-header center">
+                                                <h6 class="yellow-text">Artículos del Acta de la Sesión</h6>
+                                            </li>
+
+                                            @* Recorrer cada Aticulo de la Sesión *@
+                                            @foreach (var Articulo in Item.Articulos) {
+                                                using (Html.BeginForm("Agregar", "Acuerdo", FormMethod.Post, new { id = "frmAgregar" + Articulo.IdArticulo, autocomplete = "off" })) {
+                                                    @Html.AntiForgeryToken()
+                                                    @Html.Hidden("IdArticulo", Articulo.IdArticulo, new { id = "IdArticulo" })
+
+                                                    <li class="collection-item avatar">
+                                                        <img src="~/Content/Images/printer.png" alt="" class="circle">
+                                                        <span class="title">
+                                                            <span class="blue-text font-bold">@Html.DisplayFor(ModelItem => Articulo.TituloCapitulo)&nbsp;</span>
+                                                            <span class="text-underline font-bold">@Html.DisplayFor(ModelItem => Articulo.TituloArticulo)</span>
+                                                        </span>
+                                                        <p>
+                                                            @Html.LabelFor(ModelItem => Articulo.Confidencial)
+                                                            <span class="fz-1r">
+                                                                @Html.DisplayFor(ModelItem => Articulo.Confidencial)
+                                                            </span>
+                                                        </p>
+                                                        <button type="button" data-value="@Articulo.IdArticulo" class="btn-agregar-acuerdo secondary-content btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold">
+                                                            Agregar
+                                                        </button>
+                                                    </li>
+                                                }
+                                            }
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jqueryconfirm")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryconfirm")
+
+    <script type="text/javascript">
+        $(".btn-agregar-acuerdo").click(function (e) {
+            let IdArticulo = $(this).data('value');
+
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Generar un nuevo acuerdo',
+                content: '¿Está seguro que desea generar un nuevo acuerdo?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Confirmar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            $("form#frmAgregar" + IdArticulo).submit();
+                            MostrarCargandoPagina(); // Mostrar carga de página
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+
+        });
+    </script>
+}

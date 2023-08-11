@@ -1,0 +1,117 @@
+﻿@using SGJD_INA.Models.Entities
+
+@model IEnumerable<TipoArchivo>
+
+@{
+    ViewBag.Title = "Tipos de Archivo";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniTipArch" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Administracion", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Tipos de Archivo
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="#" class="breadcrumb">Tipos de Archivo</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m10 mb-1">
+                    <span class="fz-1-2r font-bold">
+                        Lista de tipos de archivo permitidos
+                    </span>
+                </div>
+
+                <div class="col s12 m2">
+                    @* Botón [Agregar] *@
+                    <a class="btn btn-small yellow black-text font-bold waves-effect right" id="BtnAgregar" title="Agregar Tipo de Objeto" onclick="PopUpForm('@Url.Action("Agregar", "TipoArchivo")')">
+                        Agregar
+                    </a>
+                </div>
+            </div>
+
+            <div class="row" id="CardList">
+                @foreach (var item in Model) {
+                    <div class="col s12 l4">
+                        <div class="card-panel grey lighten-5 center">
+                            <h6 class="blue-text font-bold mt-0">@Html.DisplayFor(modelItem => item.Nombre)</h6>
+                            <p class="my-1">@Html.DisplayFor(modelItem => item.Descripcion)</p>
+
+                            @* Botón [Editar] *@
+                            <a onclick="PopUpForm('@Url.Action("Editar", "TipoArchivo", new { id = item.Id })')" class="btn btn-small grey lighten-3 blue-text" title='Editar'>
+                                Editar
+                            </a>
+
+                            @* Botón [Eliminar] *@
+                            <a onclick="PopUpForm('@Url.Action("Eliminar", "TipoArchivo", new { id = item.Id })')" class="btn btn-small grey lighten-3 red-text" title='Eliminar'>
+                                Eliminar
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jqueryui")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        // Enviar petición para guardar información
+        function SubmitFormTipoArchivo(form) {
+            // Validar que los campos del formulario estén llenos y tengan valores correctos
+            $.validator.unobtrusive.parse(form);
+
+            if ($(form).valid()) {
+                MostrarCargandoPagina(); //Mostrar carga de pagina
+
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            CerrarDialog(); //Cerrar dialog
+                            $("#CardList").load(location.href + " #CardList", ""); //Recargar div que contiene cards.
+                            MostrarMensajeExito(data.message); //Notificar
+                        } else {
+                            MostrarMensajeError(data.message); // Notificar error
+                        }
+                    },
+                    error: function () {
+                        MostrarMensajeError("Error al procesar la información."); // Notificar error
+                    },
+                    complete: function () {
+                    }
+                });
+            }
+
+            DesaparecerCargandoPagina(); //Desaparece la carga de pagina
+
+            return false;
+        }
+    </script>
+}

@@ -1,0 +1,210 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model InformeSeguimientosResumidoViewModel
+
+@{
+    ViewBag.Title = "Informe de Seguimientos resumido";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="InfSegRes" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Acuerdos", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Informes de Seguimientos
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Acuerdos", "Inicio")" class="breadcrumb">Modulo de Acuerdos</a>
+                    <a href="#" class="breadcrumb">Informes de Seguimientos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            @using (Html.BeginForm("InformeSeguimientosResumido", "ReportesAcuerdos", FormMethod.Post, new { onsubmit = "return SubmitForm(this)", autocomplete = "off" })) {
+
+                <div class="row">
+                    <div class="col s12 mb-1">
+                        <span class="fz-1-2r font-bold">Informe de Seguimientos resumido</span>
+                    </div>
+
+                    @*Fecha inicial *@
+                    <div class="input-field col s12 m4">
+                        @Html.EditorFor(model => model.FechaInicio, string.Format("{0:d}", Model.FechaInicio), new { htmlAttributes = new { @class = "datepicker validate" } })
+                        @Html.LabelFor(model => model.FechaInicio)
+                    </div>
+
+                    @*Fecha final *@
+                    <div class="input-field col s12 m4">
+                        @Html.EditorFor(model => model.FechaFin, string.Format("{0:d}", Model.FechaFin), new { htmlAttributes = new { @class = "datepicker validate" } })
+                        @Html.LabelFor(model => model.FechaFin)
+                    </div>
+
+                    @*Boton de buscar*@
+                    <div class="col s12 m2">
+                        <button type="submit" id="BtnBuscar" class="btn btn-small grey lighten-3 waves-effect blue-text font-bold mt-2">
+                            Consultar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="white" id="print">
+                    <div class="row">
+                        @*Tabla de seguimientos*@
+                        <div class="col s12 m6">
+                            <table id="TablaInformeSeguimientos" class="table responsive width-100 display striped">
+                                <thead>
+                                    <tr>
+                                        <th colspan="5" class="text-center font-bold blue-text fz-1-2r">Seguimientos</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center">@Html.DisplayNameFor(model => model.DatosReporte.FirstOrDefault().TotalSeguimiento)</th>
+                                        <th class="text-center">@Html.DisplayNameFor(model => model.DatosReporte.FirstOrDefault().SeguimientoNoEjecutado)</th>
+                                        <th class="text-center">@Html.DisplayNameFor(model => model.DatosReporte.FirstOrDefault().SeguimientoEnEjecucion)</th>
+                                        <th class="text-center">@Html.DisplayNameFor(model => model.DatosReporte.FirstOrDefault().SeguimientoEjecutado)</th>
+                                        <th class="text-center">@Html.DisplayNameFor(model => model.DatosReporte.FirstOrDefault().SeguimientoVencido)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var InformeSeguimientos in Model.DatosReporte) {
+                                        <tr>
+                                            <td class="text-center">
+                                                @Html.DisplayFor(modelItem => InformeSeguimientos.TotalSeguimiento)
+                                            </td>
+                                            <td class="text-center">
+                                                @Html.DisplayFor(modelItem => InformeSeguimientos.SeguimientoNoEjecutado)
+                                            </td>
+                                            <td class="text-center">
+                                                @Html.DisplayFor(modelItem => InformeSeguimientos.SeguimientoEnEjecucion)
+                                            </td>
+                                            <td class="text-center">
+                                                @Html.DisplayFor(modelItem => InformeSeguimientos.SeguimientoEjecutado)
+                                            </td>
+                                            <td class="text-center">
+                                                @Html.DisplayFor(modelItem => InformeSeguimientos.SeguimientoVencido)
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @* Grafico de seguimientos*@
+                        <div class="col s12 m6">
+                            @* Si la fechas van vacias solo muestra el titulo de la grafica*@
+                            @if (Model.FechaInicio.Equals("") && Model.FechaFin.Equals("")) {
+                                <h6 class="blue-text font-bold center">Seguimientos</h6>
+                            }
+                            @* Si las dos fechas van con datos muestra el titulo y el rango de fechas solicitado*@
+                            else if (Model.FechaInicio != "" && Model.FechaFin != "") {
+                                <h6 class="blue-text font-bold center">Seguimientos</h6>
+                                <p class="black-text center font-bold">
+                                    @Html.DisplayFor(model => model.FechaInicio) al @Html.DisplayFor(model => model.FechaFin)
+                                </p>
+                            }
+                            @* Si la fecha de inicio lleva datos pero la fecha fin no, muestra como fecha fin la fecha actual*@
+                            else {
+                                <h6 class="blue-text font-bold center">Seguimientos</h6>
+                                <p class="black-text center font-bold">
+                                    @Html.DisplayFor(model => model.FechaInicio) al @System.DateTime.Now.ToString("dd/MM/yyyy")
+                                </p>
+                            }
+                            @* El canvas donde se encuentra el grafico contenido*@
+                            <canvas id="myChart" style="display: block; height: 700px; width: 1000px;"></canvas>
+                            @* Fuente de donde se extrae la información*@
+                            <p class="black-text font-bold center">Fuente: Actas de Junta Directiva del INA</p>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/bundles/chart")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Reconfigurar selectores de fecha para que limite la fecha de fin y esta no sea menor a la seleccionada en la fecha de inicio
+            const DatePickerFechaInicio = $('#FechaInicio');
+            M.Datepicker.init(DatePickerFechaInicio, {
+                firstDay: 1,
+                format: 'dd/mm/yyyy',
+                i18n: parametrosi18n,
+                autoClose: true,
+                onSelect: function (selected) {
+                    const DatePickerFechaFin = $('#FechaFin');
+                    M.Datepicker.init(DatePickerFechaFin, {
+                        minDate: selected,
+                        firstDay: 1,
+                        format: 'dd/mm/yyyy',
+                        i18n: parametrosi18n,
+                        autoClose: true
+                    });
+                },
+                onClose: function () {
+                    $("#FechaFin").val("");
+                }
+            });
+        });
+
+        // Grafico de seguimientos
+        var Informe = @Html.Raw(Json.Encode(Model.DatosReporte)); // Convertir y guardar el ViewModel en un objeto JSON
+
+         // Construir array con etiquetas para la propiedad labels del gráfico
+        var NoEjecutado = new Array();
+        $.each(Informe, (index, value) => NoEjecutado.push(value.SeguimientoNoEjecutado));
+
+        var EnEjecucion = new Array();
+        $.each(Informe, (index, value) => EnEjecucion.push(value.SeguimientoEnEjecucion));
+
+        var Ejecutado = new Array();
+        $.each(Informe, (index, value) => Ejecutado.push(value.SeguimientoEjecutado));
+
+         var Datos = {
+            labels: ['No Ejecutados', 'En Ejecución', 'Ejecutados'],
+            datasets: [{
+                data: [NoEjecutado,EnEjecucion,Ejecutado],
+                backgroundColor: ['#4BC0C0', '#FFCD56', '#36A2EB',],
+                borderWidth: 1,
+                borderColor: '#777',
+                hoverBorderWidth: 2,
+                hoverBorderColor: '#000'
+             }]
+        };
+
+         let MyChart = document.getElementById('myChart').getContext('2d');
+        Chart.defaults.global.defaultFontColor = '#777';
+
+
+        let MassPopChart = new Chart(MyChart, {
+            type: 'pie', // bar, horizontalBar, pie, line, radar, polarArea, doughnut
+            data: Datos,
+            options: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        fontColor: '#1F5098'
+                    }
+                }
+            }
+        });
+
+    </script>
+}

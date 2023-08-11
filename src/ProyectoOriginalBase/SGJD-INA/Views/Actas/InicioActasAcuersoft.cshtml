@@ -1,0 +1,313 @@
+﻿@using SGJD_INA.Models.ViewModels;
+
+@model IEnumerable<InicioActasAcuersoftViewModel>
+
+@{
+    ViewBag.Title = "Actas Acuersoft";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniActAcu" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Actas", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Actas de Acuersoft
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Actas", "Inicio")" class="breadcrumb">Módulo de Actas</a>
+                    <a href="#" class="breadcrumb">Actas de Acuersoft</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+
+            <div class="row">
+                <div class="col s12 mb-2">
+                    <ul class="tabs tabs-fixed-width z-depth-1">
+                        <li class="tab col s3">
+                            <a href="#ActasAcuersoft" class="blue-text">
+                                Actas Acuersoft de Acuersoft
+                            </a>
+                        </li>
+                        <li class="tab col s3">
+                            <a href="#Buscar" class="blue-text">
+                                <i class="fa fa-search">&nbsp;</i>
+                                Buscar en Actas de Acuersoft
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                @* Contenedor de pestaña [ACTAS ACUERSOFT] *@
+                <div id="ActasAcuersoft" class="col s12">
+                    <div class="row">
+                        <div class="col s12">
+                            <button id="BtnFiltrar" type="button" value="Filtrar" title="Filtrar" class="btn btn-small grey lighten-3 waves-effect black-text font-bold">
+                                <i class="fa fa-filter left"></i>
+                                Filtrar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col s12">
+                            <table id="TablaActasAcuersoft" class="table responsive display width-100 bordered cell-border">
+                                <thead>
+                                    <tr>
+                                        <th nowrap>Acta</th>
+                                        <th>@Html.DisplayNameFor(model => model.Fecha)</th>
+                                        <th>@Html.DisplayNameFor(model => model.Lugar)</th>
+                                        <th>@Html.DisplayNameFor(model => model.IdActaAcuersoft)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ActaAcuer in Model) {
+                                        <tr>
+                                            <td>
+                                                Acta&nbsp;<span class="blue-text"><b>@Html.DisplayFor(modelItem => ActaAcuer.NumeroActa)</b></span><br />
+                                                <a href="@Url.Action("DetalleActasAcuersoft", "Actas", new { Id = ActaAcuer.IdActaAcuersoft })" target="_blank" class="blue-text font-bold">
+                                                    <b>
+                                                        <i class='fa fa-fw fa-align-justify'>&nbsp;</i>
+                                                        Ver Acta
+                                                    </b>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => ActaAcuer.Fecha)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => ActaAcuer.Lugar)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => ActaAcuer.IdActaAcuersoft)
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                @* Contenedor de pestaña [BUSCAR EN ACTAS] *@
+                <div id="Buscar" class="col s12">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input placeholder="Contenido del Acta" id="PalabraClave" type="text" class="">
+                            <label for="PalabraClave">Buscar en contenido de las Actas</label>
+                        </div>
+
+                        <div class="col s6 pt-2">
+                            <button type="button" id="btn-buscar" class="btn btn-small yellow black-text font-bold z-depth-0">Buscar</button>
+                        </div>
+
+                        <div class="col s12 mb-1">
+                            <span id="LblInfo" class="" hidden></span>
+                        </div>
+
+                        <div class="col s12">
+                            <table id="TablaFiltro" class="table responsive display width-100 bordered cell-border">
+                                <thead>
+                                    <tr>
+                                        <th nowrap>Acta</th>
+                                        <th>Fecha</th>
+                                        <th>Lugar</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div class="row center">
+                                <ul class="pagination"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+
+    <script type="text/javascript">
+        var dataTable, fechaInicio, fechaFinal;
+        fechaInicio = '';
+        fechaFinal = '';
+        //Extraer el token
+        var token = $('input[name="__RequestVerificationToken"]', this.form).val();
+
+        $(document).ready(function () {
+            $("#TablaActasAcuersoft").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: true,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true,
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 },
+                    { targets: 3, visible: false }
+                ],
+                initComplete: CambiarPropiedadesFiltro
+            });
+
+            $("#TablaFiltro").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                paging: false,
+                responsive: true,
+                info: false,
+                pageLength: 10,
+                autoWidth: true,
+                lengthChange: false,
+                columns: Columnas,
+                ordering: false
+            });           
+        });
+
+
+        let Columnas = [
+            {
+                className: "dt-nowrap", render: function (data, type, row) {
+                    var IdActaAcuersoft = row['IdActa'];
+                    var NumeroActa = row['NumeroActa'];
+
+                    var EnlaceVer = "<a href='/Actas/DetalleActasAcuersoft/" + IdActaAcuersoft +"' target='_blank' class='blue-text'><b><i class='fa fa-fw fa-align-justify'>&nbsp;</i>Ver Acta</b></a>";
+
+                    var TituloActa = "Acta <span class='blue-text'><b>" + NumeroActa + "</span>";
+
+                    return TituloActa + "</br>" + EnlaceVer;
+                }
+            },
+            {
+                className: "dt-nowrap", render: function (data, type, row) {
+                    var Fecha = row['Fecha'];
+                    var Fecha = "<span class = 'blue-text'>" + Fecha + "</span>";
+                    return Fecha;
+                }
+            },
+            {
+                className: "dt-nowrap", render: function (data, type, row) {
+                    var Lugar = row['Lugar'];
+                    var Lugar = "<span class = 'blue-text'>" + Lugar + "</span>";
+                    return Lugar;
+                }
+            }
+        ];       
+
+        // Eventos para ejecutar petición de búsqueda de actas de acuersoft
+        $('#PalabraClave').keyup(function (e) {
+            if (e.keyCode == 13) {
+                BuscarActasPorPalabraClave();
+            }
+        });
+
+        $("#btn-buscar").click(function () {
+            BuscarActasPorPalabraClave(1, false);
+        });
+
+        function InicializarContenido(Pagina, bandera) {
+            BuscarActasPorPalabraClave(Pagina, bandera)
+        }
+
+        async function BuscarActasPorPalabraClave(Pagina, bandera) {
+            MostrarCargandoPagina();
+
+            let PalabraClave = $("#PalabraClave").val();          
+            
+            // Ejecutar petición AJAX para obtener las actas de acuersoft de acuerdo al filtro
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("ObtenerTodoAcuersoftPorPalabraClave", "Actas")',
+                data: {
+                    Palabra: PalabraClave,
+                    Pagina: Pagina
+                },
+                success: function (data) {
+                    Paginacion(Pagina, bandera, data.Paginas)
+                    $("#TablaFiltro").dataTable().fnClearTable();
+                    $("#TablaFiltro").dataTable().fnAddData(data.Lista);                   
+                    $("#LblInfo").text("Se encontró [ " + PalabraClave + " ] en " + data.Registros + " Acta(s)");
+                    $("#LblInfo").show();                  
+                },
+                error: function () {
+                    MostrarMensajeError(); // Notificar error
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina();
+                }
+            });
+        }
+
+        function Paginacion(Pagina, bandera, totalPaginas) {
+            //variable temporal
+            var resultado; var resultado2;
+
+            //limpiamos la pagination
+            $('.pagination li').html("");
+
+            if (totalPaginas <= 1) {
+                $('.pagination').append('<li class="disabled" value=' + Pagina + '><a href="#!"><b>Primero</b></a></li>');
+                $('.pagination').append('<li class="disabled" value=' + Pagina + '><a href="#!"><b><i class="fas fa-angle-double-left"></i></b></a></li>');
+                $('.pagination').append('<li class="active"  value=' + Pagina + '><a href="#!" onclick="InicializarContenido(' + 1 + ', false, ' + totalPaginas + ')"><b>' + 1 + '</b></a></li>');
+                $('.pagination').append('<li class="disabled" value=' + resultado + '><a href="#!" ><i class="fas fa-angle-double-right"></i></a></li>');
+                $('.pagination').append('<li class="disabled" value=' + Pagina + '><a href="#!"><b>Último</b></a></li>');
+            }
+            else if (Pagina == 1) {// caso base: inicia en 1
+                resultado = Pagina + 1;
+                $('.pagination').append('<li class="disabled" value=' + Pagina + '><a href="#!"><b>Primero</b></a></li>');
+                $('.pagination').append('<li class="disabled" value=' + Pagina + '><a href="#!"><b><i class="fas fa-angle-double-left"></i></b></a></li>');
+                $('.pagination').append('<li class="active" value=' + Pagina + '><a href="#!" onclick="InicializarContenido(' + 1 + ', false, ' + totalPaginas + ')"><b>' + 1 + '</b></a></li>');
+                $('.pagination').append('<li class="waves-effect" value=' + resultado + '><a href="#!" onclick="InicializarContenido(' + 2 + ', false, ' + totalPaginas + ')"><b>' + 2 + '</b></a></li>');
+                $('.pagination').append('<li class="waves-effect" value=' + resultado + '><a href="#!" onclick="InicializarContenido(' + 2 + ', false, ' + totalPaginas + ')" ><i class="fas fa-angle-double-right"></i></a></li>');
+                $('.pagination').append('<li class="waves-effect" onclick="InicializarContenido(' + totalPaginas + ', true, ' + totalPaginas + ')" value=' + Pagina + '><a href="#!"><b>Último</b></a></li>');
+            }
+            else if (Pagina != totalPaginas) {// caso base: inicia en 2
+                resultado2 = Pagina - 1;
+                $('.pagination').append('<li class="waves-effect" onclick="InicializarContenido(' + 1 + ', false, ' + totalPaginas + ')" value=' + 0 + '><a href="#!"><b>Primero</b></a></li>');
+                $('.pagination').append('<li class="waves-effect" value=' + resultado2 + '><a href="#!" onclick="InicializarContenido(' + resultado2 + ', false, ' + totalPaginas + ')"><b><i class="fas fa-angle-double-left"></i></b></a></li>');
+                $('.pagination').append('<li class="active" value=' + Pagina + '><a href="#!" onclick="InicializarContenido(' + Pagina + ', false, ' + totalPaginas + ')"><b>' + Pagina + '</b></a></li>');
+
+                resultado = Pagina + 1;
+                $('.pagination').append('<li class="waves-effect" value=' + resultado + '><a href="#!" onclick="InicializarContenido(' + resultado + ', false, ' + totalPaginas + ')"><b>' + resultado + '</b></a></li>');
+                $('.pagination').append('<li class="waves-effect" value=' + resultado + '><a href="#!" onclick="InicializarContenido(' + resultado + ', false, ' + totalPaginas + ')" ><i class="fas fa-angle-double-right"></i></a></li>');
+                $('.pagination').append('<li class="waves-effect" onclick="InicializarContenido(' + totalPaginas + ', true, ' + totalPaginas + ')" value=' + Pagina + '><a href="#!"><b>Último</b></a></li>');
+            }
+            else { //Si el numero de pagina alcanzo el total de paginas, (caso para registros cortos)  
+                resultado2 = Pagina - 1;
+                $('.pagination').append('<li class="waves-effect" value=' + Pagina + ' onclick="InicializarContenido(' + 1 + ', false, ' + totalPaginas + ')"><a href="#!"><b>Primero</b></a></li>');
+                $('.pagination').append('<li class="waves-effect" value=' + Pagina + ' onclick="InicializarContenido(' + resultado2 + ', false, ' + totalPaginas + ')"><a href="#!"><b><i class="fas fa-angle-double-left"></i></b></a></li>');
+                $('.pagination').append('<li class="waves-effect" value=' + Pagina + ' onclick="InicializarContenido(' + resultado2 + ', false, ' + totalPaginas + ')"><a href="#!" onclick="InicializarContenido(' + Pagina + ', false, ' + totalPaginas + ')"><b>' + resultado2 + '</b></a></li>');
+                $('.pagination').append('<li class="active" value=' + totalPaginas + '><a href="#!" onclick="InicializarContenido(' + totalPaginas + ', true, ' + totalPaginas + ')"><b>' + totalPaginas + '</b></a></li>');
+                $('.pagination').append('<li class="disabled"><a href="#!" ><i class="fas fa-angle-double-right"></i></a></li>');
+                $('.pagination').append('<li class="disabled"><a href="#!"><b>Último</b></a></li>');
+            }
+        }
+    </script>
+}

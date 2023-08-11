@@ -1,0 +1,148 @@
+﻿@using SGJD_INA.Models.ViewModels;
+
+@model  DetalleAcuerdoViewModel
+
+@{
+    ViewBag.Title = "Detalle del Acuerdo";
+    Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+<div class="container">
+    @* Encabezado *@
+    <div class="row">
+        <div class="col s12 m5 left">
+            <img src="~/Content/Images/INA-Logo.jpg" />
+        </div>
+        <div class="col s12 m5 right">
+            <div class="ql-container">
+                <div class="ql-editor">@Html.Raw(Model.Encabezado)</div>
+            </div>
+        </div>
+    </div>
+    <hr />
+
+    <div class="row">
+        <div class="col s12 center text-uppercase text-underline font-arial fz-16">
+            <h6 class="font-bold font-arial fz-16">
+                Comunicación de Acuerdo @Titulo(Model.Titulo, Model.NumeroVersion)
+            </h6>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12 text-uppercase">
+            <p class="font-arial fz-16">
+                <span class="po-relative blue-text text-underline font-bold">FECHA DE FIRMEZA</span>
+                :&nbsp;
+                <span class="font-bold">@Html.DisplayFor(model => model.FechaFirmeza)</span>
+            </p>
+
+            <p class="font-arial fz-16 text-justified">
+                <span class="po-relative blue-text font-bold text-underline font-bold">ASUNTO</span>
+                :&nbsp;@Html.DisplayFor(model => model.Asunto)
+            </p>
+
+            <p class="black-text font-arial fz-16 text-justified">
+                <span class="po-relative blue-text text-underline font-bold text-underline">PARA EJECUCIÓN</span>
+                :&nbsp;
+                @if (Model.UnidadesEjecucion != null) {
+                    foreach (UnidadViewModel Unidad in Model.UnidadesEjecucion) {
+                        if (Unidad.Equals(Model.UnidadesEjecucion.Last())) {
+                            <span class="font-bold text-underline">@Html.DisplayFor(model => Unidad.Nombre).</span>
+                        }
+                        else {
+                            <span class="font-bold text-underline">@Html.DisplayFor(model => Unidad.Nombre),</span>
+                        }
+                    }
+                }
+            </p>
+
+            <p class="font-arial fz-16 text-justified">
+                <span class="po-relative blue-text font-bold text-underline font-bold">PARA INFORMACIÓN</span>
+                :&nbsp;
+                @if (Model.UnidadesInformacion != null) {
+                    foreach (UnidadViewModel Unidad in Model.UnidadesInformacion) {
+                        if (Unidad.Equals(Model.UnidadesInformacion.Last())) {
+                            <span class="text-capitalize">@Html.DisplayFor(model => Unidad.Nombre).</span>
+                        }
+                        else {
+                            <span class="text-capitalize">@Html.DisplayFor(model => Unidad.Nombre),</span>
+                        }
+                    }
+                }
+            </p>
+
+            <p class="text-underline font-arial fz-16 text-justified">
+                @Html.DisplayFor(model => model.Detalle)
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12 center">
+            <h6>
+                <span class="po-relative black-text text-underline font-bold text-uppercase font-arial fz-16">Considerando</span>
+            </h6>
+        </div>
+        <div class="col s12 ql-editor-pdf font-arial fz-16 text-justified mt-0">
+            @Html.Raw(Model.Considerando)
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12 center">
+            <h6>
+                <span class="po-relative black-text text-underline font-bold text-underline text-uppercase font-arial fz-16">Por Tanto</span>
+            </h6>
+        </div>
+        <div class="ql-editor-pdf col s12 font-arial fz-16 text-justified">
+            @Html.Raw(Model.PorTanto)
+        </div>
+    </div>
+
+    <div class="row">
+
+        @if (Model.NombreTipoAprobacion.Equals("Aprobado por unanimidad")) {
+            <div class="col s12 font-bold font-arial fz-16 text-justified">
+                @Html.Raw(Model.Mensaje)
+            </div>
+        }
+        else {
+            <div class="col s12 font-bold font-arial fz-16 text-justified">
+                @Html.Raw(Model.Mensaje)
+            </div>
+            <div class="col s12 font-arial fz-16 text-justified">
+                @foreach (var Votacion in Model.Votaciones) {
+                    if (Votacion.TipoVotacion.Equals("A favor")) {
+                        <p>
+                            @Html.DisplayFor(modelItem => Votacion.Nombre)
+                        </p>
+                    }
+                }
+            </div>
+            <div class="col s12 font-arial fz-16 text-justified">
+                @Html.Raw(Model.ObservacionVotaciones)
+            </div>
+        }
+    </div>
+
+    @*Pie Página*@
+    <div class="row">
+        <div class="col s12 center">
+            <hr />
+            <div>@Html.Raw(Model.PiePagina)</div>
+        </div>
+    </div>
+</div>
+
+@helper Titulo(string Titulo, int NumeroVersion) {
+    if (NumeroVersion > 1) {
+        <span class="font-bold">@Titulo</span> <span>V.@NumeroVersion</span>
+    }
+    else {
+        <span class="font-bold">@Titulo</span>
+    }
+}
+
+@Styles.Render("~/Content/quill")
+@Styles.Render("~/Content/estilosimpresion")

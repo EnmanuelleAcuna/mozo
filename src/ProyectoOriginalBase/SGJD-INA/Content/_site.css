@@ -1,0 +1,347 @@
+﻿/* Clases personalizadas */
+.ancla {
+    position: relative;
+    top: -64px;
+}
+
+.seccion {
+    margin: 0.7rem 0 .6rem 0;
+}
+
+.select-small {
+    height: 2.2rem !important;
+}
+
+/****************************************************************************************************
+    Botones personalizados
+****************************************************************************************************/
+/*.btn-outline-blue {
+    border: solid 0.5px #1F5098 !important;
+}
+
+.btn-outline-yellow {
+    border: solid 0.5px #CC8A00 !important;
+}
+
+.btn-accion {
+    min-width: 140px;
+}*/
+
+/****************************************************************************************************
+    Bordes
+****************************************************************************************************/
+.border-yellow {
+    border: solid 1px #CC8A00;
+}
+
+.border-lightyellow {
+    border: solid 1px #ffdf99;
+}
+
+.border-blue {
+    border: solid 1px #1F5098;
+}
+
+.border-lightblue {
+    border: solid 1px #aac5ee;
+}
+
+.border-gray {
+    border: solid 1px #e0e0e0;
+}
+
+.border-lightgray {
+    border: solid 1px #cccccc;
+}
+
+/****************************************************************************************************
+    Estilos para móviles
+****************************************************************************************************/
+@media only screen and (max-width : 600px) {
+    .left-on-small {
+        float: left !important;
+    }
+
+    .center-on-small {
+        text-align: center !important;
+    }
+
+    /*.margin-bottom-on-small {
+        margin-bottom: 4rem !important;
+    }
+
+    span.brand-logo {
+        line-height: 25px !important;
+    }
+
+    .mt-1-on-small {
+        margin-top: 0.5rem !important;
+    }
+
+    .mt-1-on-small {
+        margin-top: 1rem !important;
+    }
+
+    .fz-1-25r-on-small {
+        font-size: 1.25rem !important;
+    }
+
+    .p-0-on-small {
+        padding: 0rem !important;
+    }
+
+    .fz-1r-on-small {
+        font-size: 1rem !important;
+    }
+
+    .margin-bottom-on-small {
+        margin-bottom: 4rem !important;
+    }*/
+}
+
+/****************************************************************************************************
+    Estilos para móviles y tablets
+****************************************************************************************************/
+@media only screen and (max-width: 992px) {
+    /*.padding-left-right-0-on-medium {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .margin-top-on-medium {
+        margin-top: 5rem !important;
+    }
+
+    select.fontFamily {
+        width: 95px;
+        right: 34px;
+    }
+
+    select.fontSize {
+        width: 55px;
+        right: 10px;
+    }
+
+    a.btn {
+        margin-bottom: 5px;
+    }
+
+    .mb-1-on-med-and-down {
+        margin-bottom: 0.5rem !important;
+    }
+
+    .mb-y-1-on-med-and-down {
+        margin-bottom: 1rem !important;
+        margin-top: 1rem !important;
+    }
+
+    .clear-left-on-med-and-down {
+        clear: left !important;
+    }
+
+    .opcion-inicio {
+        max-width: 280px !important;
+    }
+
+        .opcion-inicio img {
+            height: 120px !important;
+        }
+
+    .mr-1-on-med-and-up {
+        margin-right: 1rem !important;
+    }
+
+    .right-on-med-and-up {
+        float: right !important;
+    }
+
+    .width-720px-on-med-and-up {
+        width: 720px !important;
+    }
+
+    .clear-left-on-med-and-up {
+        clear: left !important;
+    }
+
+    .center-on-medium {
+        text-align: center !important;
+    }
+
+    .padding-left-right-0-on-medium {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .margin-top-on-medium {
+        margin-top: 5rem !important;
+    }
+
+    .hide-on-large-and-med {
+        display: none;
+    }
+
+    .opcion-inicio {
+        max-width: 280px !important;
+    }
+
+        .opcion-inicio img {
+            height: 100px !important;
+        }*/
+}
+
+/****************************************************************************************************
+    Estilos para escritorio
+****************************************************************************************************/
+@media only screen and (min-width: 993px) {
+    .right-on-large {
+        float: right !important;
+    }
+
+    /*.left-on-large {
+        float: left !important;
+    }
+
+    .btn-regresar {
+        padding-right: 2rem;
+    }
+
+    .text-right-on-med-large {
+        text-align: right !important;
+    }
+
+    .width-720px-med-large {
+        width: 720px !important;
+    }
+
+    .width-60-on-large {
+        width: 60% !important;
+    }
+
+    .max-width-60-on-large {
+        max-width: 60% !important;
+    }
+
+    .hide-on-large {
+        display: none !important;
+    }
+
+    .hide-on-large-and-down {
+        display: none !important;
+    }
+
+    .hide-on-large-and-med {
+        display: none;
+    }
+
+    .left-on-large {
+        float: left !important;
+    }
+
+
+
+    .btn-regresar {
+        padding-right: 2rem;
+    }
+
+    .width-60-on-large {
+        width: 60% !important;
+    }
+
+    .max-width-60-on-large {
+        width: 60% !important;
+    }
+
+    .hide-on-large-and-med {
+        display: none;
+    }*/
+}
+
+/*Otros*/
+/*#region Footer*/
+/*Atributos del logo*/
+/*.ina-logo {
+    width: 180px;
+    height: auto;
+}*/
+
+footer div p {
+    font-size: 1rem;
+}
+
+.page-footer {
+    background-color: #1D2625 !important;
+}
+
+/*.table-nonfluid {
+    width: auto !important;
+}
+
+.input-field.col label {
+    left: 0 !important;
+}
+
+.aperturalibro .input-field.col label {
+    left: .75rem !important;
+}
+*/
+
+.no-wrap {
+    white-space: nowrap !important;
+}
+/*
+.pre-wrap {
+    white-space: pre-wrap !important;
+}*/
+
+/*.middle {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.icono-info {
+    position: absolute;
+    left: 48%;
+    top: 45%;
+}
+
+.box-shadow-none {
+    box-shadow: none !important;
+}
+
+.robot-font-family {
+    font-family: 'Robot', sans-serif;
+}
+
+.clear-left {
+    clear: left !important;
+}
+
+li.li-no-hover:hover {
+    background-color: transparent;
+}*/
+
+@page {
+    margin: 10mm;
+}
+
+@media print {
+    .pagebreak-before {
+        page-break-before: always;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tfoot {
+        display: table-footer-group;
+    }
+
+    button {
+        display: none;
+    }
+
+    body {
+        margin: 0;
+    }
+}

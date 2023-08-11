@@ -1,0 +1,144 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<InicioRolViewModel>
+
+@{
+    ViewBag.Title = "Roles";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniPerf" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Administracion", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Roles
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="#" class="breadcrumb">Roles</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m8 mb-1">
+                    <span class="fz-1-2r font-bold">Lista de roles</span>
+                </div>
+
+                <div class="col s6 m2">
+                    <button id="BtnFiltrar" type="button" value="Filtrar" title="Filtrar" class="btn btn-small grey lighten-3 waves-effect black-text font-bold">
+                        <i class="fa fa-filter left"></i>
+                        Filtrar
+                    </button>
+                </div>
+
+                <div class="col s6 m2">
+                    @* Botón agregar *@
+                    <a class="btn btn-small yellow waves-effect black-text font-bold right" id="BtnAgregarRol" title="Agregar rol" onclick="PopUpForm('@Url.Action("Agregar", "Perfil")')">
+                        Agregar
+                    </a>
+                </div>
+            </div>
+
+            <table id="TablaRoles" class="table responsive display width-100 bordered cell-border">
+                <thead>
+                    <tr>
+                        <th nowrap>@Html.DisplayNameFor(model => model.Nombre)</th>
+                        <th nowrap></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Rol in Model) {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => Rol.Nombre)
+                            </td>
+                            <td>
+                                <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Rol.IdRol'>
+                                    <i class="fa fa-caret-down blue-text"></i>
+                                </a>
+
+                                @* Contenido del Dropdown *@
+                                <ul id="dropdown_@Rol.IdRol" class="dropdown-content">
+                                    @*<li>
+                                            <a class='black-text' title='Editar permisos' href="@Url.Action("Inicio", "VistaPerfil", new { Id = Rol.IdRol })">
+                                                Editar permisos
+                                            </a>
+                                        </li>*@
+                                    <li>
+                                        <a class='black-text' title='Ver usuarios' onclick="PopUpForm('@Url.Action("UsuariosPerfil", "Perfil", new { Id = Rol.IdRol, NombrePerfil = Rol.Nombre } )')">
+                                            Ver usuarios con el rol
+                                        </a>
+                                    </li>
+                                    @if (User.IsInRole("Administrador Datasoft")) {
+                                        <li>
+                                            <a class='blue-text' title='Editar' onclick="PopUpForm('@Url.Action("Editar", "Perfil", new { Id = Rol.IdRol } )')">
+                                                Editar
+                                            </a>
+                                        </li>
+                                    }
+
+                                </ul>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        var PopUp;
+
+        $(document).ready(function () {
+            $("#TablaRoles").DataTable({
+                initComplete: CambiarPropiedadesFiltro,
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: true,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true,
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 }
+                ]
+            });
+        });
+
+        $("#TablaRoles").on("draw.dt", function () {
+            $("#TablaRoles_paginate span a").each(function () {
+                $("#TablaRoles").DataTable().responsive.recalc();
+            });
+        });
+    </script>
+}

@@ -1,0 +1,198 @@
+﻿@using SGJD_INA.Models.ViewModels;
+
+@model ClasificarTemasOrdenDiaViewModel
+
+@{
+    ViewBag.Title = "Agregar Acta de Sesión";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="AgreAct" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "Sesion")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Actas de Sesión
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Actas", "Inicio")" class="breadcrumb">Módulo de Actas</a>
+                    <a href="@Url.Action("Inicio", "Actas")" class="breadcrumb">Actas de Sesión</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+@using (Html.BeginForm("Agregar", "Actas", FormMethod.Post, new { autocomplete = "off" })) {
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(model => model.IdSesion)
+    @Html.HiddenFor(model => model.IdOrdenDia)
+
+    <div class="row">
+        <div class="col s12">
+            <div class="card-panel">
+                <div class="row mb-1">
+                    <div class="col s12 m4">
+                        <span class="fz-1-2r font-bold">Agregar Acta</span>
+                    </div>
+
+                    @* Título y estado de la sesión a la que pertenece el Orden del Día que se está editando *@
+                    <div class="col s12 m4 center">
+                        <span class="fz-1-2r font-bold blue-text display-block">
+                            @Model.Titulo
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col s12">
+                        <span class="blue-text">
+                            <i class="fa fa-info-circle"></i>
+                            Para generar el Acta, debe indicar cuales de los siguientes temas del Orden del Día fueron discutidos en Sesión
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row mb-0">
+                    <div class="col s12">
+                        @if (Model.Secciones.Any()) {
+                            <ul class="collection">
+                                @*Recorrer cada sección del Orden del Día*@
+                                @foreach (var Seccion in Model.Secciones) {
+                                    if (Seccion.Temas.Any()) {
+                                        // Recorrer cada tema de la sección
+                                        foreach (var Tema in Seccion.Temas) {
+                                            <li class="collection-item">
+                                                <div class="row">
+                                                    <div class="col s12">
+                                                        <p class="font-bold blue-text">@Seccion.NombreSeccion</p>
+                                                    </div>
+
+                                                    <div class="col s12 m8">
+                                                        <span class="title">
+                                                            <span class="text-uppercase font-bold">@Html.DisplayFor(ModelItem => Tema.Titulo):&nbsp;</span>
+                                                            @Html.DisplayFor(ModelItem => Tema.Resumen)
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="col s12 m4">
+                                                        @Html.DropDownListFor(ModelItem => Tema.IdEstado, new SelectList(ViewBag.ListaTiposAprobacion, "Id", "Nombre", Tema.IdEstado), new { @class = "select-aprobacion browser-default fz-0-8r", @id = Tema.IdTema, data_value = Tema.IdTema })
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        }
+                                    }
+                                    else {
+                                        <li class="collection-item">
+                                            <p>
+                                                <i class="fa fa-info-circle yellow-text"></i>
+                                                No hay temas agregados en la sección <span class="font-bold blue-text">@Seccion.NombreSeccion</span>
+                                            </p>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        }
+                        else {
+                            <p>
+                                <i class="fa fa-info-circle yellow-text"></i>
+                                No hay secciones registradas agregada en el Orden del Día
+                            </p>
+                        }
+
+                    </div>
+                </div>
+
+
+                <div class="row red-text">
+                    <div class="col s12">
+                        @Html.ValidationSummary(true, "", new { @class = "data-error" })
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col s12">
+                        @{
+                            bool TodasLasSeccionesConTemas = true;
+
+                            if (Model.Secciones.Any()) {
+                                foreach (var Seccion in Model.Secciones) {
+                                    if (!Seccion.Temas.Any()) {
+                                        TodasLasSeccionesConTemas = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            else {
+                                TodasLasSeccionesConTemas = false;
+                            }
+
+                            if (TodasLasSeccionesConTemas == true) {
+                                <button type="submit" id="GenerarActa" title="Generar Acta de Sesión" value="Generar Acta de Sesión" class="btn btn-small yellow black-text waves-effect waves-light font-bold">
+                                    Generar Acta de Sesión
+                                </button>
+                            }
+                            else {
+                                <p>
+                                    <i class="fa fa-info-circle yellow-text"></i>
+                                    No todas las secciones tienen un tema agregado, para proceder con la creación del Acta, cada sección debe contener mínimo un tema agregado
+                                </p>
+                            }
+                        }
+                        <a href='@Url.Action("Inicio", "Sesion")' title="Regresar" class="btn btn-small grey lighten-3 black-text waves-effect">
+                            Regresar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        $("#GenerarActa").click(function () {
+            MostrarCargandoPagina();
+        });
+
+        // Evento para actualizar la aprobación de un tema
+        $(".select-aprobacion").change(function (e) {
+            let ObjTema = {
+                Id: $(this).data('value'),
+                IdEstado: $(this).children("option:selected").val()
+            };
+
+            console.log(ObjTema);
+
+            // Ejecutar petición para actualizar voto
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("ActualizarEstadoTema", "OrdenDiaN")',
+                data: { TemaJSON: JSON.stringify(ObjTema) },
+                success: function (data) {
+                    if (data.success) {
+                        MostrarMensajeExito("Tema actualizado.");
+                    } else {
+                        MostrarMensajeError("Error al actualizar el estado del tema"); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError(null); // Notificar error
+                }
+            });
+        });
+    </script>
+}

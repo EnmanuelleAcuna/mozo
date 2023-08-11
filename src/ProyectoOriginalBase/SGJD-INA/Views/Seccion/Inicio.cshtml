@@ -1,0 +1,124 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<InicioSeccionViewModel>
+
+@{
+    ViewBag.Title = "Sección";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="SeccOrDi" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Actas", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Sección
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="#" class="breadcrumb">Sección</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m10 mb-1">
+                    <span class="fz-1-2r font-bold">
+                        Lista de Secciones
+                    </span>
+                </div>
+
+                <div class="col s12 m2">
+                    @* Botón [Agregar] *@
+                    <a class="btn btn-small yellow black-text font-bold waves-effect right" id="BtnAgregar" title="Agregar Seccion" onclick="PopUpForm('@Url.Action("Agregar", "Seccion")')">
+                        Agregar
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <table id="TablaSeccion" class="table responsive display width-100 bordered cell-border">
+                        <thead>
+                            <tr>
+                                <th nowrap>@Html.DisplayNameFor(model => model.Descripcion)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Seccion in Model) {
+                                <tr>
+                                    <td nowrap>
+                                        @Html.DisplayFor(modelItem => Seccion.Descripcion)
+                                    </td>
+                                    <td nowrap>
+                                        <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Seccion.IdSeccion'>
+                                            <i class="fa fa-caret-down blue-text"></i>
+                                        </a>
+
+                                        @* Contenido del Dropdown *@
+                                        <ul id='dropdown_@Seccion.IdSeccion' class='dropdown-content'>
+                                            <li>
+                                                <a class="blue-text" title='Editar' onclick="PopUpForm('@Url.Action("Editar", "Seccion", new { IdSeccion=Seccion.IdSeccion} )')">Editar</a>
+                                            </li>
+                                            @if (User.IsInRole("Administrador Datasoft")) {
+                                                <li>
+                                                    <a class="red-text" title='Eliminar' onclick="PopUpForm('@Url.Action("Eliminar", "Seccion", new { IdSeccion=Seccion.IdSeccion} )')">Eliminar</a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#TablaSeccion").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                sorting: false,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                ordering: false,
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 }
+                ]
+            });
+        });
+    </script>
+}

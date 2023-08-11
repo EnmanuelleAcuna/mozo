@@ -1,0 +1,157 @@
+﻿@using SGJD_INA.Models.ViewModels
+@using SGJD_INA.Models.Entities
+
+@model IEnumerable<InicioAvisoViewModel>
+
+@{
+    ViewBag.Title = "Avisos";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniAvis" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Administracion", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Avisos
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="#" class="breadcrumb">Avisos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m10 mb-1">
+                    <span class="fz-1-2r font-bold">Lista de avisos</span>
+                </div>
+
+                <div class="col s6 m2">
+                    @* Botón agregar *@
+                    <a class="btn btn-small yellow waves-effect black-text font-bold right" title="Agregar usuario" href="@Url.Action("Agregar", "Avisos")">
+                        Agregar
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <table id="TablaAvisos" class="table responsive display width-100 bordered cell-border">
+                        <thead>
+                            <tr>
+                                <th nowrap>@Html.DisplayNameFor(model => model.Nombre)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.Tipo)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.TipoDestinatario)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Aviso in Model) {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Aviso.Nombre)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Aviso.Tipo)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Aviso.TipoDestinatario)
+                                    </td>
+                                    <td>
+                                        <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Aviso.IdAviso'>
+                                            <i class="fa fa-caret-down blue-text"></i>
+                                        </a>
+
+                                        @* Contenido del Dropdown *@
+                                        <ul id='dropdown_@Aviso.IdAviso' class='dropdown-content'>
+                                            <li>
+                                                <a class="black-text" title="Ver detalles del aviso" onclick="PopUpForm('@Url.Action("Detalles", "Avisos", new { Id=Aviso.IdAviso })')">
+                                                    Ver Detalles
+                                                </a>
+                                            </li>
+                                            @if (Aviso.TipoDestinatario is TipoDestinatario.Usuarios) {
+                                                <li>
+                                                    <a class="black-text" title='Ver destinatarios del aviso' onclick="PopUpForm('@Url.Action("UsuariosAviso", "Avisos", new { Id=Aviso.IdAviso, NombreAviso = Aviso.Nombre })')">
+                                                        Ver destinatarios
+                                                    </a>
+                                                </li>
+                                            }
+                                            <li class="divider" tabindex="-1"></li>
+                                            <li>
+                                                <a class="blue-text" title='Editar usuario' href="@Url.Action("Editar", "Avisos", new { Id=Aviso.IdAviso })">
+                                                    Editar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="red-text" title="Cambiar Contraseña" onclick="PopUpForm('@Url.Action("Eliminar", "Avisos" , new {Id=Aviso.IdAviso})')">
+                                                    Borrar
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        var PopUp, AvisoGuardado;
+
+        // Si la vista se carga despues de crear un usuario se verifica si existe el mensaje dentro del ViewBag para mostrarlo como notificación
+        @if (ViewBag.AvisoGuardado != null) {
+            @:AvisoGuardado = '@ViewBag.AvisoGuardado';
+        }
+
+        if (AvisoGuardado === 'true') {
+            MostrarMensajeExito("Aviso guardado correctamente");
+        }
+
+        $(document).ready(function () {
+            $("#TablaAvisos").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true,
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 }
+                ]
+            });
+        });
+    </script>
+}

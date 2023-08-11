@@ -1,0 +1,39 @@
+﻿@using SGJD_INA.Models.Entities
+
+@model Repositorio
+
+@{
+    Layout = null;
+}
+
+<h6 class="center text-uppercase font-bold fz-1r black-text">
+    Eliminar repositorio
+</h6>
+
+@using (Html.BeginForm("Eliminar", "Repositorio", FormMethod.Post, new { onsubmit = "return SubmitForm(this);", autocomplete = "off" })) {
+    @Html.AntiForgeryToken()
+    //Atributos del objeto, ocultos para ser utilizados por el controlador POST
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.Nombre)
+    @Html.HiddenFor(model => model.Ruta)
+
+    <div class="fz-1r black-text mt-3 mb-2">
+        ¿Desea eliminar el repositorio:
+        <label class="font-bold fz-1r black-text">@Html.DisplayFor(model => model.Nombre)</label>?
+        <p class="m-0">
+            @Html.DisplayFor(model => model.Ruta, new { @readOnly = "readonly" })@Html.DisplayFor(model => model.Nombre)
+        </p>
+    </div>
+
+    <section class="section center">
+        <button type="submit" title="Eliminar" value="Eliminar" class="btn btn-small yellow black-text font-bold btn-accion waves-effect waves-light">
+            Eliminar
+        </button>
+        <button type="button" title="Cancelar" value="Cancelar" class="btn btn-small btn-accion grey lighten-3 red-text font-bold waves-effect" onclick="CerrarDialog()">
+            Cancelar
+        </button>
+    </section>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

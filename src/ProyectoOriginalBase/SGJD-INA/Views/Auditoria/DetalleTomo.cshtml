@@ -1,0 +1,185 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model DetalleTomoViewModel
+
+@{
+    ViewBag.Title = "Detalle de Tomo";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="DetToAud" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Tomos", "Auditoria")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Libro de Actas
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Actas", "Inicio")" class="breadcrumb">Módulo de Actas</a>
+                    <a href="@Url.Action("Tomos", "Auditoria")" class="breadcrumb">Libro de Actas</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                @* Título y estado del acta que se está editando *@
+                <div class="col s12 m6">
+                    <span class="fz-1-1r">
+                        Detalle de <span class="font-bold blue-text">@Model.NombreTomo</span>
+                    </span>
+                    <span class="grey-text display-block">@Html.LabelFor(ModeItem => Model.NombreEstado) <b>@Helpers.Estado(Model.CodigoEstado, Model.NombreEstado)</b></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <div class="row">
+                        <div class="col s12">
+                            <span class="fz-1-2r font-bold blue-text display-block">Detalle de Apertura</span>
+
+                            <p class="text-justified">
+                                La Auditoría Interna del Instituto Nacional de Aprendizaje, cumpliendo con lo
+                                dispuesto en el Art. 22 literal e) de la Ley General de Control Interno No. 8292
+                                hace constar que aquí inicia el tomo No. <span class="font-strong">@Html.DisplayFor(model => model.NumeroTomo)</span> del libro
+                                <span class="font-strong">@Html.DisplayFor(model => model.NombreLibro)</span>
+                                utilizado por <span class="font-strong">@Html.DisplayFor(model => model.UnidadEjecutora)</span>.
+                            </p>
+                            <p>
+                                <span class="font-strong">Observaciones de apertura: </span> @Html.Raw(Model.ObservacionApertura)<br />
+                            </p>
+                            <p>
+                                San José, <span class="font-strong">@Html.DisplayFor(model => model.FechaApertura.Day)</span> de <span class="font-strong">@Html.Raw(Model.FechaApertura.ToString("MMMM"))</span> del <span class="font-strong">@Html.DisplayFor(model => model.FechaApertura.Year)</span><br />
+                            </p>
+                            <p>
+                                Auditor(a) Interno(a): <span class="font-strong">@Html.DisplayFor(model => model.UsuarioApertura)</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="row mb-0">
+                        <div class="col s12">
+                            <p>Cantidad de Actas: <span class="font-strong">@Model.ListaActas.Count()</span></p>
+                        </div>
+                    </div>
+
+                    @if (@Model.ListaActas.Count() > 0) {
+                        <span class="fz-1-2r font-bold blue-text display-block">@Html.DisplayNameFor(model => model.ListaActas)</span>
+
+                        <div class="collection">
+                            @foreach (var Acta in Model.ListaActas) {
+                                <div class="row ml-1 mr-1">
+                                    @* Titulo del acta*@
+                                    <div class="col s12 m4">
+                                        @Html.Raw("Acta de " + Acta.TipoSesion + " " + Acta.NumeroSesion + " - " + Acta.AnnoSesion)
+                                    </div>
+                                    @* Estado del acta*@
+                                    <div class="col s12 m4">
+                                        <a>@Helpers.Estado(Acta.CodigoEstado, Acta.NombreEstado)</a>
+                                    </div>
+                                    @* Botones para ver en pdf o ver en linea segun sea el caso*@
+                                    <div class="col s12 m3">
+                                        @if (Acta.CodigoEstado.Equals("AC-FIRM")) {
+                                            <a class="secondary-content" href="@Url.Action("Editar", "Actas", new { IdSesion = Acta.IdSesion})" target="_blank">
+                                                &nbsp; &nbsp;
+                                                <span class="black-text">Ver Acta</span>
+                                                <i class="fas fa-external-link-alt blue-grey-text"></i>
+                                            </a>
+                                        }
+
+                                        @if (!Acta.UrlActa.IsEmpty()) {
+                                            <a class="secondary-content" href="@Acta.UrlActa" target="_blank">
+                                                <span class="black-text">Ver</span>
+                                                <i class="material-icons secondary-content red-text">picture_as_pdf</i>
+                                            </a>
+                                        }
+
+                                    </div>
+                                </div>
+
+                                @*<a class="collection-item black-text" href="@Url.Action("Detalle", "Actas", new { Id = Acta.IdActa})" target="_blank">
+                                        @Html.Raw("Acta de " + Acta.TipoSesion + " " + Acta.NumeroSesion + " - " + Acta.AnnoSesion)
+                                        <i class="material-icons secondary-content black-text">info</i>
+                                    </a>*@
+                            }
+                        </div>
+                    }
+
+                    <div class="divider mb-1"></div>
+
+                    @if (Model.CodigoEstado.Equals("TOM-CERR")) {
+                        <div class="row">
+                            <div class="col s12">
+                                <div class="row">
+                                    <div class="col s12">
+                                        <span class="fz-1-2r font-bold blue-text display-block">Detalle de Cierre</span>
+                                        <p class="text-justified">
+                                            La Auditoría Interna del Instituto Nacional de Aprendizaje, cumpliendo con lo
+                                            dispuesto en el Art. 22 literal e) de la Ley General de Control Interno No. 8292
+                                            hace constar que aquí finaliza el tomo No. <span class="font-strong">@Html.DisplayFor(model => model.NumeroTomo)</span> del libro
+                                            <span class="font-strong">@Html.DisplayFor(model => model.NombreLibro)</span>
+                                            utilizado por <span class="font-strong">@Html.DisplayFor(model => model.UnidadEjecutora)</span>.
+                                        </p>
+                                        <p>
+                                            <span class="font-strong">Observaciones de cierre: </span> @Html.Raw(Model.ObservacionCierre)<br />
+                                        </p>
+                                        <p>
+                                            <span class="font-strong">Observaciones mediante oficio: </span> @Html.Raw(Model.ObservacionesMedianteOficio)<br />
+                                        </p>
+                                        <p>
+                                            San José, <span class="font-strong">@Html.DisplayFor(model => model.FechaCierre.Day)</span> de <span class="font-strong">@Html.Raw(Model.FechaCierre.ToString("MMMM"))</span> del <span class="font-strong">@Html.DisplayFor(model => model.FechaCierre.Year)</span><br />
+                                        </p>
+                                        <p>
+                                            Auditor(a) Interno(a): <span class="font-strong">@Html.DisplayFor(model => Model.UsuarioCierre)</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    @* Botón [Descargar tomo] *@
+                    <a title="Descargar" id="DescargarLibro" class="btn btn-small yellow black-text waves-effect waves-light font-bold" href="@Url.Action("Descargar", "Auditoria", new { IdTomo = Model.IdTomo})">
+                        Descargar Tomo
+                    </a>
+
+                    @* Botón [Cerrar tomo] *@
+                    @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Auditor") || User.IsInRole("Sub. Auditor")) {
+                        if (Model.CodigoEstado.Equals("TOM-ABIE")) {
+                            <a title="Cerrar" id="CerrarLibro" class="btn btn-small grey lighten-3 red-text waves-effect" href="@Url.Action("CierreTomo", "Auditoria", new { Id = Model.IdTomo })">
+                                Cerrar Tomo
+                            </a>
+                        }
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+    </script>
+}

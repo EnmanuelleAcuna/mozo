@@ -1,0 +1,24 @@
+﻿<!-- Modal para agregar un tema -->
+<div id="ModalAgregarAvance" class="modal">
+    <div class="modal-content">
+
+        <h6 class="blue-text fz-1-25r">
+            <span class=" font-bold">Agregar nuevo avance</span>
+            <span id="NombreSeccion"></span>
+        </h6>
+
+        <div class="input-field mt-2">
+            <textarea type="text" id="DetalleNuevoAvance" name="DetalleNuevoAvance" class="materialize-textarea validate"></textarea>
+            <label for="DetalleNuevoAvance">Detalle</label>
+        </div>
+    </div>
+
+    <div class="modal-footer text-left pl-1">
+        <button id="BtnAgregarAvance" class="btn btn-small waves-effect yellow black-text font-bold" title="Agregar nuevo tema" onclick="AgregarAvance()">Agregar</button>
+        <a class="modal-close btn btn-small grey lighten-3 waves-effect black-text">Cancelar</a>
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+}

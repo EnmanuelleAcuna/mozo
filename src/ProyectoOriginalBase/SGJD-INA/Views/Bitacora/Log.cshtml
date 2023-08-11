@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "Registro de Errores";
+}
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Administracion", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Bitácora del sistema
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="#" class="breadcrumb">Bitácora</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m6 mb-1">
+                    <span class="fz-1-2r font-bold">Reporte de Registro de Errores (LOG)</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <table id="TablaLog" class="table responsive width-100 display bordered">
+                        <thead>
+                            <tr>
+                                <th nowrap>Error</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+
+    <script type="text/javascript">
+        let ListaErrorJSON = new Array();
+
+        // Ejecutar petición para obtener información del log
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: '@Url.Action("ObtenerDatosLog", "Bitacora")',
+            success: function (data) {
+                $.each(data.data, function (index, error) {
+                    ListaErrorJSON.unshift({ error: error });
+                });
+
+                console.log(ListaErrorJSON);
+            },
+            error: function () {
+                MostrarMensajeError("Error al procesar la información."); // Notificar error
+            }
+        });
+
+        // Cargar datos en tabla
+        $("#TablaLog").DataTable({
+            initComplete: CambiarPropiedadesFiltro,
+            data: ListaErrorJSON,
+            columns: [{ data: "error", className: "no-wrap" }],
+            language: parametrosLenguajeDataTable,
+            pagingType: "numbers",
+            searching: true,
+            sorting: true,
+            responsive: true,
+            info: false,
+            pageLength: 20,
+            autoWidth: true,
+            lengthChange: false,
+            ordering: true,
+            orderCellsTop: true,
+            fixedHeader: true
+        });
+    </script>
+}

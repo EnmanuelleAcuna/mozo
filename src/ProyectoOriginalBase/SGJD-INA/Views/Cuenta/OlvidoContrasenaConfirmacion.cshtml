@@ -1,0 +1,19 @@
+﻿@{
+    ViewBag.Title = "Solicitud de cambio de contraseña";
+    Layout = "~/Views/Shared/_LayoutLogIn.cshtml";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="OlviContraConfir" />
+
+<h6 class="center">@ViewBag.Title</h6>
+
+<p class="text-justified">
+    Se ha enviado un correo con instrucciones para establecer una nueva contraseña, por favor revise su correo.
+</p>
+
+<div class="input-field center">
+    <a href="@Url.Action("IniciarSesion", "Cuenta")" title="Iniciar sesión" class="btn btn-small waves-effect waves-light white-text blue">
+        Ir a inicio de sesión
+    </a>
+</div>

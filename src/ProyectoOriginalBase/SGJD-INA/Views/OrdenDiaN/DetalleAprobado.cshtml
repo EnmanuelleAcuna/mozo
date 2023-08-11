@@ -1,0 +1,88 @@
+﻿@using SGJD_INA.Models.ViewModels;
+
+@model DetallesOrdenDiaViewModel
+
+@{
+    ViewBag.Title = "Detalle de Orden del Día";
+    Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+<div class="container">
+    @* Encabezado *@
+    <div class="row">
+        <div class="col s12 center">
+            <div class="ql-container">
+                <div class="ql-editor">@Html.Raw(Model.Encabezado)</div>
+            </div>
+        </div>
+    </div>
+
+    @* Encabezado del Orden del Día *@
+    <div class="row">
+        <div class="col s12">
+            <h6 class="font-bold text-uppercase center">
+                Convocatoria
+            </h6>
+
+            <span class="display-block">Para: Miembros de Junta Directiva</span>
+            <span class="display-block">De: @Model.NombreUnidad</span>
+            <span class="display-block">Asunto: <b><u>@Model.Sesion</u></b></span>
+            <span class="display-block">Fecha: <b><u>@Model.FechaSesion</u></b></span>
+            <span class="display-block">Hora: <b><u>@Model.HoraSesion</u></b></span>
+
+            <p>
+                @* Si el campo encabezado posee texto este se mostrará *@
+                @Html.DisplayFor(model => model.EncabezadoConvocatoria)
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        @* Título del Orden del Día *@
+        <div class="col s12 text-uppercase">
+            <h6 class="font-bold center">
+                Proyecto Orden del Día <b>APROBADA</b>
+            </h6>
+            <h6 class="font-bold center">
+                @Model.NombreSesion
+            </h6>
+        </div>
+
+        <div class="col s12">
+            @* Secciones *@
+            <ol class="pl-0">
+                @foreach (SeccionViewModel Seccion in Model.Secciones) {
+                    if (Seccion.Temas.Any()) {
+                        <li>
+                            @* Nombre de sección *@
+                            <span class="font-bold text-underline fz-1r">@Html.DisplayFor(modelItem => Seccion.NombreSeccion)</span>
+
+                            @* Temas *@
+                            <ol>
+                                @foreach (TemaViewModel Tema in Seccion.Temas) {
+                                    <li>
+                                        @* Titulo de tema *@
+                                        <span class="font-bold text-underline fz-1r">@Html.DisplayFor(modelItem => Tema.Titulo)</span>.&nbsp;
+
+                                        @* Contenido de tema *@
+                                        @Html.DisplayFor(modelItem => Tema.Resumen)
+                                    </li>
+                                }
+                            </ol>
+                        </li>
+                    }
+                }
+            </ol>
+        </div>
+    </div>
+
+    <div class="row mb-1">
+        <div class="col s12 center">
+            <hr class="mb-0" />
+            <div class="ql-editor py-0">@Html.Raw(Model.PiePagina)</div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/estilosimpresion")
+@Styles.Render("~/Content/quill")

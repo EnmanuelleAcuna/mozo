@@ -1,0 +1,37 @@
+﻿@*Vista utilizada desde cada objeto, en vez del mantenimiento de Archivos Adjuntos en Administración.*@
+@using SGJD_INA.Models.Entities;
+
+@model ArchivoAdjunto
+
+@{
+    ViewBag.Title = "Eliminar adjunto";
+    Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+@* Encabezado / Título del PopUp / Modal / Dialog *@
+<h6 class="center text-uppercase mb-2">
+    Eliminar Archivo Adjunto
+</h6>
+
+@using (Html.BeginForm("Eliminar", "ArchivoAdjunto", FormMethod.Post, new { onsubmit = "return SubmitForm(this)", autocomplete = "off" })) {
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.IdArchivo)
+    @Html.HiddenFor(m => m.IdObjeto)
+    @Html.HiddenFor(m => m.Observaciones)
+    @Html.HiddenFor(m => m.UrlArchivo)
+
+    <div class="center mb-2 black-text">
+        ¿Desea eliminar el Archivo Adjunto: @Html.DisplayFor(model => model.Observaciones)@Html.DisplayFor(model => model.TipoArchivo.Nombre)
+        <span class="font-bold fz-1r black-text"></span>?
+    </div>
+
+    <div class="center">
+        <button type="submit" title="Eliminar" value="Eliminar" class="btn btn-small yellow black-text font-bold waves-effect waves-light fz-0-8r">
+            Eliminar
+        </button>
+        <button type="button" title="Cancelar" value="Cancelar" class="btn btn-small grey lighten-3 red-text waves-effect fz-0-8r" onclick="CerrarDialog()">
+            Cancelar
+        </button>
+    </div>
+}

@@ -1,0 +1,18 @@
+﻿/*Estilos para la página de inicio de sesión*/
+.login {
+    min-height: 100vh;
+    background: url("Images/bg-master.jpg") no-repeat center center;
+    background-size: cover;
+}
+
+/* Estilos para móviles */
+@media only screen and (max-width : 600px) {
+}
+
+/* Estilos para móviles y tablets */
+@media only screen and (max-width: 992px) {
+}
+
+/* Estilos para escritorio */
+@media only screen and (min-width: 993px) {
+}

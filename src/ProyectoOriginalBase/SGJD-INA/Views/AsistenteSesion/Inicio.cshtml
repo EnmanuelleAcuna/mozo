@@ -1,0 +1,313 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model InicioAsistenciaViewModel
+
+@{
+    ViewBag.Title = "Control de asistencia a Sesión";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="AsiSes" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "Sesion")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Sesiones de Junta Directiva
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Actas", "Inicio")" class="breadcrumb">Módulo de Actas</a>
+                    <a href="@Url.Action("Inicio", "Sesion")" class="breadcrumb">Sesiones de Junta Directiva</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 mb-1">
+                    <span class="fz-1-2r font-bold">
+                        Control de asistencia a la <span class="blue-text">@Model.Sesion</span>
+                    </span>
+                </div>
+            </div>
+
+            @using (Html.BeginForm("Inicio", "AsistenteSesion", FormMethod.Post, htmlAttributes: new { onsubmit = "return SubmitForm(this)", autocomplete = "off" })) {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "data-error" })
+
+                @* Asistencia de miembros de junta dirtectiva y otros asistentes a una sesion *@
+                <div class="row">
+                    <div class="col s12">
+                        <ul class="collapsible expandable">
+                            @* Asistentes de junta directiva *@
+                            <li class="active">
+                                <div class="collapsible-header">
+                                    <i class="fa fa-caret-right"></i>
+                                    Miembros de la Junta Directiva
+                                </div>
+                                <div class="collapsible-body">
+                                    <div class="row">
+                                        <div class="col s12">
+                                            <table id="TablaAsistentesJunta" class="table responsive display width-100 bordered cell-border">
+                                                <thead>
+                                                    <tr>
+                                                        <td>@Html.DisplayNameFor(model => model.ListaTipoAsistenteSesion.FirstOrDefault().Usuario)</td>
+                                                        <td>@Html.DisplayNameFor(model => model.ListaTipoAsistenteSesion.FirstOrDefault().TipoAsistencia)</td>
+                                                        <td></td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var ListAsistente in Model.ListaTipoAsistenteSesion) {
+                                                        <tr>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => ListAsistente.Usuario)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DropDownListFor(model => ListAsistente.TipoAsistencia, new SelectList(ViewBag.ListaTipoAsistencia, "Value", "Text", ListAsistente.TipoAsistencia), new { @class = "select-asistencia browser-default fz-0-8r", data_value = ListAsistente.IdAsistenteSesion })
+                                                            </td>
+                                                            <td>
+                                                                <a class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold" title="Hora" onclick="PopUpForm('@Url.Action("EditarHora", "AsistenteSesion", routeValues: new { IdAsistente = ListAsistente.IdAsistenteSesion })')">
+                                                                    <i class='material-icons'>access_time</i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            @* Otros asistentes a una sesión de junta directiva *@
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="fa fa-caret-right"></i>
+                                    Otros asistentes
+                                </div>
+                                <div class="collapsible-body">
+                                    <div class="row">
+                                        <div class="col s12">
+                                            @* Botón [Agregar] *@
+                                            <a class="btn btn-small yellow black-text font-bold waves-effect waves-teal mr-0 right" id="agregar" title="Agregar" onclick="PopUpForm('@Url.Action("AgregarOtroAsistente", "AsistenteSesion", new { IdSesion = Model.IdSesion })')">
+                                                Agregar
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col s12">
+                                            <table id="tablaOtroAsistenteSesion" class="table responsive compact width-100 bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th nowrap>Nombre</th>
+                                                        <th nowrap>Tipo Usuario</th>
+                                                        <th nowrap>Puesto</th>
+                                                        <th nowrap>Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        @*//const Sesion1 = @Html.Raw(Json.Encode(ViewBag.Sesion));*@
+        var dataTable
+        let PopUp;
+
+        $(document).ready(function () {
+            var Asistencia = @Html.Raw(Json.Encode(Model));
+
+            CargarDataTable();
+        });
+
+        // Cambiar la orientación de las flechas al abrir y cerrar un elemento del collapsible
+        $(".collapsible").on("click", "li div.collapsible-header", function () {
+            if ($(this).parent().attr("class") == "active") {
+                $(this).find("i").removeClass("fa fa-caret-down").addClass("fa fa-caret-right");
+            }
+            else {
+                $(this).find("i").removeClass("fa fa-caret-right").addClass("fa fa-caret-down");
+            }
+        });
+
+        // Inicializar DataTable de asisdtencia de miembros de junta directiva
+        $("#TablaAsistentesJunta").DataTable({
+            language: parametrosLenguajeDataTable,
+            pagingType: "numbers",
+            searching: false,
+            responsive: true,
+            info: false,
+            paging: false,
+            autoWidth: true,
+            lengthChange: false,
+            orderCellsTop: true,
+            fixedHeader: true
+        });
+
+        // Actualizar el tipo de asistencia de miembros de junta directiva
+        $(".select-asistencia").change(function (e) {
+            let ObjAsistencia = {
+                Id: $(this).data('value'),
+                TipoAsistencia: $(this).children("option:selected").text()
+            };
+
+            // Ejecutar petición para actualizar el tipo de asistencia
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("ActualizarAsistencia", "AsistenteSesion")',
+                data: { AsistenciaJSON: JSON.stringify(ObjAsistencia) },
+                success: function (data) {
+                    MostrarMensajeExito(data.message);
+                },
+                error: function (data) {
+                    MostrarMensajeError(data.message); // Notificar error
+                }
+            });
+        });
+
+        // Function para cargar registros en el datatable de otros asistentes mediante AJAX.
+        function CargarDataTable() {
+            //Parámetros AJAX para cargar DataTable
+            var parametrosAJAX = {
+                url: '@Url.Action("ObtenerOtroAsistensiasPorIdSesion", "AsistenteSesion")',
+                type: "GET",
+                datatype: "json",
+                data: {IdSesion: "@Model.IdSesion"},
+                error: MensajeError
+            };
+
+            dataTable = $("#tablaOtroAsistenteSesion").DataTable({
+                initComplete: function () {
+
+                    //Desaparece loading de acción
+                    DesaparecerCargandoPagina();
+                    //Desaparece la carga de pagina
+                    DesaparecerCargandoPagina();
+                },
+                ajax: parametrosAJAX,
+                columns: [
+                    { data: "Nombre", className: "no-wrap" },
+                    { data: "TipoUsuario.Nombre", className: "no-wrap" },
+                    { data: "Puesto", className: "no-wrap" },
+                    {
+                        data: "Id", className: "center no-wrap pl-0", render: function (data) {
+                            return "<a class='btn btn-small grey lighten-3 waves-effect waves-teal mx-1 blue-text font-bold' title='Editar' onclick=PopUpForm('@Url.Action("EditarOtroAsistente", "AsistenteSesion")/" + data + "')><span class='hide-on-small-only'>Editar</span><i class='hide-on-med-and-up fas fa-edit'></i></a>" +
+                                "<a class='btn btn-small  grey waves-effect waves-red lighten-3 mx-1 blue-text font-bold' title='Borrar' onclick=PopUpForm('@Url.Action("EliminarOtroAsistente", "AsistenteSesion")/" + data + "')><span class='hide-on-small-only'>Borrar</span><i class='hide-on-med-and-up fas fa-trash-alt'></i></a>";
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                responsive: true,
+                info: false,
+                paging: false,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true
+            });
+        }
+
+         $("#tablaOtroAsistenteSesion").on("draw.dt", function () {
+            $("#tablaOtroAsistenteSesion_paginate span a").each(function () {
+                dataTable.responsive.recalc();
+            });
+         });
+
+        // Enviar información del formulario al servidor utilizando AJAX para agregar otro asistente a sesión.
+        function SubmitFormAgregar(form) {
+
+            MostrarCargandoPagina();
+
+            // Valida que los campos del formulario estén llenos y tengan valores correctos
+            $.validator.unobtrusive.parse(form);
+
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                data: $(form).serialize(),
+                success: function (data) {
+                    if (data.success != null) {
+                        CerrarDialog(); //Cerrar dialog
+                        dataTable.ajax.reload(); //Recargar DataTable
+                        MostrarMensajeExito(data.message); //Notificar
+                    } else {
+                        MostrarMensajeError(data.message); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina();
+                }
+            });
+
+            return false;
+        }
+
+        // Function para cargar registros en el datatable de otros asistentes mediante AJAX.
+        function SubmitFormHora(form) {
+            // Valida que los campos del formulario estén llenos y tengan valores correctos
+            $.validator.unobtrusive.parse(form);
+
+            if ($(form).valid()) {
+                MostrarCargandoPagina(); //Mostrar carga de página
+
+                // Ejecutar petición para actualizar la hora del asistente
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    dataType: 'json',
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            MostrarMensajeExito(data.Mensaje); //Notificar
+                            CerrarDialog(); //Cerrar dialog
+                        } else {
+                            MostrarMensajeError(data.Mensaje); // Notificar error
+                        }
+                    },
+                    error: function () {
+                        MostrarMensajeError("Error al procesar la información."); // Notificar error
+                    }
+                });
+
+                DesaparecerCargandoPagina(); //Ocultar carga de página
+            }
+
+            return false;
+        }
+    </script>
+}

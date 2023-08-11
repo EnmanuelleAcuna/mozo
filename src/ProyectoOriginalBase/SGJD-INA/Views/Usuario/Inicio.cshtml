@@ -1,0 +1,219 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<InicioUsuarioViewModel>
+
+@{
+    ViewBag.Title = "Usuarios";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniUsu" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Administracion", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Usuarios
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="#" class="breadcrumb">Tipos de Usuarios</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m8 mb-1">
+                    <span class="fz-1-2r font-bold">Lista de usuarios</span>
+                </div>
+
+                <div class="col s6 m2">
+                    <button id="BtnFiltrar" type="button" value="Filtrar" title="Filtrar" class="btn btn-small grey lighten-3 waves-effect black-text font-bold">
+                        <i class="fa fa-filter left"></i>
+                        Filtrar
+                    </button>
+                </div>
+
+                <div class="col s6 m2">
+                    @* Botón agregar *@
+                    <a class="btn btn-small yellow waves-effect black-text font-bold right" title="Agregar usuario" href="@Url.Action("Agregar", "Usuario")">
+                        Agregar
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <table id="TablaUsuarios" class="table responsive display width-100 bordered cell-border">
+                        <thead>
+                            <tr>
+                                <th nowrap>@Html.DisplayNameFor(model => model.Nombre)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.Rol)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.Correo)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.Estado)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Usuario in Model) {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Usuario.Nombre)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Usuario.Rol)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Usuario.Correo)
+                                    </td>
+                                    @if (Usuario.Estado == true) {
+                                        <td class="green lighten-2 white-text">
+                                            Activo
+                                        </td>
+                                    }
+                                    else {
+                                        <td class="blue-grey lighten-2 white-text">
+                                            Inactivo
+                                        </td>
+                                    }
+                                    <td>
+                                        <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Usuario.IdUsuario'>
+                                            <i class="fa fa-caret-down blue-text"></i>
+                                        </a>
+
+                                        @* Contenido del Dropdown *@
+                                        <ul id='dropdown_@Usuario.IdUsuario' class='dropdown-content'>
+                                            <li>
+                                                <a class="black-text" title="Ver detalles del usuario" onclick="PopUpForm('@Url.Action("Detalles", "Usuario", new { Id=Usuario.IdUsuario })')">
+                                                    Ver Detalles
+                                                </a>
+                                            </li>
+                                            <li class="divider" tabindex="-1"></li>
+                                            <li>
+                                                <a class="blue-text" title='Editar usuario' href="@Url.Action("Editar", "Usuario", new { Id=Usuario.IdUsuario })">
+                                                    Editar información básica
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="blue-text" title="Ver teléfonos del usuario" href="@Url.Action("TelefonosCorreos", "Usuario", new { Id=Usuario.IdUsuario })">
+                                                    Editar teléfonos y correos
+                                                </a>
+                                            </li>
+                                            <li>
+                                                @if (Usuario.Estado) {
+                                                    <a class="red-text" title='Inhabilitar usuario' onclick="PopUpForm('@Url.Action("Inhabilitar", "Usuario" , new { Id=Usuario.IdUsuario } )')">
+                                                        Inhabilitar usuario
+                                                    </a>
+                                                }
+                                                else {
+                                                    <a class="green-text" title='Inhabilitar usuario' onclick="PopUpForm('@Url.Action("Habilitar", "Usuario", new { Id=Usuario.IdUsuario } )')">
+                                                        Habilitar usuario
+                                                    </a>
+                                                }
+                                            </li>
+                                            <li>
+                                                <a class="blue-text" title="Cambiar Contraseña" onclick="PopUpForm('@Url.Action("CambiarContrasena", "Usuario" , new {Id=Usuario.IdUsuario})')">
+                                                    Cambiar contraseña
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        var PopUp, UsuarioGuardado;
+
+        // Si la vista se carga despues de crear un usuario se verifica si existe el mensaje dentro del ViewBag para mostrarlo como notificación
+        @if (ViewBag.UsuarioGuardado != null) {
+            @:UsuarioGuardado = '@ViewBag.UsuarioGuardado';
+        }
+
+        if (UsuarioGuardado === 'true') {
+            MostrarMensajeExito("Usuario guardado correctamente");
+        }
+
+        $(document).ready(function () {
+            $("#TablaUsuarios").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: true,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true,
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 }
+                ],
+                initComplete: CambiarPropiedadesFiltro
+            });
+        });
+
+        $("#TablaUsuarios").on("draw.dt", function () {
+            $("#TablaUsuarios_paginate span a").each(function () {
+                $("#TablaUsuarios").DataTable().responsive.recalc();
+            });
+        });
+
+        /** Enviar petición para cambiar contraseña desde modal/dialog/popup */
+        function SubmitFormPassword(form) {
+            // Valida que los campos del formulario estén llenos y tengan valores correctos
+            $.validator.unobtrusive.parse(form);
+
+            if ($(form).valid()) {
+                MostrarMensajeInformacion("Procesando información");
+
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            CerrarDialog(); //Cerrar dialog
+                            MostrarMensajeExito(data.message); //Notificar
+                        } else {
+                            MostrarMensajeError(data.message); // Notificar error
+                        }
+                    },
+                    error: function () {
+                        MostrarMensajeError("Error al procesar la información."); // Notificar error
+                    }
+                });
+            }
+            return false;
+        }
+    </script>
+}

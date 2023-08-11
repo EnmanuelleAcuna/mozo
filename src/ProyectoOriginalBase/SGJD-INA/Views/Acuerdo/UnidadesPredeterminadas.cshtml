@@ -1,0 +1,281 @@
+﻿@{
+    ViewBag.Title = "Unidades predeterminadas para informacion";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniUniPred" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Acuerdos", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Unidades predeterminadas
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Acuerdos", "Inicio")" class="breadcrumb">Módulo de Acuerdos</a>
+                    <a href="#" class="breadcrumb">Parámetros de Acuerdos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 mb-1">
+                    <span class="fz-1-2r font-bold">Editar unidades predeterminadas para información de Acuerdos</span>
+                </div>
+            </div>
+
+            <div class="row clearfix">
+                <div class="col s12 m6">
+                    <h6 class="blue-text">Unidades</h6>
+                    <table id="TablaUnidades" class="table compact width-100">
+                        <thead class="display-none"></thead>
+                    </table>
+                </div>
+
+
+                <div class="col s12 m6">
+                    <h6 class="blue-text">Unidades predeterminadas</h6>
+                    <table id="TablaUnidadesPredeterminadas" class="table compact width-100">
+                        <thead class="display-none"></thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+
+    <script type="text/javascript">
+        let tablaUnidades, tablaUnidadesPred;
+        let jsonUnidades = new Array();
+        let jsonUnidadesPred = new Array();
+
+        $(document).ready(function () {
+            // Primero cargar la tabla de miembros y despues la de usuarios
+            $.when(CargarDataTableUnidadPred()).then(function () {
+                CargarDataTablaUnidad();
+            });
+        });
+
+        // Función para cargar las unidades predeterminadas
+        function CargarDataTableUnidadPred() {
+            const parametrosAJAXUnidadesPred = {
+                url: '@Url.Action("ObtenerUnidadesPredeterminadas", "Acuerdo")',
+                type: "GET",
+                datatype: "json",
+                error: MostrarMensajeError,
+                dataSrc: function (json) {
+
+                    for (let i = 0; i < json.data.length; i++) {
+                        jsonUnidadesPred.push({
+                            'Id': json.data[i]['Unidad'].Id,
+                            'Nombre': json.data[i]['Unidad'].Nombre
+                        })
+                    }
+
+                    return jsonUnidadesPred;
+                }
+            };
+
+            tablaUnidadesPred = $("#TablaUnidadesPredeterminadas").DataTable({
+                columnDefs: [{
+                    targets: 0,
+                    render: function (data, type, row) {
+                        if (window.matchMedia("(max-width: 400px)").matches) {
+                            return data.length > 20 ? data.substr(0, 20) + '…' : data;
+                        }
+                        else {
+                            data;
+                        }
+                    }
+                }],
+                ajax: parametrosAJAXUnidadesPred,
+                columns: [
+                    {
+                        render: function (data, type, row) {
+                            //El nombre debe tratarse antes de ser incrustado en el evento OnClick ya que normalmente al construirse los parámetros de la
+                            //función en el primer espacio inserta ", por lo que los espacios se sustituyen por _
+                            let id = row['Id'];
+                            let nombre = row['Nombre'].trim().replace(/\s+/g, '_');
+                            let nombreUnidadPred = row['Nombre'];
+                            return "<a class='btn btn-small grey lighten-3 waves-effect waves-red black-text text-left width-100' title='Quitar' onclick=QuitarUnidadPred('" + id + "','" + nombre + "')><i class='fa fa-caret-left red-text left'></i>" + nombreUnidadPred + "</a>";
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                sorting: false,
+                responsive: false,
+                info: false,
+                pageLength: 10,
+                autoWidth: true,
+                lengthChange: false,
+                ordering: true,
+                filtering: false
+            });
+        }
+
+        //Función para cargar las unidades del sistema
+        function CargarDataTablaUnidad() {
+            const parametrosAJAXUnidades = {
+                url: '@Url.Action("ObtenerDatos", "Unidad")',
+                type: "GET",
+                datatype: "json",
+                error: MostrarMensajeError,
+                dataSrc: function (json) {
+
+                    for (let i = 0; i < json.data.length; i++) {
+                        let esUnidadPred = false;
+
+                        //Recorrer lista de miembros para saber si el usuario es miembro de JD
+                        for (let x = 0; x < jsonUnidadesPred.length; x++) {
+                            if (json.data[i].Id === jsonUnidadesPred[x].Id) {
+                                esUnidadPred = true;
+                            }
+                        }
+
+                        if (!esUnidadPred) {
+                            jsonUnidades.push({
+                                'Id': json.data[i].Id,
+                                'Nombre': json.data[i].Nombre
+                            })
+                        }
+                    }
+
+                    return jsonUnidades;
+                }
+            };
+
+            tablaUnidades = $("#TablaUnidades").DataTable({
+                ajax: parametrosAJAXUnidades,
+                columns: [
+                    {
+                        render: function (data, type, row) {
+                            //El nombre debe tratarse antes de ser incrustado en el evento OnClick ya que normalmente al construirse los parámetros de la
+                            //función en el primer espacio inserta ", por lo que los espacios se sustituyen por _
+                            let id = row['Id'];
+                            let nombre = row['Nombre'].trim().replace(/\s+/g, '_');
+                            let nombreUnidad = row['Nombre'];
+                            return "<a class='btn btn-small grey lighten-3 waves-effect black-text text-left width-100' title='Agregar' onclick=AgregarUnidadPred('" + id + "','" + nombre + "')><i class='fa fa-caret-right blue-text right'></i>" + nombreUnidad + "</a>";
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                responsive: false,
+                info: false,
+                pageLength: 10,
+                autoWidth: true,
+                lengthChange: false,
+                filtering: false
+            });
+        }
+
+        function AgregarUnidadPred(IdUnidad, NombreUnidad) {
+            MostrarCargandoPagina();
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AgregarUnidadPred", "Acuerdo")',
+                dataType: 'json',
+                data: { IdUnidad: IdUnidad },
+                success: function (data) {
+                    // Quitar de lista de unidades
+                    jsonUnidades.forEach(function (currentValue, index, arr) {
+                        if (jsonUnidades[index].Id == IdUnidad) {
+                            jsonUnidades.splice(index, 1);
+                        }
+                    });
+
+                    // Agregar unidad predeterminada para informacion
+                    // El nombre debe tratarse antes de ser insertado en el Json array, ya que viene con _ en vez de espacios y para mostrarlo en el botón
+                    // correctamente se reemplaza los _ con espacio
+                    jsonUnidadesPred.push({
+                        'Id': IdUnidad,
+                        'Nombre': NombreUnidad.replace(/_/g, ' ')
+                    });
+
+                    //Actualizar DataTables
+                    tablaUnidadesPred.clear();
+                    tablaUnidadesPred.rows.add(jsonUnidadesPred);
+                    tablaUnidadesPred.draw();
+
+                    tablaUnidades.clear();
+                    tablaUnidades.rows.add(jsonUnidades);
+                    tablaUnidades.draw();
+
+                    MostrarMensajeExito(data.message);
+                },
+                error: function () {
+                    MostrarMensajeError("Error al procesar su solicitud");
+                }, complete: function () {
+                    DesaparecerCargandoPagina();
+                }
+            });
+        }
+
+        function QuitarUnidadPred(IdUnidadPred, NombreUnidadPred) {
+            MostrarCargandoPagina();
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("QuitarUnidadPred", "Acuerdo")',
+                dataType: 'json',
+                data: { IdUnidad: IdUnidadPred },
+                success: function (data) {
+                    //Quitar unidad
+                    jsonUnidadesPred.forEach(function (currentValue, index, arr) {
+                        if (jsonUnidadesPred[index].Id == IdUnidadPred) {
+                            jsonUnidadesPred.splice(index, 1);
+                        }
+                    });
+
+                    //Agregar unidad predeterminada para informacion
+                    //El nombre debe tratarse antes de ser insertado en el Json array, ya que viene con _ en vez de espacios y para mostrarlo en el botón
+                    //correctamente se reemplaza los _ con espacio
+                    jsonUnidades.push({
+                        'Id': IdUnidadPred,
+                        'Nombre': NombreUnidadPred.replace(/_/g, ' ')
+                    })
+
+                    //Actualizar DataTables
+                    tablaUnidadesPred.clear();
+                    tablaUnidadesPred.rows.add(jsonUnidadesPred);
+                    tablaUnidadesPred.draw();
+
+                    tablaUnidades.clear();
+                    tablaUnidades.rows.add(jsonUnidades);
+                    tablaUnidades.draw();
+
+                    MostrarMensajeExito(data.message);
+                },
+                error: function () {
+                    MostrarMensajeError("Error al procesar su solicitud");
+                }, complete: function () {
+                    DesaparecerCargandoPagina();
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,225 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model InicioBitacoraViewModel
+
+@{
+    ViewBag.Title = "Bitácora del sistema";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniBita" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Administracion", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Bitácora del sistema
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="#" class="breadcrumb">Bitácora</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m6 mb-1">
+                    <span class="fz-1-2r font-bold">Registro de la bitácora</span>
+                </div>
+
+                <div class="col s6 m3">
+                    <button type="button" id="BtnFiltrar" value="Filtro básico" title="Filtro por fecha" class="btn btn-small grey lighten-3 waves-effect black-text font-bold right">
+                        <i class="fa fa-filter left"></i>
+                        Filtro básico
+                    </button>
+                </div>
+
+                <div class="col s6 m3">
+                    @* Botón Filtrar *@
+                    <button type="button" id="BtnFiltrarPorFecha" value="Filtro por fecha" title="Filtro por fecha" class="btn btn-small yellow waves-effect black-text font-bold right">
+                        <i class="fa fa-calendar-week left"></i>
+                        Filtro por fecha
+                    </button>
+                </div>
+            </div>
+
+            <div id="DivFiltrarPorFecha" class="row" hidden>
+                <div class="col s12">
+                    <p class="font-bold blue-text center">Filtrar por fecha</p>
+                </div>
+                <div class="col s12">
+                    <div class="row">
+                        <div class="col s12 m8 offset-m2">
+                            @using (Ajax.BeginForm("ObtenerBitacoraPorRangoFecha", "Bitacora", new AjaxOptions { HttpMethod = "POST", OnBegin = "MostrarCargandoPagina()", OnSuccess = "CargarBitacoraFiltrada(data)", OnFailure = "DesaparecerCargandoPagina(); MostrarMensajeError(null);" }, new { autocomplete = "off" })) {
+                                @* Fecha inicial *@
+                                <div class="input-field col s12 m4">
+                                    <input type="text" id="FechaInicio" name="FechaInicio" class="validate datepicker" />
+                                    <label for="FechaInicio">Fecha inicial</label>
+                                </div>
+
+                                @* Fecha final *@
+                                <div class="input-field col s12 m4">
+                                    <input type="text" id="FechaFin" name="FechaFin" class="validate datepicker" />
+                                    <label for="FechaFin">Fecha final</label>
+                                </div>
+
+                                <div class="col s12 m4 mt-2">
+                                    <button type="submit" id="BtnBuscar" class="btn btn-small grey lighten-3 waves-effect blue-text font-bold right">
+                                        Consultar
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <table id="TablaBitacora" class="table responsive width-100 display bordered cell-border">
+                        <thead>
+                            <tr>
+                                <th nowrap>@Html.DisplayNameFor(model => model.NombreUsuario)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.Fecha)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.Accion)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.Seccion)</th>
+                                <th nowrap></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+@Styles.Render("~/Content/jquerydatatablebuttons")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jquerydatatablebuttons")
+    @Scripts.Render("~/bundles/jquerydatatablebuttonshtml")
+    @Scripts.Render("~/bundles/jquerydatatablepdfzip")
+    @Scripts.Render("~/bundles/jquerydatatablepdfmake")
+    @Scripts.Render("~/bundles/jquerydatatablepdfmakefonts")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+             // Datepicker
+            const DatePickers = document.querySelectorAll('.datepicker');
+            M.Datepicker.init(DatePickers, { format: 'dd/mm/yyyy', i18n: parametrosi18n, autoClose: true, container: ".main-container" });
+        });
+
+        // Mostrar u ocultar contenedor de filtro por fecha al hacer clic en el botón [Filtro por fecha]
+        $("#BtnFiltrarPorFecha").click(function () {
+            if ($("#DivFiltrarPorFecha").is(":visible")) {
+                $("#DivFiltrarPorFecha").hide("slideUp");
+            } else {
+                $("#DivFiltrarPorFecha").show("slideDown"); // Mostrar contendor de búsqueda por fecha
+                $("#BtnBuscar").attr("disabled", "disabled");
+
+                // Eliminar instancias de selector de fecha inicializadas en Layout
+                const OldDatePickers = $('.datepicker');
+                let Instancias = M.Datepicker.getInstance(OldDatePickers);
+                Instancias.destroy();
+
+                // Reconfigurar selectores de fecha para que limite la fecha de fin y esta no sea menor a la seleccionada en la fecha de inicio
+                const DatePickerFechaInicio = $('#FechaInicio');
+                M.Datepicker.init(DatePickerFechaInicio, {
+                    firstDay: 1,
+                    format: 'dd/mm/yyyy',
+                    i18n: parametrosi18n,
+                    autoClose: true,
+                    onSelect: function (selected) {
+                        const DatePickerFechaFin = $('#FechaFin');
+                        M.Datepicker.init(DatePickerFechaFin, {
+                            minDate: selected,
+                            firstDay: 1,
+                            format: 'dd/mm/yyyy',
+                            i18n: parametrosi18n,
+                            autoClose: true,
+                            onSelect: function () {
+                                $("#BtnBuscar").removeAttr("disabled", "disabled");
+                            }
+                        });
+                    },
+                    onClose: function () {
+                        $("#FechaFin").val("");
+                        $("#BtnBuscar").attr("disabled", "disabled");
+                    }
+                });
+            }
+        });
+
+        // Evalua la respuesta del filtro que viene en el JSON y se recarga el DataTable con los nuevos datos
+        function CargarBitacoraFiltrada(response) {
+            $("#TablaBitacora").dataTable().fnClearTable();
+            if (response.data.length > 0) {
+                $("#TablaBitacora").dataTable().fnAddData(response.data);
+            }
+            MostrarMensajeExito(response.message);
+            DesaparecerCargandoPagina();
+        }
+
+        //Parámetros AJAX para cargar DataTable
+        const ParametrosAJAX = {
+            url: '@Url.Action("ObtenerDatos", "Bitacora")',
+            type: "GET",
+            datatype: "json",
+            error: MostrarMensajeError
+        };
+
+        let Columnas = [{ data: "NombreUsuario", className: "no-wrap" },
+            { data: 'Fecha', className: "no-wrap" },
+            { data: "Accion", className: "no-wrap" },
+            { data: "Seccion", className: "no-wrap" },
+            {
+                data: "IdRegistroBitacora", className: "no-wrap", render: function (data) {
+                    return "<a class='btn btn-small grey lighten-3 waves-effect waves-teal blue-text' onclick=PopUpForm('@Url.Action("Detalles", "Bitacora")/" + data + "')>Detalles</a>";
+                }
+            }];
+
+        $("#TablaBitacora").DataTable({
+            dom: 'Bfrtp',
+            initComplete: CambiarPropiedadesFiltro,
+            ajax: ParametrosAJAX,
+            columns: Columnas,
+            dom: 'Bfrtip',
+            language: parametrosLenguajeDataTable,
+            pagingType: "numbers",
+            searching: true,
+            responsive: true,
+            info: false,
+            pageLength: 20,
+            autoWidth: true,
+            lengthChange: false,
+            orderCellsTop: true,
+            fixedHeader: true,
+            order: [1, "desc"],
+            columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                { responsivePriority: 1, targets: 0 },
+                { responsivePriority: 2, targets: -1 }
+            ],
+            buttons: [
+                'excel', 'pdf'
+            ]
+        });
+    </script>
+}

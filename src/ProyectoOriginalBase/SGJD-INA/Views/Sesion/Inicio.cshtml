@@ -1,0 +1,338 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<InicioSesionViewModel>
+
+@{
+    ViewBag.Title = "Sesiones";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniSes" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Actas", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Sesiones de Junta Directiva
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Actas", "Inicio")" class="breadcrumb">Módulo de Actas</a>
+                    <a href="#" class="breadcrumb">Sesiones de Junta Directiva</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m8 mb-1">
+                    <span class="fz-1-2r font-bold">Lista de Sesiones</span>
+                </div>
+
+                <div class="col s12 m2">
+                    <button id="BtnFiltrar" type="button" value="Filtrar" title="Filtrar" class="btn btn-small grey lighten-3 waves-effect black-text font-bold">
+                        <i class="fa fa-filter left"></i>
+                        Filtrar
+                    </button>
+                </div>
+
+                @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas")) {
+                    <div class="col s12 m2">
+                        @* Botón agregar *@
+                        <button type="button" class="btn btn-small yellow black-text font-bold waves-effect right" id="AgregarSesion" title="Agregar Sesión" onclick="PopUpForm('@Url.Action("Agregar", "Sesion")')">
+                            Agregar
+                        </button>
+                    </div>
+                }
+
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <table id="TablaSesion" class="table responsive display width-100 bordered cell-border">
+                        <thead>
+                            <tr>
+                                <th nowrap>Sesión</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.FechaSesion)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.NombreEstado)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.IdSesion)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Sesion in Model) {
+                                <tr>
+                                    <td nowrap>
+                                        <a class="black-text" title="Ver Sesión" href="#" onclick="PopUpForm('@Url.Action("Detalles", "Sesion", new { IdSesion=Sesion.IdSesion })')">
+                                            <span>@Html.DisplayFor(modelItem => Sesion.TipoSesion)</span>&nbsp;<span class="blue-text"><b>@Html.DisplayFor(modelItem => Sesion.Numero)</b> - @Html.DisplayFor(modelItem => Sesion.Anno)</span>
+                                        </a>
+                                    </td>
+                                    <td nowrap>
+                                        @Html.DisplayFor(modelItem => Sesion.FechaSesion)
+                                    </td>
+                                    <td nowrap>
+                                        @Helpers.Estado(Sesion.CodigoEstado, Sesion.NombreEstado)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Sesion.IdSesion)
+                                    </td>
+                                    <td>
+                                        <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Sesion.IdSesion'>
+                                            <i class="fa fa-caret-down blue-text"></i>
+                                        </a>
+
+                                        @* Contenido del Dropdown *@
+                                    <ul id='dropdown_@Sesion.IdSesion' class='dropdown-content'>
+
+                                        @*Seccion de Sesión*@
+                                        <li><a class="text-underline pb-0">Sesión</a></li>
+                                        <li>
+                                            <a class="blue-text pl-2" title="Ver Sesión" onclick="PopUpForm('@Url.Action("Detalles", "Sesion", new { IdSesion=Sesion.IdSesion })')">
+                                                Ver detalles
+                                            </a>
+                                        </li>  
+                                        @if (@Sesion.CodigoEstado.Equals("SES-PEND") && (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas"))) {
+                                            <li>
+                                                <a class="blue-text pl-2" title="Editar" onclick="PopUpForm('@Url.Action("Editar", "Sesion", new { IdSesion=Sesion.IdSesion } )')">
+                                                    Editar
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (@Sesion.CodigoEstado.Equals("SES-PEND") && (User.IsInRole("Administrador Datasoft"))) {
+                                            <li>
+                                                <a class="red-text pl-2" title="Eliminar" onclick="PopUpForm('@Url.Action("Eliminar", "Sesion", new { IdSesion=Sesion.IdSesion } )')">
+                                                    Eliminar
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @*Seccion de Orden del Día*@
+                                        <li class="divider" tabindex="-1"></li>
+                                        <li><a class="text-underline">Orden del día</a></li>
+                                        @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas") || User.IsInRole("Profesional Secretaría Técnica") || User.IsInRole("Archivo")) {
+                                            <li>
+                                                <a class="blue-text pl-2" title="Editar" href="@Url.Action("EditarN", "OrdenDiaN", new { IdSesion = Sesion.IdSesion })" target="_blank">
+                                                    Editar
+                                                </a>
+                                            </li>
+                                        }
+                                        <li>
+                                            <a class="blue-text pl-2" title="Editar" href="@Url.Action("DetalleN", "OrdenDiaN", new { IdOrdenDia = Sesion.IdOrdenDia })" target="_blank">
+                                                Ver convocada
+                                            </a>
+                                        </li>
+                                        @if (Sesion.CodigoEstado.Equals("SES-EJEC")) {
+                                            <li>
+                                                <a class="blue-text pl-2" title="Editar" href="@Url.Action("DetalleAprobado", "OrdenDiaN", new { IdOrdenDia = Sesion.IdOrdenDia })" target="_blank">
+                                                    Ver aprobada
+                                                </a>
+
+                                            </li>
+                                        }
+
+                                        @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas") || User.IsInRole("Profesional Secretaría Técnica")) {
+                                            @*Control asistencia*@
+                                            <li class="divider" tabindex="-1"></li>
+                                            <li><a class="text-underline">Asistencia</a></li>
+                                            <li>
+                                                <a class="blue-text" title="Editar" href="@Url.Action("Inicio", "AsistenteSesion", new { IdSesion = Sesion.IdSesion })" target="_blank">
+                                                    Control de asistencia
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @*Seccion de Acta*@
+                                        <li class="divider" tabindex="-1"></li>
+                                        <li><a class="text-underline">Acta</a></li>
+                                        @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas")) {
+                                            <li>
+                                                <a class="blue-text pl-2" title="Editar" href="@Url.Action("Editar", "Actas", new { IdSesion = Sesion.IdSesion })" target="_blank">
+                                                    Editar
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (Sesion.IdActa > 0) {
+                                            <li>
+                                                <a class="blue-text pl-2" title='Ver Acta' href="@Url.Action("Detalle", "Actas",  new { Id = Sesion.IdActa })" target="_blank">
+                                                    Ver Acta
+                                                </a>
+                                            </li>
+                                        }
+
+
+                                    </ul>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jqueryui")
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#TablaSesion").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: true,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true,
+                order: [3, "desc"],
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 },
+                    { targets: 3, visible: false }
+                ],
+                initComplete: CambiarPropiedadesFiltro
+            });
+        });
+
+        var FechaValida;
+
+        //Function: Enviar información del formulario al servidor utilizando AJAX para agregar sesión.
+        function SubmitFormAgregarSesion(form) {
+            // Valida que los campos del formulario estén llenos y tengan valores correctos
+            $.validator.unobtrusive.parse(form);
+
+            if ($(form).valid()) {
+                $.when($.ajax(ValidarFecha())).done(function () {
+                    if (FechaValida === true) {
+                        AgregarSesion(form);
+                    }
+                    else if(FechaValida === false) {
+                        MostrarMensajeError("Ya existe una Sesión con fecha posterior a la seleccionada"); // Notificar error
+                    }
+                });
+            }
+
+            return false;
+        }
+
+        window['FechaCambiada'] = false;
+
+        //Enviar información del formulario al servidor utilizando AJAX para editar sesión.
+
+        //fuera de esa función hay que registrar un evento para el change del campo de fecha, y con una variable control valiadr si la fecha cambia
+        //Una forma de solucionarlo sería, verificar en la vista si el campo fecha cambia para que una variable de control cambie su valor, para que al
+        //momento de guardar, se valide si esa variable es true,
+        //por ejemplo que la variable se llame FechaCambiada, si es true se vaalida la fecha, sino, solamente se guarda la información de la sesión.
+        function SubmitFormEditarSesion(form) {
+            // Valida que los campos del formulario estén llenos y tengan valores correctos
+            $.validator.unobtrusive.parse(form);
+
+            if ($(form).valid()) {
+                console.log(window['FechaCambiada']);
+                if (window['FechaCambiada'] === false) {
+                    EditarSesion(form);
+                }
+                else {
+                    $.when($.ajax(ValidarFecha())).done(function () {
+                        if (FechaValida === true) {
+                            EditarSesion(form);
+                        }
+                        else if (FechaValida === false) {
+                            MostrarMensajeError("Ya existe una Sesión con fecha posterior a la seleccionada"); // Notificar error
+                        }
+                    });
+                }
+            }
+
+            return false;
+        }
+
+        function ValidarFecha() {
+            MostrarMensajeInformacion("Validando fecha.");
+
+            // Ejecutar petición para validar fecha especificada para la nueva sesión
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("VerificarFecha", "Sesion")',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                    Fecha: $("#Fecha").val()
+                },
+                success: function (data) {
+                    FechaValida = data.success;
+                },
+                error: function () {
+                    MostrarMensajeError(""); // Notificar error
+                }
+            });
+        }
+
+        function AgregarSesion(form) {
+            MostrarMensajeInformacion("Agregando Sesión.");
+
+            // Ejecutar petición para agregar la nueva sesión
+            $.ajax({
+                type: "POST",
+                url:  form.action,
+                data: $(form).serialize(),
+                success: function (data) {
+                    if (data.success == true) {
+                        CerrarDialog(); //Cerrar dialog
+                        MostrarMensajeExito(data.message); //Notificar
+                        location.reload();
+                    } else {
+                        MostrarMensajeError(data.message); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError(); // Notificar error
+                }
+            });
+        }
+
+        function EditarSesion(form) {
+            MostrarMensajeInformacion("Editando Sesión.");
+
+            // Ejecutar petición para ediatr la sesión
+            $.ajax({
+                type: "POST",
+                url:  form.action,
+                data: $(form).serialize(),
+                success: function (data) {
+                    if (data.success == true) {
+                        CerrarDialog(); //Cerrar dialog
+                        MostrarMensajeExito(data.message); //Notificar
+                        location.reload();
+                    } else {
+                        MostrarMensajeError(data.message); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError(); // Notificar error
+                }
+            });
+        }
+    </script>
+}

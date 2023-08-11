@@ -1,0 +1,48 @@
+﻿/*Global*/
+*,
+*::before,
+*::after {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    /* Mejor renderizado de fuentes */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: #E4E3E3;
+}
+
+main {
+    min-height: 100vh;
+}
+
+    main .content-wrapper-before {
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 240px;
+        -webkit-transition: .3s ease all;
+        transition: .3s ease all;
+    }
+
+/* Establecer ancho máximo de elementos de un formulario ya que son 100% de ancho por defecto */
+input,
+select {
+    max-width: 455px;
+}
+
+/* Estilos para móviles */
+@media only screen and (max-width : 600px) {
+}
+
+/* Estilos para móviles y tablets */
+@media only screen and (max-width: 992px) {
+}
+
+/* Estilos para escritorio */
+@media only screen and (min-width: 993px) {
+}

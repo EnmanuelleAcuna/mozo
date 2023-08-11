@@ -1,0 +1,43 @@
+﻿@using SGJD_INA.Models.Entities
+
+@model Repositorio
+
+@{
+    Layout = null;
+}
+
+<h6 class="center text-uppercase font-bold fz-1r black-text">
+    Editar Repositorio
+</h6>
+
+@using (Html.BeginForm("Editar", "Repositorio", FormMethod.Post, new { onsubmit = "return SubmitForm(this); return false;", autocomplete = "off" })) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "data-error" })
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.Nombre)
+    @Html.HiddenFor(model => model.Ruta)
+
+    <div class="input-field mt-2 mb-3">
+        <label class="po-relative fz-1 focus-text">Nombre actual: </label>
+        @Html.DisplayFor(model => model.Nombre)
+    </div>
+
+    <div class="input-field">
+        <input type="text" name="nuevoNombre" id="nuevoNombre" class="validate" />
+        @Html.Label("Nuevo nombre")
+        @Html.ValidationMessage("nuevoNombre", "", new { @class = "helper-text" })
+    </div>
+
+    <section class="section center">
+        <button type="submit" title="Guardar" value="Guardar" class="btn btn-small yellow black-text font-bold waves-effect waves-light btn-accion">
+            Guardar
+        </button>
+        <button type="button" title="Cancelar" value="Cancelar" class="btn btn-small grey lighten-3 red-text font-bold waves-effect btn-accion" onclick="CerrarDialog()">
+            Cancelar
+        </button>
+    </section>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

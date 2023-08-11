@@ -1,0 +1,152 @@
+﻿@{
+    ViewBag.Title = "Actas";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="Act" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Módulo de Actas
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="#" class="breadcrumb">Módulo de Actas</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    @* Sesiones de Junta Directiva *@
+    <div class="col s12 m4">
+        <a href="@Url.Action("Inicio", "Sesion")">
+            <div class="card">
+                <div class="card-image">
+                    <img class="responsive-img" alt="Sesiones de Junta Directiva" src="~/Content/Images/sesiones.png">
+                </div>
+                <div class="card-action center blue-text font-bold">
+                    Sesiones de Junta Directiva
+                </div>
+            </div>
+        </a>
+    </div>
+
+    @* Órdenes del Día *@
+    @*<div class="col s12 m4">
+            <a href="@Url.Action("InicioN", "OrdenDiaN")">
+                <div class="card">
+                    <div class="card-image">
+                        <img class="responsive-img" alt="Órdenes del Día" src="~/Content/Images/ordenDia.png">
+                    </div>
+                    <div class="card-action center blue-text font-bold">
+                        Ordenes del Día
+                    </div>
+                </div>
+            </a>
+        </div>*@
+
+    @* Actas de Sesión *@
+    <div class="col s12 m4">
+        <a href="@Url.Action("Inicio", "Actas")">
+            <div class="card">
+                <div class="card-image">
+                    <img class="responsive-img" alt="Actas de Sesión" src="~/Content/Images/acta.png">
+                </div>
+                <div class="card-action center blue-text font-bold">
+                    Actas de Sesión
+                </div>
+            </div>
+        </a>
+    </div>
+
+    @* Actas de Acuersoft *@
+    <div class="col s12 m4">
+        <a href="@Url.Action("InicioActasAcuersoft", "Actas")">
+            <div class="card">
+                <div class="card-image">
+                    <img class="responsive-img" alt="Actas de Sesión" src="~/Content/Images/list.png">
+                </div>
+                <div class="card-action center blue-text font-bold">
+                    Actas de Acuersoft
+                </div>
+            </div>
+        </a>
+    </div>
+
+    @* Auditoría *@
+    <div class="col s12 m4">
+        <a href="@Url.Action("Tomos", "Auditoria")">
+            <div class="card">
+                <div class="card-image">
+                    <img class="responsive-img" alt="Libro de Actas" src="~/Content/Images/libro.png">
+                </div>
+                <div class="card-action center blue-text font-bold">
+                    Libro de Actas
+                </div>
+            </div>
+        </a>
+    </div>
+
+    @* Informe de gestión de directores *@
+    <div class="col s12 m4">
+        <div class="card">
+            <div class="card-image">
+                <img class="responsive-img" alt="Informes" src="~/Content/Images/informe.png">
+            </div>
+            <ul class="collapsible expandable z-depth-0 m-0">
+                <li>
+                    <div class="collapsible-header blue-text font-bold">
+                        <i class="fa fa-caret-right"></i>
+                        Informes
+                    </div>
+                    <div class="collapsible-body p-0">
+                        <ul class="collection">
+                            <li class="collection-item">
+                                <a href="@Url.Action("InformeGestion", "ReportesActas")" class="blue-text">
+                                    <i>&#45;&nbsp;</i>
+                                    Informe de gestión resumido
+                                </a>
+                            </li>
+                            <li class="collection-item">
+                                <a href="@Url.Action("InformeGestionDetallado", "ReportesActas")" class="blue-text">
+                                    <i>&#45;&nbsp;</i>
+                                    Informe de gestión detallado
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        @Html.Partial("_ParametrosActasPartial")
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        // Cambiar la orientación de las flechas al abrir y cerrar un elemento del collapsible
+        $(".collapsible").on("click", "li div.collapsible-header", function () {
+            $(this).parent().siblings().not("active").find("div.collapsible-header i").removeClass("fa fa-caret-down").addClass("fa fa-caret-right");
+
+            if ($(this).parent().attr("class") == "active") {
+                $(this).find("i").removeClass("fa fa-caret-down").addClass("fa fa-caret-right");
+            }
+            else {
+                $(this).find("i").removeClass("fa fa-caret-right").addClass("fa fa-caret-down");
+            }
+        });
+    </script>
+}

@@ -1,0 +1,135 @@
+﻿@using SGJD_INA.Models.Entities
+
+@model Repositorio
+
+@{
+    ViewBag.Title = "Repositorios";
+    ViewBag.BreadCrumb = Html.ActionLink("Administración", "Administracion", "Inicio", null, new { @class = "black-text" }) + " / Parámetros del Sistema / Repositorios";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section mx-1 pt-0">
+    <div class="card-panel">
+        <nav class="mb-2 z-depth-0 white">
+            <div class="nav-wrapper">
+                <ul class="left">
+                    <li>
+                        <a title="Regresar" href="@Url.Action("Administracion", "Inicio")" class="pl-0 regresar">
+                            <i class="fa fa-arrow-left blue-text"></i>
+                        </a>
+                    </li>
+                </ul>
+                <span class="brand-logo center-on-medium black-text font-bold fz-1-25r mt-1-on-small">
+                    Repositorios
+                </span>
+                <ul class="right">
+                    <li>
+                        @if ((int)Session["NivelPermiso"] == 1 || (int)Session["NivelPermiso"] == 3 || (int)Session["NivelPermiso"] == 5 || (int)Session["NivelPermiso"] == 7) {
+
+                            /**/
+                            <a class="btn btn-small yellow black-text font-bold waves-effect waves-teal mr-0" id="agregar" title="Agregar Repositorio" onclick="PopUpForm('@Url.Action("Agregar", "Repositorio")')">
+                                <span class="hide-on-small-and-down mx-1">Agregar Repositorio</span>
+                            </a>
+                        }
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <table id="tablaRepositorios" class="table responsive display width-100 bordered cell-border">
+            <thead>
+                <tr>
+                    <th nowrap>Nombre del Repositorio</th>
+                    <th nowrap>Ruta de acceso</th>
+                    <th nowrap>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</section>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        var PopUp, dataTable;
+
+
+        $(document).ready(function ()
+        {            
+            CargarDataTable();
+        });
+
+        function ValidarNuevoNombre(input) {
+            if (input.value.length = 0) {
+                input.setCustomValidity("El nuevo nombre es requerido");
+            } else {
+                input.setCustomValidity('');
+            }
+        }
+
+        function CargarDataTable() {
+            //Parámetros AJAX para cargar DataTable
+            var parametrosAJAX = {
+                url: "../Repositorio/ObtenerDatos",
+                type: "GET",
+                datatype: "json",
+                error: MensajeError
+            }
+
+            dataTable = $("#tablaRepositorios").DataTable({
+                initComplete: function () {
+                    //Desaparece la carga de pagina
+                    DesaparecerCargandoPagina();
+                },
+                ajax: parametrosAJAX,
+                columns: [
+                    { data: "Nombre" },
+                    { data: "Ruta", className: "truncate" },
+                    {
+                        data: "Id",
+                        className: "center",
+                        render: function (data) {
+                            var permiso = '@Session["NivelPermiso"]';
+                            if (permiso == 6 || permiso == 7) {
+                                return "<a class='btn btn-small grey lighten-3 waves-effect waves-teal mx-1 blue-text font-bold' title='Editar' onclick=PopUpForm('@Url.Action("Editar", "Repositorio")/" + data + "')><span class='hide-on-small-and-down'>Editar</span></a>" +
+                                    "<a class='btn btn-small grey waves-effect waves-red lighten-3 mx-1 blue-text font-bold' title='Borrar' onclick=PopUpForm('@Url.Action("Eliminar", "Repositorio")/" + data + "')><span class='hide-on-small-and-down'>Borrar</span></a>";
+                            } else if (permiso == 2 || permiso == 3) {
+                                return "<a class='btn btn-small grey lighten-3 waves-effect waves-teal mx-1 blue-text font-bold' title='Editar' onclick=PopUpForm('@Url.Action("Editar", "Repositorio")/" + data + "')><span class='hide-on-small-and-down'>Editar</span></a>";
+                            } else if (permiso == 4 || permiso == 5) {
+                                return "<a class='btn btn-small grey waves-effect waves-red lighten-3 mx-1 blue-text font-bold' title='Borrar' onclick=PopUpForm('@Url.Action("Eliminar", "Repositorio")/" + data + "')><span class='hide-on-small-and-down'>Borrar</span></a>";
+
+                            } else {
+                                return "";
+                            }
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                sorting: true,
+                responsive: true,
+                info: false,
+                pageLength: 5,
+                lengthChange: false,
+                autoWidth: true,
+                lengthChange: false,
+                ordering: true
+            });
+        }
+
+        $("#tablaRepositorios").on("draw.dt", function () {
+            $("#tablaRepositorios_paginate span a").each(function () {
+                dataTable.responsive.recalc();
+            });
+        });
+
+        /* Función encargada de extraer ruta del servidor*/
+        function ExtractorDir() {
+            var iframes = document.getElementById("exploradorAdmin").contentDocument.head.innerHTML;
+            iframes = iframes.split('-');
+            iframes = iframes[1].replace("</title>", "");
+            $("#txtRuta").val(iframes);
+        }
+    </script>
+}

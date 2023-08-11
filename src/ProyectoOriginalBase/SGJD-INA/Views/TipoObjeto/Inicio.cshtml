@@ -1,0 +1,138 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<InicioTipoObjetoViewModel>
+
+@{
+    ViewBag.Title = "Tipos de Objeto";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniTipObj" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Administracion", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Tipos de Objeto
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="#" class="breadcrumb">Tipos de Objeto</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m10 mb-1">
+                    <span class="fz-1-2r font-bold">
+                        Lista de Tipos de Objeto
+                    </span>
+                </div>
+
+                <div class="col s12 m2">
+                    @* Botón [Agregar] *@
+                    <a class="btn btn-small yellow black-text font-bold waves-effect right" id="BtnAgregar" title="Agregar Tipo de Objeto" onclick="PopUpForm('@Url.Action("Agregar", "TipoObjeto")')">
+                        Agregar
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <table id="TablaTipoObjeto" class="table responsive display width-100 bordered cell-border">
+                        <thead>
+                            <tr>
+                                <th nowrap>@Html.DisplayNameFor(model => model.Descripcion)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.Consecutivo)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.ParametroEdicion)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.EncabezadoPiePagina)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var TipoObjeto in Model) {
+                                <tr>
+                                    <td nowrap>
+                                        @Html.DisplayFor(modelItem => TipoObjeto.Descripcion)
+                                    </td>
+                                    <td nowrap>
+                                        @Html.DisplayFor(modelItem => TipoObjeto.Consecutivo)
+                                    </td>
+                                    <td nowrap>
+                                        @Html.DisplayFor(modelItem => TipoObjeto.ParametroEdicion)
+                                    </td>
+                                    <td nowrap>
+                                        @Html.DisplayFor(modelItem => TipoObjeto.EncabezadoPiePagina)
+                                    </td>
+                                    <td>
+                                        <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@TipoObjeto.IdTipoObjeto'>
+                                            <i class="fa fa-caret-down blue-text"></i>
+                                        </a>
+
+                                        @* Contenido del Dropdown *@
+                                        <ul id='dropdown_@TipoObjeto.IdTipoObjeto' class='dropdown-content'>
+                                            <li>
+                                                <a class="blue-text" title='Ver detalles' onclick="PopUpForm('@Url.Action("Detalles", "TipoObjeto", new { IdTipoObjeto=TipoObjeto.IdTipoObjeto } )')">Ver detalles</a>
+                                            </li>
+                                            <li class="divider" tabindex="-1"></li>
+                                            <li>
+                                                <a class="blue-text" title='Editar' onclick="PopUpForm('@Url.Action("Editar", "TipoObjeto", new { IdTipoObjeto=TipoObjeto.IdTipoObjeto } )')">Editar</a>
+                                            </li>
+                                            <li>
+                                                <a class="red-text" title='Borrar' onclick="PopUpForm('@Url.Action("Eliminar", "TipoObjeto", new { IdTipoObjeto=TipoObjeto.IdTipoObjeto } )')">Eliminar</a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#TablaTipoObjeto").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                sorting: false,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                ordering: false,
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 }
+                ]
+            });
+        });
+    </script>
+}

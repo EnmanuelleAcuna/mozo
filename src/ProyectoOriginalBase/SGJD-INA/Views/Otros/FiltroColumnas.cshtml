@@ -1,0 +1,77 @@
+﻿@section scripts
+{
+    <script type="text/javascript">
+        //vacía todos los inputs de búsqueda, que tienen la clase filtro
+        $("input.filtro").val("");
+
+
+        $(window).resize(function () {
+            if (window.matchMedia("(min-width: 992px)").matches) {
+                //al establecer el tamaño de pantalla específico se oculta el filtro general y aparecen el filtro de columnas
+                ocultarFiltroGeneralAparecerFiltroColumnas();
+            }
+            else {
+                //al establecer el tamaño de pantalla específico se oculta los filtros de columnas y aparece el filtro general
+                aparecerFiltroGeneralDesaparecerFiltroColumnas();
+            }
+        });
+
+        //oculta el filtro general y aparece el filtro de columnas
+        function ocultarFiltroGeneralAparecerFiltroColumnas() {
+            $("div#tablaUsuarioActivo_filter").hide();
+            $("div#tablaUsuarioInactivo_filter").hide();
+            $("#tablaUsuarioActivo thead tr").not(":first").show();
+            $("#tablaUsuarioInactivo thead tr").not(":first").show();
+        }
+
+        //oculta los filtros de columnas y aparece el filtro general
+        function aparecerFiltroGeneralDesaparecerFiltroColumnas() {
+            $("#tablaUsuarioActivo thead tr").not(":first").hide();
+            $("#tablaUsuarioInactivo thead tr").not(":first").hide();
+            $("div#tablaUsuarioActivo_filter").show();
+            $("div#tablaUsuarioInactivo_filter").show();
+        }
+
+        // Function: LLena los registros del datatable mediante ajax.
+        function CargarDataTables() {
+
+            //clona los títulos de cada columna en las tablas usuarioActivo e usuarioInactivo
+            $("#tablaUsuarioActivo thead tr").clone(true).appendTo(".table thead");
+        };
+
+        // funcion que filtra usuarios activos
+        function filtroTablaActivo() {
+            $("#tablaUsuarioActivo thead tr:eq(1) th").each(function (i) {
+                //Se crean los input text de filtro
+                $(this).html("<input type='text' class='filtro'/>");
+                //evento que busca en la tabla usuarioActivo, cuando se cambia el contenido de los input text de filtro
+                $("input", this).on("keyup change", function () {
+                    if (dataTableActivo.column(i).search() !== this.value) {
+                        dataTableActivo
+                            .column(i)
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+        }
+
+        //funcion que filtra usuarios inactivos
+        function filtroTablaInactivo() {
+            $("#tablaUsuarioInactivo thead tr:eq(1) th").each(function (i) {
+                //Se crean los input text de filtro
+                $(this).html("<input type='text' class='filtro'/>");
+                //evento que busca en la tabla usuarioInactivo, cuando se cambia el contenido de los input text de filtro
+                $("input", this).on("keyup change", function () {
+                    if (dataTableInactivo.column(i).search() !== this.value) {
+                        dataTableInactivo
+                            .column(i)
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+        }
+
+    </script>
+}

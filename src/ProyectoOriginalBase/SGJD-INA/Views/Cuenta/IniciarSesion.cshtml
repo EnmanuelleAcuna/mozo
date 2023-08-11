@@ -1,0 +1,100 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IniciarSesionViewModel
+
+@{
+    ViewBag.Title = "Iniciar sesión";
+    Layout = "~/Views/Shared/_LayoutLogIn.cshtml";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniciarSes" />
+
+@using (Html.BeginForm("IniciarSesion", "Cuenta", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @id = "FrmLogin", autocomplete = "off" })) {
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Certificado, new { @value = "" })
+
+    @* Correo electrónico *@
+    <div id="DivUsuario" class="input-field">
+        @Html.EditorFor(m => m.Usuario, new { htmlAttributes = new { @class = "validate" } })
+        @Html.LabelFor(m => m.Usuario, new { @class = "black-text" })
+        @Html.ValidationMessageFor(m => m.Usuario, "", new { @class = "helper-text" })
+    </div>
+
+    @* Lista de certificados *@
+    <div id="DivCertificado" class="input-field mb-2" hidden>
+        @* Selector de certificados *@
+        <select id="selectCerts" class="browser-default">
+            <option value="-1" disabled selected>No se han detectado tarjetas conectadas</option>
+        </select>
+    </div>
+
+    @* Contraseña / PIN *@
+    <div class="input-field">
+        @Html.PasswordFor(m => m.Contrasena, new { @class = "validate" })
+        @Html.LabelFor(m => m.Contrasena, new { @class = "black-text" })
+        @Html.ValidationMessageFor(m => m.Contrasena, "", new { @class = "helper-text" })
+    </div>
+
+    <div class="center red-text font-bold">
+        @Html.ValidationSummary(true, "", new { @class = "data-error" })
+    </div>
+
+    @* Iniciar sesion con usuario y contraseña *@
+    <div id="DivIniciarSesionUC" class="row">
+        <div class="col s12">
+            <button type="submit" id="BtnIniciarSesion" value="Iniciar sesión" class="btn btn-small waves-effect waves-light font-bold black-text yellow width-100">
+                Iniciar sesión
+            </button>
+
+            <p class="center">
+                <a href="@Url.Action("OlvidoContrasena", "Cuenta")" title="¿Olvidó su contraseña?" class="blue-text">
+                    ¿Olvidó su contraseña?
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <div id="DivIniciarSesionFD" class="row" hidden>
+        <div class="col s12">
+            <button type="button" id="BtnIniciarSesionConFD" onclick="certClick()" class="btn btn-small waves-effect waves-light font-bold black-text yellow width-100">
+                Iniciar sesión
+            </button>
+
+            <div id="DivPreloader" hidden>
+                <div class="preloader-wrapper small active">
+                    <div class="spinner-layer spinner-yellow-only" id="preloader">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div><div class="gap-patch">
+                            <div class="circle"></div>
+                        </div><div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
+                </div>
+                <label>Verificando información, por favor espere.</label>
+            </div>
+        </div>
+    </div>
+
+    <p class="center">
+        <label class="black-text">Iniciar sesión con</label>
+    </p>
+
+    <div id="DivBtnIniciarConFD">
+        <button type="button" id="BtnIniciarConFD" class="btn btn-small waves-effect waves-dark white blue-text width-100">
+            Firma digital
+        </button>
+    </div>
+
+    <div id="DivBtnIniciarConUC" hidden>
+        <button type="button" id="BtnIniciarConUC" class="btn btn-small waves-effect waves-dark white blue-text width-100">
+            Usuario y Contraseña
+        </button>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

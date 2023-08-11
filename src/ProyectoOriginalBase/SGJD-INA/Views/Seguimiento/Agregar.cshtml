@@ -1,0 +1,113 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<AgregarSeguimientoViewModel>
+
+@{
+    ViewBag.Title = "Agregar seguimiento";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="AgreSeg" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "Seguimiento")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Seguimiento de Acuerdos
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Acuerdos", "Inicio")" class="breadcrumb">Módulo de Acuerdos</a>
+                    <a href="@Url.Action("Inicio", "Seguimiento")" class="breadcrumb">Seguimiento de Acuerdos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12">
+                    <span class="fz-1-2r font-bold">Agregar seguimiento</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <span class="blue-text">
+                        <i class="fa fa-info-circle"></i>
+                        Lista de Acuerdos en firme, en estado [Notificado] o [En ejecución] con opción para agregar seguimiento
+                    </span>
+                </div>
+                <div class="col s12">
+                    <ul class="collection">
+                        @foreach (var Acuerdo in Model) {
+                            using (Html.BeginForm("Agregar", "Seguimiento", FormMethod.Post, new { id = "frmAgregar" + Acuerdo.IdAcuerdo, autocomplete = "off" })) {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("IdAcuerdo", Acuerdo.IdAcuerdo, new { id = "IdArticulo" })
+
+                                <li class="collection-item avatar">
+                                    <img src="~/Content/Images/printer.png" alt="Acuerdo" class="circle">
+                                    <span class="title font-bold">
+                                        @Html.DisplayFor(modelItem => Acuerdo.Titulo)
+                                    </span>
+                                    <p>
+                                        @Html.LabelFor(modelItem => Acuerdo.FechaFirmeza)&nbsp;@Html.DisplayFor(modelItem => Acuerdo.FechaFirmeza)
+                                        &#124;
+                                        @Html.LabelFor(modelItem => Acuerdo.EstadoAcuerdo)&nbsp;@Html.DisplayFor(modelItem => Acuerdo.EstadoAcuerdo)
+                                    </p>
+                                    <p>
+                                        @Html.LabelFor(modelItem => Acuerdo.Asunto)&nbsp;@Html.DisplayFor(modelItem => Acuerdo.Asunto)
+                                    </p>
+                                    <button type="button" data-value="@Acuerdo.IdAcuerdo" class="btn-agregar-seguimiento secondary-content btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold">
+                                        Agregar
+                                    </button>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jqueryconfirm")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryconfirm")
+
+    <script type="text/javascript">
+        $(".btn-agregar-seguimiento").click(function (e) {
+            let IdAcuerdo = $(this).data('value');
+
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Agregar nuevo Seguimiento al Acuerdo',
+                content: '¿Está seguro que desea agregar un nuevo seguimiento al acuerdo?',
+                boxWidth: '35%',
+                useBootstrap: false,
+                buttons: {
+                    Confirmar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            $("form#frmAgregar" + IdAcuerdo).submit();
+                            MostrarCargandoPagina(); // Mostrar carga de página
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+        });
+    </script>
+}

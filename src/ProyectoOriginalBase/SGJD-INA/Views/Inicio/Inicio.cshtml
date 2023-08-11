@@ -1,0 +1,264 @@
+﻿@{
+    ViewBag.Title = "Inicio";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="Ini" />
+
+<div class="row mt-2">
+    <div class="col s12 m6">
+        <h6 class="seccion white-text">
+            Módulos del sistema
+        </h6>
+    </div>
+</div>
+
+<div class="row">
+    @* Actas *@
+    <div class="col s12 m4">
+        <a href="@Url.Action("Actas", "Inicio")">
+            <div class="card">
+                <div class="card-image">
+                    <img src="~/Content/Images/acta.png" alt="Actas">
+                </div>
+                <div class="card-action center blue-text font-bold">
+                    Actas
+                </div>
+            </div>
+        </a>
+    </div>
+
+    @* Acuerdos *@
+    <div class="col s12 m4">
+        <a href="@Url.Action("Acuerdos", "Inicio")">
+            <div class="card">
+                <div class="card-image">
+                    <img src="~/Content/Images/acuerdo.png" alt="Acuerdos">
+                </div>
+                <div class="card-action center blue-text font-bold">
+                    Acuerdos
+                </div>
+            </div>
+        </a>
+    </div>
+
+    @* Administración *@
+    <div class="col s12 m4">
+        <a href="@Url.Action("Administracion", "Inicio")">
+            <div class="card">
+                <div class="card-image">
+                    <img src="~/Content/Images/config.png" alt="Administración">
+                </div>
+                <div class="card-action center blue-text font-bold">
+                    Administración
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <h6>Gráficos de interés</h6>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12 m4">
+        <div class="card-panel p-0">
+            <div id="PreloaderGraficoSesiones" class="valign-wrapper center">
+                <div class="progress">
+                    <div class="indeterminate"></div>
+                </div>
+            </div>
+            <canvas id="myChart1"></canvas>
+        </div>
+    </div>
+
+    <div class="col s12 m4">
+        <div class="card-panel p-0">
+            <div id="PreloaderGraficoActas" class="valign-wrapper center">
+                <div class="progress">
+                    <div class="indeterminate"></div>
+                </div>
+            </div>
+            <canvas id="myChart2"></canvas>
+        </div>
+    </div>
+
+    <div class="col s12 m4">
+        <div class="card-panel p-0">
+            <div id="PreloaderGraficoAcuerdos" class="valign-wrapper center">
+                <div class="progress">
+                    <div class="indeterminate"></div>
+                </div>
+            </div>
+
+            <canvas id="myChart3"></canvas>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/chart")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Cargar gráfico de Sesiones
+            CargarGraficoSesiones();
+
+            // Cargar gráfico de Actas
+            CargarGraficoActas();
+
+            // Cargar gráfico de Acuerdos
+            CargarGraficoAcuerdos();
+        });
+
+        let MyChart1 = document.getElementById('myChart1').getContext('2d');
+        let MyChart2 = document.getElementById('myChart2').getContext('2d');
+        let MyChart3 = document.getElementById('myChart3').getContext('2d');
+
+        // Gráfico de sesiones
+        function CargarGraficoSesiones() {
+            // Ejecutar petición para obtener datos
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("InformeGraficoSesiones", "ReportesSesiones")',
+                success: function (datos) {
+                    $("#PreloaderGraficoSesiones").hide();
+
+                    var Datos = {
+                        labels: ['Ordinarias', 'Extraordinarias'],
+                        datasets: [{
+                            data: [datos.Modelo['Ordinarias'], datos.Modelo['Extraordinarias']],
+                            borderWidth: 1,
+                            borderColor: '#777',
+                            backgroundColor: ['#1F5098', '#eba93a'],
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: '#000'
+                        }]
+                    };
+
+                    const massPopChart1 = new Chart(myChart1, {
+                        type: 'pie', // bar, horizontalBar, pie, line, radar, polarArea, doughnut
+                        data: Datos,
+                        options: {
+                            title: {
+                                display: true,
+                                text: 'Sesiones'
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                                labels: {
+                                    fontColor: 'black'
+                                }
+                            }
+                        }
+                    });
+
+                },
+                error: function () {
+                    MostrarMensajeError("Error al obtener datos para el gráfico de Sesiones."); // Notificar error
+                }
+            });
+        }
+
+        // Gráfico de actas
+        function CargarGraficoActas() {
+            // Ejecutar petición para obtener datos
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("InformeGraficoActas", "ReportesActas")',
+                success: function (datos) {
+                    $("#PreloaderGraficoActas").hide();
+
+                    console.log(datos);
+
+                    // Construir array con etiquetas para la propiedad labels del gráfico
+                    var Annos = new Array();
+                    $.each(datos.Modelo, (index, value) => Annos.push(value.Anno));
+
+                    // Construir array con totales por año
+                    var Totales = new Array();
+                    $.each(datos.Modelo, (index, value) => Totales.push(value.Cantidad));
+
+                    console.log(Annos);
+                    console.log(Totales);
+
+                    var Datos = {
+                        labels: Annos,
+                        datasets: [{
+                            data: Totales,
+                            borderWidth: 1,
+                            borderColor: '#777',
+                            backgroundColor: '#4BC0C0',
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: '#000'
+                        }]
+                    };
+
+                    const massPopChart2 = new Chart(myChart2, {
+                        type: 'bar', // bar, horizontalBar, pie, line, radar, polarArea, doughnut
+                        data: Datos,
+                        options: {
+                            title: {
+                                display: true,
+                                text: 'Actas'
+                            },
+                            legend: {
+                                display: false
+                            }
+                        }
+                    });
+
+                },
+                error: function () {
+                    MostrarMensajeError("Error al obtener datos para el gráfico de Acuerdos."); // Notificar error
+                }
+            });
+
+        }
+
+        function CargarGraficoAcuerdos() {
+            // Ejecutar petición para obtener datos
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("InformeGraficoAcuerdos", "ReportesAcuerdos")',
+                success: function (datos) {
+                    $("#PreloaderGraficoAcuerdos").hide();
+
+                    var Datos = {
+                        labels: ['Notificados', 'En ejecución', 'Ejecutados'],
+                        datasets: [{
+                            data: [datos.Modelo['Notificados'], datos.Modelo['EnEjecucion'], datos.Modelo['Ejecutados']],
+                            borderWidth: 1,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: '#000'
+                        }]
+                    };
+
+                    const massPopChart3 = new Chart(myChart3, {
+                        type: 'line', // bar, horizontalBar, pie, line, radar, polarArea, doughnut
+                        data: Datos,
+                        options: {
+                            title: {
+                                display: true,
+                                text: 'Acuerdos'
+                            },
+                            legend: {
+                                display: false
+                            }
+                        }
+                    });
+
+                },
+                error: function () {
+                    MostrarMensajeError("Error al obtener datos para el gráfico de Acuerdos."); // Notificar error
+                }
+            });
+        }
+    </script>
+}

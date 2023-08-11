@@ -1,0 +1,195 @@
+﻿@using Microsoft.AspNet.Identity;
+
+@if (Request.IsAuthenticated) {
+    @* Encabezado *@
+    <header>
+        <div class="navbar-fixed">
+            <nav class="yellow">
+                <div class="container">
+                    <div class="nav-wrapper">
+                        @* Logo *@
+                        <a href="@Url.Action("Inicio", "Inicio")" class="brand-logo">
+                            <img class="responsive-img" alt="Logo" src="~/Content/Images/INA_48.png" />
+                        </a>
+
+                        @*Menú hamburguesa *@
+                        <a href="#" class="sidenav-trigger" data-target="mobile-nav">
+                            <i class="material-icons black-text">menu</i>
+                        </a>
+
+                        @* Opciones *@
+                        <ul class="right hide-on-med-and-down">
+                            <li>
+                                <a href="@Url.Action("Inicio", "Inicio")" class="black-text">
+                                    Inicio
+                                </a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Actas", "Inicio")" class="dropdown-trigger black-text" data-target="dropdownActas">
+                                    Actas
+                                </a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Acuerdos", "Inicio")" class="dropdown-trigger black-text" data-target="dropdownAcuerdos">
+                                    Acuerdos
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="dropdown-trigger" id="menu-usuario" data-target="contenido-menu-usuario">
+                                    <i class="material-icons black-text">person</i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        @* Menú lateral *@
+        <ul class="sidenav blue-grey darken-4" id="mobile-nav">
+            <li>
+                <div class="user-view">
+                    <div class="background blue"></div>
+                    <a href="#">
+                        <span class="white-text name"><b>@User.NombreCompleto()</b></span>
+                    </a>
+                    <a href="#">
+                        <span class="white-text email">@User.NombreUnidad()</span>
+                    </a>
+                    <a href="#">
+                        <span class="white-text name"><b>Usuario</b>: @User.NombreTipoUsuario()</span>
+                    </a>
+                    <a href="#">
+                        <span class="white-text email"><b>Rol</b>: @User.NombreRol()</span>
+                    </a>
+                </div>
+            </li>
+            <li>
+                <a href="@Url.Action("Inicio", "Inicio")" class="white-text">
+                    <i class="material-icons white-text">home</i>
+                    <b>Inicio</b>
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("Administracion", "Inicio")" class="white-text">
+                    <i class="material-icons white-text">settings</i>
+                    <b>Administración</b>
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("Actas", "Inicio")" class="white-text">
+                    <i class="material-icons white-text">import_contacts</i>
+                    <b>Actas</b>
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("Acuerdos", "Inicio")" class="white-text">
+                    <i class="material-icons white-text">assignment_turned_in</i>
+                    <b>Acuerdos</b>
+                </a>
+            </li>
+
+            @* Salir *@
+            @using (Html.BeginForm("CerrarSesion", "Cuenta", FormMethod.Post, new { id = "frmCerrarSesionSideNav", autocomplete = "off" })) {
+                @Html.AntiForgeryToken()
+                <li>
+                    <a href="javascript:document.getElementById('frmCerrarSesionSideNav').submit()" class="red-text">
+                        <i class="material-icons red-text">exit_to_app</i>
+                        Cerrar sesión
+                    </a>
+                </li>
+            }
+        </ul>
+
+        @* Menú actas *@
+        <ul id='dropdownActas' class='dropdown-content'>
+            <li>
+                <a href="~/Inicio/Actas" class="black-text">
+                    <i class="material-icons">import_contacts</i>
+                    Módulo de Actas
+                </a>
+            </li>
+            <li class="divider"></li>
+            <li>
+                <a href="~/Sesion/Inicio" class="black-text">
+                    <i class="material-icons">people</i>
+                    Sesiones de Junta Directiva
+                </a>
+            </li>
+            <li>
+                <a href="~/Actas/Inicio" class="black-text">
+                    <i class="material-icons">import_contacts</i>
+                    Actas de Sesión
+                </a>
+            </li>
+            <li>
+                <a href="~/Auditoria/Tomos" class="black-text">
+                    <i class="material-icons">book</i>
+                    Libro de Actas
+                </a>
+            </li>
+        </ul>
+
+        @* Menú acuerdos *@
+        <ul id='dropdownAcuerdos' class='dropdown-content'>
+            <li>
+                <a href="~/Inicio/Acuerdos" class="black-text">
+                    <i class="material-icons">assignment_turned_in</i>
+                    Módulo de Acuerdos
+                </a>
+            </li>
+            <li class="divider"></li>
+            <li>
+                <a href="~/Acuerdo/Inicio" class="black-text">
+                    <i class="material-icons">list</i>
+                    Acuerdos
+                </a>
+            </li>
+            <li>
+                <a href="~/Seguimiento/Inicio" class="black-text">
+                    <i class="material-icons">timeline</i>
+                    Seguimientos
+                </a>
+            </li>
+        </ul>
+
+        @* Menú notificaciones *@
+        <ul id='contenido-notificaciones' class='dropdown-content'>
+            <li>
+                <a href="#" id="limpiar-notificaciones" class="red-text">
+                    <i class="material-icons">delete_sweep</i>
+                    Borrar notificaciones
+                </a>
+            </li>
+        </ul>
+
+        @* Menú usuario *@
+        <ul id='contenido-menu-usuario' class='dropdown-content'>
+            <li>
+                <a class="center black-text font-bold" href="#">@User.NombreCompleto()</a>
+            </li>
+            <li class="li-no-hover c-default">
+                <p class="m-0 center fz-0-9r grey-text">@User.NombreUnidad()</p>
+                <p class="m-0 center fz-0-9r grey-text"><b>Tipo de usuario</b>: @User.NombreTipoUsuario()</p>
+                <p class="m-0 center fz-0-9r grey-text"><b>Rol</b>: @User.NombreRol()</p>
+            </li>
+            @*<li>
+                <a href="@Url.Action("TelefonosCorreos", "Usuario", new { Id=User.Identity.GetUserId() })" class="black-text">
+                    <i class="material-icons">contact_phone</i>
+                    Teléfonos & Correos
+                </a>
+            </li>*@
+
+            @* Salir *@
+            @using (Html.BeginForm("CerrarSesion", "Cuenta", FormMethod.Post, new { id = "frmCerrarSesionNavBar", autocomplete = "off" })) {
+                @Html.AntiForgeryToken()
+                <li>
+                    <a href="javascript:document.getElementById('frmCerrarSesionNavBar').submit()" class="red-text">
+                        <i class="material-icons">exit_to_app</i>
+                        Cerrar sesión
+                    </a>
+                </li>
+            }
+        </ul>
+    </header>
+}

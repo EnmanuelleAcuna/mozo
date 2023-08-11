@@ -1,0 +1,34 @@
+﻿/* Enumerar la listas ordenadas y sublista con el formato:
+    1. Item
+        1.1 Sub item
+        1.2 Sub item
+    2. Item
+        2.1 Sub item
+        2.2 Sub item
+*/
+body{
+    background-color: white;
+}
+
+ol {
+    counter-reset: item;
+}
+
+li {
+    display: block
+}
+
+    li:before {
+        content: counters(item, ".") " ";
+        counter-increment: item
+    }
+
+img {
+    max-width: 100% !important;
+}
+
+textarea {
+    color: red;
+    min-height: 100px;
+    width: 100%;
+}

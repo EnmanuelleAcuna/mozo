@@ -1,0 +1,79 @@
+﻿<!-- Modal para ver una lista de elementos relacionados y agregar un elemento relacionado -->
+<div id="ModalElementosRelacionados" class="modal">
+    <div class="modal-content px-0 py-1">
+        <input hidden type="text" id="Seguimiento" />
+
+        <div class="row mb-0">
+            <div class="col s12">
+                <ul class="tabs tabs-fixed-width">
+                    <li class="tab col s3">
+                        <a href="#TabElemRelacionados" class="active blue-text">
+                            Elementos Relacionados al Seguimiento
+                            <span id="TituloSeguimiento" class="font-bold"></span>
+                        </a>
+                    </li>
+                    @if (ViewBag.SeguimientoNoEjecutado == true && ViewBag.UsuariosGestionarElementosRelacionados == true) {
+                        <li class="tab col s3">
+                            <a class="blue-text" href="#TabNuevoElemRelacionado">
+                                Agregar nuevo elemento relacionado
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            <div id="TabElemRelacionados" class="col s12">
+                @* Tabla con elementos relacionados en el seguimiento *@
+                <table id="TablaElementosRelacionados" class="table responsive display width-100 bordered mt-1">
+                    <thead>
+                        <tr>
+                            <th>Actas/Acuerdos</th>
+                            <th>Tipo Elemento</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            @if (ViewBag.SeguimientoNoEjecutado == true && ViewBag.UsuariosGestionarElementosRelacionados == true) {
+                <div id="TabNuevoElemRelacionado" class="col s12">
+                    @* Contenedor para agregar un nuevo elemento relacionado al seguimiento *@
+                    <div class="row mt-1 mb-0" id="SubirElemRelacionado">
+                        @* Selección del tipo de elemento *@
+                        <div class="col s12 m4">
+                            <div class="input-field">
+                                <label for="ListaTipoElemento" class="active">Tipo de elemento relacionado:</label>
+                                @Html.DropDownList("ListaTipoElemento", new SelectList(ViewBag.ListaTiposElementosRelacionados, "Value", "Text"), null, new { @class = "browser-default" })
+                                @Html.ValidationMessage("ListaTipoElemento", "", new { @class = "browser-default" })
+                            </div>
+                        </div>
+
+                        @* Detalle / observación del archivo *@
+                        <div class="col s12 m6">
+                            <div class="input-field">
+                                <label for="ListaAcuerdoActa" class="active">Elemento relacionado:</label>
+                                @Html.DropDownList("ListaAcuerdoActa", Enumerable.Empty<SelectListItem>(), null, new { @class = "browser-default" })
+                                @Html.ValidationMessage("ListaAcuerdoActa", "", new { @class = "browser-default" })
+                            </div>
+                        </div>
+
+                        <div class="col s12 m2">
+                            <label class="po-relative">Agregar elem. relacionado</label>
+                            <button id="AgregarElementoRelacionado" type="button" class="btn waves-effect waves-teal yellow black-text font-bold width-100" title="Agregar">
+                                Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="modal-footer text-center">
+        <a class="modal-close btn btn-small grey lighten-3 waves-effect blue-text">Cerrar</a>
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+}

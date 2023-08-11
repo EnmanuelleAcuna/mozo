@@ -1,0 +1,37 @@
+﻿<!-- Modal para agregar un articulo al acta mientras se edita -->
+<div id="ModalAgregarArticulo" class="modal">
+    <div class="modal-content px-0 py-1">
+        <input hidden type="text" id="IdCapitulo" />
+
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs tabs-fixed-width">
+                    <li class="tab col s3">
+                        <a href="#test1" class="active blue-text">
+                            Agregar nuevo articulo a
+                            <span id="Titulo" class="font-bold blue-text"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            @* Agregar nuevo Articulo *@
+            <div id="test1" class="col s12">
+                <div class="input-field mt-2">
+                    <input type="text" id="TituloNuevoArticulo" name="TituloNuevoArticulo" class="max-width-100 validate" />
+                    <label for="TituloNuevoArticulo">Número de Oficio / Documento / Título del articulo</label>
+                </div>
+
+                <div>
+                    <button id="BtnAgregarArticulo" class="btn btn-small waves-effect yellow black-text font-bold" title="Agregar nuevo articulo" onclick="AgregarNuevoArticulo()">Agregar</button>
+                    <a class="modal-close btn btn-small grey lighten-3 waves-effect black-text">Cancelar</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,194 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<InicioUsuarioAvisoAcuerdoViewModel>
+
+@{
+    ViewBag.Title = "Usuarios para aviso";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniUsuAviAcu" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Acuerdos", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Usuarios para aviso
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Acuerdos", "Inicio")" class="breadcrumb">Módulo de Acuerdos</a>
+                    <a href="#" class="breadcrumb">Parámetros de Acuerdos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            @* Titulo de la vista*@
+            <div class="row">
+                <div class="col s12 m10">
+                    <span class="fz-1-2r font-bold">
+                        Lista de usuarios destinatarios por estado de acuerdo
+                    </span>
+                </div>
+            </div>
+            @* Mensaje sobre funcionalidad de la vista*@
+            <div class="row">
+                <div class="col s12">
+                    <span class="blue-text">
+                        <i class="fa fa-info-circle"></i>
+                        Si el Acuerdo esta en un estado especifico, por ejemplo, <span class="font-bold">Borrador</span> y desde la edición dan clic a [Enviar correo] este le llegará al usuario que esta definido en esta sección.
+                    </span>
+                </div>
+            </div>
+            @* Tabla de estados de acuerdos, por usuario de avisos *@
+            <div class="row">
+                <div class="col s12">
+                    <table id="TablaUsuarioAvisoAcuerdo" class="table responsive display width-100 bordered cell-border">
+                        <thead>
+                            <tr>
+                                <th nowrap>@Html.DisplayNameFor(model => model.NombreEstado)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.NombreAviso)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.IdUsuario)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var UsuarioAvisoAcuerdo in Model) {
+                                <tr>
+                                    <td nowrap>@Estado(UsuarioAvisoAcuerdo.CodigoEstado, UsuarioAvisoAcuerdo.NombreEstado)</td>
+                                    <td nowrap>@Html.DisplayFor(model => UsuarioAvisoAcuerdo.NombreAviso)</td>
+                                    <td nowrap>
+                                        @Html.DropDownListFor(model => UsuarioAvisoAcuerdo.IdUsuario, new SelectList(ViewBag.ListaUsuarios, "Id", "Nombre", UsuarioAvisoAcuerdo.IdUsuario), new { @class = "browser-default fz-0-8r display-inline", data_aviso = UsuarioAvisoAcuerdo.IdAviso })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@helper Estado(string Codigo, string Nombre) {
+    switch (Codigo) {
+        case "ACU-BORR":
+            <span class="blue-grey-text">
+                <i class="fa fa-edit">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-VB":
+            <span class="green-text">
+                <i class="fa fa-user-check">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-FIRM":
+            <span class="blue-text">
+                <i class="fa fa-signature">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-NOTI":
+            <span class="red-text">
+                <i class="fa fa-paper-plane">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-VA":
+            <span class="grey-text">
+                <i class="fa fa-archive">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-EE":
+            <span class="green-text">
+                <i class="fa fa-play">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-EJEC":
+            <span class="orange-text">
+                <i class="fa fa-archive">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-REV":
+            <span class="red-text">
+                <i class="fa fa-archive">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+    }
+}
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#TablaUsuarioAvisoAcuerdo").DataTable({
+                language: parametrosLenguajeDataTable,
+                searching: false,
+                sorting: false,
+                responsive: true,
+                info: false,
+                autoWidth: true,
+                lengthChange: false,
+                ordering: false,
+                paging: false,
+            });
+        });
+
+        $("select").change(function () {
+            console.log($(this).data("aviso"));
+            console.log($(this).children('option:selected').val());
+
+            MostrarMensajeInformacion("Procesando cambios...");
+
+            var IdAviso = $(this).data("aviso");
+            var IdUsuario = $(this).children('option:selected').val();
+
+            // Ejecutar petición AJAX para agregar la unidad al acuerdo
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("EditarUsuarioAvisoAcuerdo", "ParametrosAcuerdos")',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                    IdAviso: IdAviso,
+                    IdUsuario: IdUsuario
+                },
+                success: function (data) {
+                    if (data.success === true) {
+                        MostrarMensajeExito("Usuario agregado al aviso.");
+                    }
+                    else {
+                        MostrarMensajeError(); // Notificar error
+                    }
+                },
+                error: function (data) {
+                    MostrarMensajeError(); // Notificar error
+                }
+            });
+        });
+    </script>
+}

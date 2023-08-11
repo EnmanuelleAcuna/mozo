@@ -1,0 +1,315 @@
+﻿@using SGJD_INA.Models.Entities
+
+@model ApplicationRole
+
+@{
+    ViewBag.Title = "Vistas de perfil";
+    ViewBag.BreadCrumb = Html.ActionLink("Administración", "Administracion", "Inicio", null, new { @class = "black-text" }) + " / Seguridad / " + Html.ActionLink("Perfiles", "Inicio", "Perfil", null, new { @class = "black-text" }) + " / Vistas de perfil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "data-error" })
+}
+
+<section class="section mx-1 pt-0">
+    <div class="card-panel">
+        <nav class="mb-2 z-depth-0 white">
+            <div class="nav-wrapper">
+                <ul class="left">
+                    <li>
+                        <a title="Regresar" href="@Url.Action("Inicio", "Perfil")" class="pl-0 regresar">
+                            <i class="fa fa-arrow-left blue-text"></i>
+                        </a>
+                    </li>
+                </ul>
+                <span class="brand-logo center-on-medium black-text font-bold fz-1-25r mt-1-on-small">
+                    <label class="hide-on-med-and-down black-text font-bold fz-10r">Permisos de las vistas del perfil</label> @Model.Name
+                </span>
+                <ul class="right">
+                    <li>
+                        <a class="btn btn-small yellow black-text font-bold waves-effect waves-teal mr-0" id="agregar" title="Agregar vista al perfil" onclick="PopUpForm('@Url.Action("Agregar", "VistaPerfil", new { IdPerfil = Model.Id, NombrePerfil = Model.Name })')">
+                            <span class="hide-on-small-and-down mx-1">Agregar</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <table id="tablaVistasPerfil" class="table responsive display width-100 bordered cell-border">
+            <thead>
+                <tr>
+                    <th class="bordered" nowrap>Vista</th>
+                    <th class="bordered" nowrap>Permiso</th>
+                    <th class="bordered" nowrap>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</section>
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        var PopUp, dataTable, idRol;
+
+        $(document).ready(function () {
+            //Muestra loading de acción
+            MostrarCargandoPagina();
+            $('#agregar').attr("disabled", "disabled");
+
+            CargarDataTable();
+        });
+
+        function CargarDataTable() {
+            //Parámetros AJAX para cargar DataTable
+            var parametrosAJAX = {
+                url: '@Url.Action("ObtenerVistasPerfil", "VistaPerfil", new { idPerfil = Model.Id })',
+                type: "GET",
+                datatype: "json",
+                error: MensajeError
+            };
+
+            dataTable = $("#tablaVistasPerfil").DataTable({
+                initComplete: function () {
+                    $('#agregar').removeAttr("disabled");
+
+                    //Desaparece loading de acción
+                    DesaparecerCargandoPagina();
+
+                    //Desaparece la carga de pagina
+                    DesaparecerCargandoPagina();
+                },
+                ajax: parametrosAJAX,
+                columns: [
+                    { data: "vista.nombreVista", className: "no-wrap" },
+                    {
+                        data: "permiso", className: "no-wrap", render: function (data) {
+                            switch (data) {
+                                case 0:
+                                    return "Ver"
+                                    break;
+                                case 1:
+                                    return "Ver y crear"
+                                    break;
+                                case 2:
+                                    return "Ver y editar"
+                                    break;
+                                case 3:
+                                    return "Ver, crear y editar"
+                                    break;
+                                case 4:
+                                    return "Ver y eliminar"
+                                    break;
+                                case 5:
+                                    return "Ver, crear y eliminar"
+                                    break;
+                                case 6:
+                                    return "Ver, editar y eliminar"
+                                    break;
+                                case 7:
+                                    return "Control total"
+                                    break;
+                                default:
+                                    return "Sin control"
+                                    break;
+                            }
+                        }
+                    },
+                    {
+                        className: "center no-wrap", render: function (data, type, row) {
+                            var linkEditar = '@Url.Action("Editar", "VistaPerfil", new { idPerfil = Model.Id, nombrePerfil = Model.Name, idVista = "_1", permiso = "_2" })';
+                            linkEditar = linkEditar.replace("_1", row["idVista"]);
+                            linkEditar = linkEditar.replace("_2", row["permiso"]);
+
+                            var linkEliminar = '@Url.Action("Eliminar", "VistaPerfil", new { idPerfil = Model.Id, nombrePerfil = Model.Name, idVista = "_1", permiso = "_2" })';
+                            linkEliminar = linkEliminar.replace("_1", row["idVista"]);
+                            linkEliminar = linkEliminar.replace("_2", row["permiso"]);
+
+                            return "<a class='btn btn-small grey lighten-3 waves-effect waves-teal mx-1 blue-text font-bold' title='Editar' onclick=PopUpFormPerfil('" + linkEditar + "')><span class='hide-on-small-and-down'>Editar</span></a>" +
+                                "<a class='btn btn-small grey waves-effect waves-red lighten-3 mx-1 blue-text font-bold' title='Borrar' onclick=PopUpForm('" + linkEliminar + "')><span class='hide-on-small-and-down'>Borrar</span></a>";
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                sorting: true,
+                responsive: true,
+                info: false,
+                pageLength: 10,
+                autoWidth: true,
+                lengthChange: false,
+                ordering: true
+            });
+        }
+
+        // Function: Abrir un dialog/modal con para la modificación de los permisos de un perfil en una vista.
+        function PopUpFormPerfil(url) {
+            //Mostrar loading de acción
+            MostrarCargandoPagina();
+
+            var FormDiv = $('<div/>');
+
+            $.get(url).done(function (response) {
+                FormDiv.html(response);
+                PopUp = FormDiv.dialog(ParametrosPopUp);
+                //Evaluar el valor del permiso para marcar los CheckBox correspondientes
+                MostrarPermiso();
+
+                //Desaparece loading de acción
+                DesaparecerCargandoPagina();
+            });
+        }
+
+        function agregarClaseBotonesDatatableVistasPerfil() {
+            $("#tablaVistasPerfil tbody").find("a").addClass("btn-accion");
+        }
+
+        /*Función encargada de cargar los checkbox de Modificar*/
+        function MostrarPermiso() {
+            var permiso = $("#permiso").val();
+            var ver = $('#ver');
+            var crear = $('#crear');
+            var editar = $('#editar');
+            var eliminar = $('#eliminar');
+            if (permiso === "0") {
+                ver.attr('checked', true);
+            } else if (permiso === "1") {
+                ver.attr('checked', true);
+                crear.attr('checked', true);
+            } else if (permiso === "2") {
+                ver.attr('checked', true);
+                editar.attr('checked', true);
+            } else if (permiso === "3") {
+                ver.attr('checked', true);
+                editar.attr('checked', true);
+                crear.attr('checked', true);
+            } else if (permiso === "4") {
+                ver.attr('checked', true);
+                eliminar.attr('checked', true);
+            } else if (permiso === "5") {
+                ver.attr('checked', true);
+                crear.attr('checked', true);
+                eliminar.attr('checked', true);
+            } else if (permiso === "6") {
+                ver.attr('checked', true);
+                editar.attr('checked', true);
+                eliminar.attr('checked', true);
+            } else if (permiso === "7") {
+                ver.attr('checked', true);
+                editar.attr('checked', true);
+                eliminar.attr('checked', true);
+                crear.attr('checked', true);
+            }
+        }
+        //Function: Obtiene y determina el nivel de permiso segun ver, crear, editar y eliminar.
+        function ObtenerPermiso() {
+            var permiso = 0;
+            var crear = $('#crear');
+            var editar = $('#editar');
+            var eliminar = $('#eliminar');
+
+            if (!crear.is(':checked') && !editar.is(':checked') && !eliminar.is(':checked')) {
+                permiso = 0;
+            } else if (crear.is(':checked') && !editar.is(':checked') && !eliminar.is(':checked')) {
+                permiso = 1;
+            } else if (!crear.is(':checked') && editar.is(':checked') && !eliminar.is(':checked')) {
+                permiso = 2;
+            } else if (!crear.is(':checked') && !editar.is(':checked') && eliminar.is(':checked')) {
+                permiso = 4;
+            } else if (crear.is(':checked') && editar.is(':checked') && !eliminar.is(':checked')) {
+                permiso = 3;
+            } else if (!crear.is(':checked') && editar.is(':checked') && eliminar.is(':checked')) {
+                permiso = 6;
+            } else if (crear.is(':checked') && !editar.is(':checked') && eliminar.is(':checked')) {
+                permiso = 5;
+            } else if (crear.is(':checked') && editar.is(':checked') && eliminar.is(':checked')) {
+                permiso = 7;
+            }
+            return permiso;
+        }
+
+
+        //Ajusta el tamaño del contenido de la tabla en la pantalla
+        $("#tablaVistasPerfil").on("draw.dt", function () {
+            agregarClaseBotonesDatatableVistasPerfil();
+        });
+
+        //Function: Enviar información del formulario al servidor utilizando AJAX.
+        function SubmitFormVistaPerfil(form) {
+            /*Modelo setado con el modelo de Vista Perfil de pagina*/
+            $("#vista").val($("#selectVista").select().val());
+            $("#idPerfil").val($("#idPerfil").val());
+            $("#permisoVista").val(ObtenerPermiso());
+
+            /*Funcion ajax que envia serealiado el modelo*/
+            // Valida que los campos del formulario estén llenos y tengan valores correctos
+            $.validator.unobtrusive.parse(form);
+
+            if ($(form).valid()) {
+                //Muestra loading de acción
+                MostrarCargandoPagina();
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            CerrarDialog(); //Cerrar dialog
+                            dataTable.ajax.reload(); //Recargar DataTable
+                            MostrarMensajeExito(data.message); //Notificar
+                        } else {
+                            MostrarMensajeError(data.message); // Notificar error
+                        }
+                    },
+                    error: function () {
+                        MostrarMensajeError("Error al procesar la información."); // Notificar error
+                    },
+                    complete: function () {
+                        //Desaparece loading de acción
+                        DesaparecerCargandoPagina();
+                    }
+                });
+            }
+            return false;
+        }
+
+        //Function: Enviar información del formulario al servidor utilizando AJAX.
+        function SubmitFormVistaPerfilEditar(form) {
+            /*Modelo setado con el modelo de Vista Perfil de pagina*/
+            $("#vista").val($("#vista").val());
+            $("#idPerfil").val($("#idPerfil").val());
+            $("#permiso").val(ObtenerPermiso());
+
+            /*Funcion ajax que envia serealiado el modelo*/
+            // Valida que los campos del formulario estén llenos y tengan valores correctos
+            $.validator.unobtrusive.parse(form);
+            if ($(form).valid()) {
+                //Muestra loading de acción
+                MostrarCargandoPagina();
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            CerrarDialog(); //Cerrar dialog
+                            dataTable.ajax.reload(); //Recargar DataTable
+                            MostrarMensajeExito(data.message); //Notificar
+                        } else {
+                            MostrarMensajeError(data.message); // Notificar error
+                        }
+                    },
+                    error: function () {
+                        MostrarMensajeError("Error al procesar la información."); // Notificar error
+                    },
+                    complete: function () {
+                        //Desaparece loading de acción
+                        DesaparecerCargandoPagina();
+                    }
+                });
+            }
+            return false;
+        }
+    </script>
+}

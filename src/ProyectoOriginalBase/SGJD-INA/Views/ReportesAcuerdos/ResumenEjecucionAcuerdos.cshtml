@@ -1,0 +1,395 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model InformeResumenEjecucionAcuerdosViewModel
+
+@{
+    ViewBag.Title = "Resumen de ejecución de Acuerdos";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="ResEjeAcu" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Acuerdos", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Informes de Acuerdos
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Acuerdos", "Inicio")" class="breadcrumb">Modulo de Acuerdos</a>
+                    <a href="#" class="breadcrumb">Informes de Acuerdos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                @*Titulo del informe*@
+                <div class="col s12 mb-1">
+                    <span class="fz-1-2r font-bold">Resumen de ejecución de Acuerdos</span>
+                </div>
+            </div>
+
+            <div class="white" id="print1">
+                <ul class="collection">
+                    @*Muestra la tabla y grafica de total de acuerdos por año*@
+                    <li class="collection-item py-2">
+                        <div class="row">
+                            @*Tabla de total de acuerdos*@
+                            <div class="col s12 m6">
+                                <h4 class="text-center font-bold blue-text fz-1-2r">Total de Acuerdos</h4>
+                                <table id="TablaTotalAcuerdos" class="table responsive width-100 display bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>@Html.DisplayNameFor(model => model.TotalAcuerdos.FirstOrDefault().Ano)</th>
+                                            <th>@Html.DisplayNameFor(model => model.TotalAcuerdos.FirstOrDefault().Acuerdos)</th>
+                                            <th>@Html.DisplayNameFor(model => model.TotalAcuerdos.FirstOrDefault().AcuerdosProceso)</th>
+                                            <th>@Html.DisplayNameFor(model => model.TotalAcuerdos.FirstOrDefault().AcuerdosCumplidos)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var InformeTotal in Model.TotalAcuerdos) {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => InformeTotal.Ano)
+                                                </td>
+                                                <td class="width-auto">
+                                                    @Html.DisplayFor(modelItem => InformeTotal.Acuerdos)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => InformeTotal.AcuerdosProceso)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => InformeTotal.AcuerdosCumplidos)
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            @* Grafico de total de acuerdos por año*@
+                            <div class="col s12 m6 mt-2">
+                                @* El canvas donde se encuentra el grafico contenido*@
+                                <canvas id="myChart2" style="display: block; height: 570px; width: 1140px;"></canvas>
+                                @* Fuente de donde se extrae la información*@
+                                <p class="black-text font-bold center">Fuente: Actas de Junta Directiva del INA</p>
+                            </div>
+
+                        </div>
+                    </li>
+
+                    @*Muestra la tabla y grafica de total de acuerdos en ejecución por año*@
+                    <li class="collection-item py-2">
+                        <div class="row">
+                            @*Tabla de resumen de ejcución de acuerdos*@
+                            <div class="col s12 m6">
+                                <h4 class="text-center font-bold blue-text fz-1-2r">Acuerdos en ejecucion con seguimiento</h4>
+                                <table id="TablaResumenEjecucionAcuerdos" class="table responsive width-100 display bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>@Html.DisplayNameFor(model => model.ResumenAcuerdos.FirstOrDefault().Ano)</th>
+                                            <th>@Html.DisplayNameFor(model => model.ResumenAcuerdos.FirstOrDefault().Total)</th>
+                                            <th>@Html.DisplayNameFor(model => model.ResumenAcuerdos.FirstOrDefault().ConSeguimiento)</th>
+                                            <th>@Html.DisplayNameFor(model => model.ResumenAcuerdos.FirstOrDefault().SeguimientoPermanente)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var InformeResumen in Model.ResumenAcuerdos) {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => InformeResumen.Ano)
+                                                </td>
+                                                <td class="width-auto">
+                                                    @Html.DisplayFor(modelItem => InformeResumen.Total)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => InformeResumen.ConSeguimiento)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => InformeResumen.SeguimientoPermanente)
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            @* Grafico de total de acuerdos en ejecución por año*@
+                            <div class="col s12 m6 mt-2">
+                                @* El canvas donde se encuentra el grafico contenido*@
+                                <canvas id="myChart" style="display: block; height: 900px; width: 1800px;"></canvas>
+                                @* Fuente de donde se extrae la información*@
+                                <p class="black-text font-bold center">Fuente: Actas de Junta Directiva del INA</p>
+                            </div>
+
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+@Styles.Render("~/Content/jquerydatatablebuttons")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jquerydatatablebuttons")
+    @Scripts.Render("~/bundles/jquerydatatablebuttonshtml")
+    @Scripts.Render("~/bundles/jquerydatatablepdfzip")
+    @Scripts.Render("~/bundles/jquerydatatablepdfmake")
+    @Scripts.Render("~/bundles/jquerydatatablepdfmakefonts")
+    @Scripts.Render("~/bundles/chart")
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+             $("#TablaTotalAcuerdos").DataTable({
+                dom: 'Bfrtp',
+                initComplete: CambiarPropiedadesFiltro,
+                dom: 'Bfrtip',
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                responsive: true,
+                info: false,
+                pageLength: 5,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true,
+                order: [0, "desc"],
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 }
+                ],
+                buttons: [
+                    'excel', 'pdf'
+                ]
+             });
+
+            // Metodo pamostrar la fecha y hora en reporte pdf
+            var currentdate = new Date();
+            var horas = currentdate.getHours();
+            var ampm = horas >= 12 ? 'PM' : 'AM';
+            horas = horas % 12;
+            var datetime = "Fecha y hora de emisión: " + currentdate.getDate() + "/"
+                + (currentdate.getMonth() + 1) + "/"
+                + currentdate.getFullYear() + "  "
+                + horas + ":"
+                + currentdate.getMinutes() + '' + ampm;
+
+            $("#TablaResumenEjecucionAcuerdos").DataTable({
+               dom: 'Bfrtp',
+                initComplete: CambiarPropiedadesFiltro,
+                dom: 'Bfrtip',
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                responsive: true,
+                info: false,
+                pageLength: 5,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true,
+                order: [0, "desc"],
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 }
+                ],
+                buttons: [
+                    'excel',
+                    {
+                        extend: "pdf",
+                        customize: function (doc) {
+                            doc.content[1].margin = [0, 0, 0, 0];
+                            doc.content.splice(1, 0);
+                            doc.defaultStyle.fontSize = 10;
+                            doc.styles.tableHeader.fontSize = 10;
+                            doc.header = (function () {
+                                return {
+                                    columns: [{
+                                        alignment: 'left',
+                                        image: 'data:image/png;base64,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)'
+                                    },
+                                    {
+                                        alignment: 'right',
+                                        text: datetime
+                                    },
+
+                                    ],
+                                    margin: 10
+                                };
+                            });
+                        }
+                    }
+                ]
+            });
+
+        });
+
+         // Grafico de total de acuerdos por año
+         var Informe = @Html.Raw(Json.Encode(Model.TotalAcuerdos)); // Convertir y guardar el ViewModel en un objeto JSON
+
+        // Construir array con etiquetas para la propiedad labels del gráfico
+        var Annos = new Array();
+        $.each(Informe, (index, value) => Annos.push(value.Ano));
+
+        var TotalesAcuerdos = new Array();
+        $.each(Informe, (index, value) => TotalesAcuerdos.push(value.Acuerdos - value.AcuerdosCumplidos));
+
+        var TotalesEjecutado = new Array();
+        $.each(Informe, (index, value) => TotalesEjecutado.push(value.AcuerdosCumplidos));
+
+        var Datos = {
+            labels: Annos,
+            datasets: [{
+                label: 'Acuerdos ejecutados',
+                data: TotalesEjecutado,
+                stack: 'Stack 0',
+                backgroundColor: '#FFCD56',
+                borderWidth: 1,
+                borderColor: '#777',
+                hoverBorderWidth: 2,
+                hoverBorderColor: '#000'
+            }, {
+                label: 'Acuerdos en ejecución',
+                data: TotalesAcuerdos,
+                stack: 'Stack 0',
+                backgroundColor: '#36A2EB',
+                borderWidth: 1,
+                borderColor: '#777',
+                hoverBorderWidth: 2,
+                hoverBorderColor: '#000'
+                }
+            ]
+        };
+
+        let MyChart2 = document.getElementById('myChart2').getContext('2d');
+        Chart.defaults.global.defaultFontColor = '#777';
+
+        let MassPopChart2 = new Chart(MyChart2, {
+            type: 'bar', // bar, horizontalBar, pie, line, radar, polarArea, doughnut
+            data: Datos,
+            options: {
+                title: {
+                    display: true,
+                    text: 'Total de Acuerdos ejecutados por año',
+                    fontSize: 16,
+                    fontColor: '#1F5098'
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        fontColor: '#1F5098'
+                    }
+                },
+                tooltips: {
+                    enabled: true
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+        // Grafico de acuerdos en ejecución por año
+        var Informe = @Html.Raw(Json.Encode(Model.ResumenAcuerdos)); // Convertir y guardar el ViewModel en un objeto JSON
+
+        // Construir array con etiquetas para la propiedad labels del gráfico
+        var Annos = new Array();
+        $.each(Informe, (index, value) => Annos.push(value.Ano));
+
+        var Totales = new Array();
+        $.each(Informe, (index, value) => Totales.push(value.Total - value.SeguimientoPermanente));
+
+        var SeguimientosPermanente = new Array();
+        $.each(Informe, (index, value) => SeguimientosPermanente.push(value.SeguimientoPermanente));
+
+        var Datos = {
+            labels: Annos,
+            datasets: [{
+                label: 'Seguimiento permanente',
+                data: Totales,
+                stack: 'Stack 0',
+                backgroundColor: '#4BC0C0',
+                borderWidth: 1,
+                borderColor: '#777',
+                hoverBorderWidth: 2,
+                hoverBorderColor: '#000'
+            },{
+                label: 'Con seguimiento',
+                data: SeguimientosPermanente,
+                stack: 'Stack 0',
+                backgroundColor: '#ddd',
+                borderWidth: 1,
+                borderColor: '#777',
+                hoverBorderWidth: 2,
+                hoverBorderColor: '#000'
+                },
+            ]
+        };
+
+        let MyChart = document.getElementById('myChart').getContext('2d');
+        Chart.defaults.global.defaultFontColor = '#777';
+
+        let MassPopChart = new Chart(MyChart, {
+            type: 'bar', // bar, horizontalBar, pie, line, radar, polarArea, doughnut
+            data: Datos,
+            options: {
+                title: {
+                    display: true,
+                    text: 'Total de Acuerdos en ejecución por año',
+                    fontSize: 16,
+                    fontColor: '#1F5098'
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        fontColor: '#1F5098'
+                    }
+                },
+                tooltips: {
+                    enabled: true
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+    </script>
+}
+
+
+
+

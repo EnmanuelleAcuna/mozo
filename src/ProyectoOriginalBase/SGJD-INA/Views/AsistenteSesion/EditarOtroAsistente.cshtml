@@ -1,0 +1,74 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model EditarOtroAsistenteViewModel
+
+@{
+    ViewBag.Title = "Editar Asistencia";
+    Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+@* Encabezado / Título del PopUp / Modal / Dialog *@
+<h6 class="center text-uppercase mb-2">
+    Editar Otro asistente a sesión
+</h6>
+
+@using (Html.BeginForm("EditarOtroAsistente", "AsistenteSesion", FormMethod.Post, new { onsubmit = "return SubmitForm(this)", autocomplete = "off" })) {
+
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "data-error" })
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.IdSesion)   
+
+    <section class="section">
+        <div class="input-field">
+            @Html.EditorFor(model => model.Nombre, new { @class = "validate" })
+            @Html.LabelFor(model => model.Nombre, "Nombre", new { @Class = "active" })
+            @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "helper-text" })
+        </div>
+
+        <div class="input-field">
+            @Html.EditorFor(model => model.Puesto, new { @class = "validate" })
+            @Html.LabelFor(model => model.Puesto, "Puesto", new { @Class = "active" })
+            @Html.ValidationMessageFor(model => model.Puesto, "", new { @class = "helper-text" })
+        </div>
+
+        <div class="input-field mt-0 mb-1">
+            <label class="po-relative fz-1 focus-text">Tipo de Usuario: </label>
+            @Html.DropDownListFor(model => model.IdTipoUsuario, new SelectList(ViewBag.TipoUsuario, "id", "nombre"), new { @class = "browser-default" })
+            @Html.ValidationMessageFor(model => model.IdTipoUsuario, "", new { @class = "helper-text" })
+        </div>
+
+        <div class="row">
+            <div class="col s12 m6">
+                <div class="input-field black-text">
+                    <input type="text" name="HoraInicio" id="time" class="timepicker validate center-on-small center" placeholder="Hora llegada" value="@Model.HoraInicio " />
+                </div>
+            </div>
+
+            <div class="col s12 m6">
+                <div class="input-field black-text">
+                    <input type="text" name="HoraFin" id="time" class="timepicker validate center-on-small center" placeholder="Hora salida" value="@Model.HoraFin" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="center">
+        <button type="submit" title="Guardar" value="Guardar" class="btn btn-small yellow black-text font-bold waves-effect waves-light btn-accion">
+            Guardar
+        </button>
+        <button type="button" title="Cancelar" value="Cancelar" class="btn btn-small grey lighten-3 red-text font-bold waves-effect btn-accion" onclick="CerrarDialog()">
+            Cancelar
+        </button>
+    </div>
+
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        // Inicializar timepicker de materialize que se encuentra dentro del PopUp
+        // Debe ser realizado puesto que cuando se carga esta vista en el PopUp ya los scripts de LayOut se ejecutaron
+        $(".timepicker").timepicker({ i18n: parametrosi18nTimePicker });
+    </script>
+}
+

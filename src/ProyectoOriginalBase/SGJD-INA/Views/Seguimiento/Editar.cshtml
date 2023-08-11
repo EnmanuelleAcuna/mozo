@@ -1,0 +1,1568 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model EditarSeguimientoViewModel
+
+@{
+    ViewBag.Title = "Editar Seguimiento del Acuerdo";
+    ViewBag.SeguimientoNoEjecutado = (Model.CodigoEstado.Equals("SA-NE")) ? true : false;
+    ViewBag.UsuariosGestionarElementosRelacionados = (User.IsInRole("Administrador") || User.IsInRole("Secretario Tecnico") || User.IsInRole("Profesional de apoyo")) ? true : false;
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="EditSeg" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "Seguimiento")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Seguimiento de Acuerdos
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Acuerdos", "Inicio")" class="breadcrumb">Módulo de Acuerdos</a>
+                    <a href="@Url.Action("Inicio", "Seguimiento")" class="breadcrumb">Seguimiento de Acuerdos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            @using (Html.BeginForm("Editar", "Seguimiento", FormMethod.Post, htmlAttributes: new { onsubmit = "return SubmitFormEditarSeguimiento(this)", autocomplete = "off" })) {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "data-error" })
+
+                @Html.HiddenFor(model => model.IdSeguimiento)
+                @Html.HiddenFor(model => model.IdAcuerdo)
+                @Html.HiddenFor(model => model.IdEstadoSeguimiento)
+                @Html.HiddenFor(model => model.CodigoEstado)
+                @Html.HiddenFor(model => model.FechaNotificacion)
+                @Html.HiddenFor(model => model.PlazoDias)
+                @Html.HiddenFor(model => model.PorcentajeAvance)
+                @Html.HiddenFor(model => model.NombreObjeto)
+
+                if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico")) {
+                    <div class="row">
+                        <div class="col s12 m6">
+                            @* Título y estado del seguimiento *@
+                            <span class="fz-1-1r">
+                                Editar <span class="font-bold">Seguimiento al Acuerdo</span> <span class="font-bold blue-text"> @Model.TituloSeguimiento</span>
+                            </span>
+
+                            <span class="grey-text display-block">@Html.LabelFor(ModeItem => Model.NombreEstadoSeguimiento) <b>@Helpers.Estado(Model.CodigoEstado, Model.NombreEstadoSeguimiento)</b></span>
+                        </div>
+
+                        <div class="col s12 m4 center-on-small">
+                            <button type="button" onclick="AbrirModalElementosRelacionados(@Model.IdSeguimiento,'@Model.TituloSeguimiento')" data-target="ModalElementosRelacionados" class="btn btn-small grey lighten-3 blue-text font-bold waves-effect modal-trigger right-on-large" data-target="ModalElementosRelacionados">Elementos relacionados</button>
+                        </div>
+
+                        <div class="col s12 m2 center-on-small">
+                            <a class="btn btn-small yellow black-text font-bold waves-effect right-on-large" id="VerAcuerdo" title="Ver Acuerdo" href="@Url.Action("Detalles", "Acuerdo", new { Id = Model.IdAcuerdo})" target="_blank">
+                                ver Acuerdo
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        @* Fecha de notificación *@
+                        <div class="col s12 m3">
+                            <div class="input-field ">
+                                @Html.LabelFor(model => model.FechaNotificacion, new { @class = "active black-text" })
+                                @Html.TextBox("TxtFechaNotificacion", string.Format("{0:dd/MM/yyyy}", Model.FechaNotificacion), new { @disabled = "disabled" })
+                            </div>
+                        </div>
+
+                        @* Fecha de vencimiento *@
+                        <div class="col s12 m3">
+                            <div class="input-field">
+                                @Html.LabelFor(model => model.FechaVencimiento, new { @class = "active black-text" })
+                                @Html.TextBoxFor(model => model.FechaVencimiento, string.Format("{0:dd/MM/yyyy}", Model.FechaVencimiento), new { @class = "datepicker validate" })
+                                @Html.ValidationMessageFor(model => model.FechaVencimiento, "", new { @class = "helper-text" })
+                            </div>
+                        </div>
+
+                        @* Plazo de ejecución (En días) *@
+                        <div class="col s12 m3">
+                            <div class="input-field">
+                                @Html.Label("Plazo de ejecución (días)", new { @class = "active black-text" })
+                                @Html.TextBox("TxtPlazoDias", Model.PlazoDias, new { @class = "validate", @disabled = "disabled" })
+                            </div>
+                        </div>
+
+                        @* Porcentaje de avance *@
+                        <div class="col s12 m3">
+                            @Html.LabelFor(model => model.PorcentajeAvance, new { @class = "po-relative display-block black-text font-bold" })
+                            <select id="SelectPorcentaje" class="browser-default"></select>
+
+                            <div class="input-field">
+                                <progress id="BarraAvance" class="width-100" max="100" title="Avance del Seguimiento"></progress>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Observación *@
+                    <div class="row">
+                        <div class="col s12">
+                            <div class="input-field">
+                                @Html.TextAreaFor(model => model.Observaciones, new { @class = "materialize-textarea width-100 validate" })
+                                @Html.LabelFor(model => model.Observaciones, new { @class = "black-text font-bold" })
+                                @Html.ValidationMessageFor(model => model.Observaciones, "", new { @class = "helper-text" })
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Unidades ejecutoras *@
+                    <div class="row mb-2">
+                        @* Unidades ejecutoras del acuerdo *@
+                        <div class="col s12 m6">
+                            <label class="po-relative display-block black-text font-bold">Unidades ejecutoras del Acuerdo</label>
+                            <div id="ContenedorChipsUnidadesAcuerdo" class="chips chips-initial">
+                                @foreach (var UnidadAcuerdo in Model.UnidadesEjecutorasAcuerdo) {
+                                    bool UnidadAcuerdoEnUnidadSeguimiento = false;
+
+                                    //Buscar la unidad acuerdo en la lista de unidad seguimiento
+                                    foreach (var UnidadSeguimiento in Model.UnidadesEjecutorasSeguimiento) {
+                                        if (UnidadSeguimiento.IdUnidad == UnidadAcuerdo.IdUnidad) {
+                                            UnidadAcuerdoEnUnidadSeguimiento = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (UnidadAcuerdoEnUnidadSeguimiento == true) {
+
+                                        <div class="chip blue-text font-bold" id="AgregarUnidad_@UnidadAcuerdo.IdUnidad">
+                                            @UnidadAcuerdo.Nombre
+                                            <i class="green-text c-pointer display-none fa fa-plus" onclick="AgregarUnidad(@UnidadAcuerdo.IdUnidad, '@UnidadAcuerdo.Nombre', @Model.IdSeguimiento)"></i>
+                                        </div>
+
+                                    }
+                                    else {
+                                        if (Model.CodigoEstado.Equals("SA-EE") || Model.CodigoEstado.Equals("SA-EJEC")) {
+                                            <div class="chip blue-text font-bold" id="AgregarUnidad_@UnidadAcuerdo.IdUnidad">
+                                                @UnidadAcuerdo.Nombre
+                                            </div>
+                                        }
+                                        else {
+                                            <div class="chip blue-text font-bold" id="AgregarUnidad_@UnidadAcuerdo.IdUnidad">
+                                                @UnidadAcuerdo.Nombre
+                                                <i class="green-text c-pointer fa fa-plus" onclick="AgregarUnidad(@UnidadAcuerdo.IdUnidad, '@UnidadAcuerdo.Nombre', @Model.IdSeguimiento)"></i>
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </div>
+                            <label>Para agregar una unidad del Acuerdo al seguimiento haga clic sobre el "+" que desee agregar</label>
+                        </div>
+
+                        @* Unidades ejecutoras del seguimiento *@
+                        <div class="col s12 m6">
+                            <label class="po-relative display-block black-text font-bold">Unidades ejecutoras del Seguimiento</label>
+                            <div id="ContenedorChipsUnidadesSeguimiento" class="chips chips-initial">
+                                @foreach (var Unidad in Model.UnidadesEjecutorasSeguimiento) {
+                                    if (Model.CodigoEstado.Equals("SA-EJEC") || Model.CodigoEstado.Equals("SA-EE")) {
+                                        <div class="chip blue-text font-bold" id="QuitarUnidad_@Unidad.IdUnidad">
+                                            @Unidad.Nombre
+                                        </div>
+                                    }
+                                    else {
+                                        <div class="chip blue-text font-bold" id="QuitarUnidad_@Unidad.IdUnidad">
+                                            @Unidad.Nombre
+                                            <i class="red-text c-pointer fa fa-times" onclick="QuitarUnidad(@Unidad.IdUnidad, @Model.IdSeguimiento)"></i>
+                                        </div>
+                                    }
+
+                                }
+                            </div>
+                            <input id="EnviarCorreoUsuariosDeUnidades" type="checkbox" name="EnviarCorreoUsuariosDeUnidades" checked="checked">
+                            <label for="EnviarCorreoUsuariosDeUnidades">Enviar notificación a todos los usuarios de la unidad</label>
+                        </div>
+                    </div>
+
+                    @* Sección de botones *@
+                    <div class="row">
+                        <div class="col s12 m6 mb-1">
+                            <button type="submit" title="Guardar" id="GuardaSeguimiento" class="btn btn-small yellow black-text waves-effect waves-light font-bold">
+                                <span class="font-bold">Guardar</span>
+                            </button>
+
+                            <a title="Cancelar" href="@Url.Action("Inicio", "Seguimiento")" id="Cancelar" class="btn btn-small grey lighten-3 black-text waves-effect">
+                                Regresar
+                            </a>
+                        </div>
+
+                        <div class="col s12 m6 text-right">
+                            @if (Model.CodigoEstado.Equals("SA-EE") && User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador")) {
+                                <button type="button" title="Seguimiento Ejecutado" value="SeguimientoEjecutado" id="BtnSeguimientoEjecutado" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold">
+                                    Ejecutado
+                                </button>
+                                @* Boton para enviar correo de notificación a la junta directiva" *@
+                                <button type="button" title="Notificar" value="Notificar" id="BtnNotificarVencimientoUnidades" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold">
+                                    Notificar Vencimiento a Unidades
+                                </button>
+                            }
+                            @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador")) {
+                                @* Boton para enviar correo de notificación a la junta directiva" *@
+                                <button type="button" title="Notificar" value="Notificar" id="BtnNotificarUnidades" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold">
+                                    Notificar a Unidades
+                                </button>
+                            }
+
+                        </div>
+                    </div>
+                }
+                else {
+                    @Html.HiddenFor(model => model.FechaVencimiento)
+                    @Html.HiddenFor(model => model.Observaciones)
+
+                    <div class="row">
+                        <div class="col s12 m6">
+                            @* Título y estado del seguimiento *@
+                            <span class="fz-1-1r">
+                                Editar <span class="font-bold">Seguimiento al Acuerdo</span> <span class="font-bold blue-text"> @Model.TituloSeguimiento</span>
+                            </span>
+
+                            <span class="grey-text display-block">@Html.LabelFor(ModeItem => Model.NombreEstadoSeguimiento) <b>@Helpers.Estado(Model.CodigoEstado, Model.NombreEstadoSeguimiento)</b></span>
+                        </div>
+
+                        <div class="col s12 m6 center-on-small">
+                            <a class="btn btn-small yellow black-text font-bold waves-effect right-on-large" id="VerAcuerdo" title="Ver Acuerdo" href="@Url.Action("Detalles", "Acuerdo", new { Id = Model.IdAcuerdo})" target="_blank">
+                                ver Acuerdo
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        @* Fecha de notificación *@
+                        <div class="col s12 m3">
+                            <div class="input-field ">
+                                @Html.LabelFor(model => model.FechaNotificacion, new { @class = "active black-text" })
+                                @Html.TextBox("TxtFechaNotificacion", string.Format("{0:dd/MM/yyyy}", Model.FechaNotificacion), new { @disabled = "disabled" })
+                            </div>
+                        </div>
+
+                        @* Fecha de vencimiento *@
+                        <div class="col s12 m3">
+                            <div class="input-field">
+                                @Html.LabelFor(model => model.FechaVencimiento, new { @class = "active black-text" })
+                                @Html.TextBoxFor(model => model.FechaVencimiento, string.Format("{0:dd/MM/yyyy}", Model.FechaVencimiento), new { @class = "datepicker validate", @disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.FechaVencimiento, "", new { @class = "helper-text" })
+                            </div>
+                        </div>
+
+                        @* Plazo de ejecución (En días) *@
+                        <div class="col s12 m3">
+                            <div class="input-field">
+                                @Html.Label("Plazo de ejecución (días)", new { @class = "active black-text" })
+                                @Html.TextBox("TxtPlazoDias", Model.PlazoDias, new { @class = "validate", @disabled = "disabled" })
+                            </div>
+                        </div>
+
+                        @* Porcentaje de avance *@
+                        <div class="col s12 m3">
+                            @Html.LabelFor(model => model.PorcentajeAvance, new { @class = "po-relative display-block black-text font-bold" })
+                            <select id="SelectPorcentaje" class="browser-default"></select>
+
+                            <div class="input-field">
+                                <progress id="BarraAvance" class="width-100" max="100" title="Avance del Seguimiento"></progress>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Observación *@
+                    <div class="row">
+                        <div class="col s12">
+                            <div class="input-field">
+                                @Html.TextAreaFor(model => model.Observaciones, new { @class = "materialize-textarea width-100 validate", @disabled = "disabled" })
+                                @Html.LabelFor(model => model.Observaciones, new { @class = "black-text font-bold" })
+                                @Html.ValidationMessageFor(model => model.Observaciones, "", new { @class = "helper-text" })
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Unidades ejecutoras *@
+                    <div class="row mb-2">
+                        @* Unidades ejecutoras del acuerdo *@
+                        <div class="col s12 m6">
+                            <label class="po-relative display-block black-text font-bold">Unidades ejecutoras del Acuerdo</label>
+                            <div id="ContenedorChipsUnidadesAcuerdo" class="chips chips-initial">
+                                @foreach (var UnidadAcuerdo in Model.UnidadesEjecutorasAcuerdo) {
+                                    bool UnidadAcuerdoEnUnidadSeguimiento = false;
+
+                                    //Buscar la unidad acuerdo en la lista de unidad seguimiento
+                                    foreach (var UnidadSeguimiento in Model.UnidadesEjecutorasSeguimiento) {
+                                        if (UnidadSeguimiento.IdUnidad == UnidadAcuerdo.IdUnidad) {
+                                            UnidadAcuerdoEnUnidadSeguimiento = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (UnidadAcuerdoEnUnidadSeguimiento == true) {
+
+                                        <div class="chip blue-text font-bold" id="AgregarUnidad_@UnidadAcuerdo.IdUnidad">
+                                            @UnidadAcuerdo.Nombre
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            <label>Para agregar una unidad del Acuerdo al seguimiento haga clic sobre el "+" que desee agregar</label>
+                        </div>
+
+                        @* Unidades ejecutoras del seguimiento *@
+                        <div class="col s12 m6">
+                            <label class="po-relative display-block black-text font-bold">Unidades ejecutoras del Seguimiento</label>
+                            <div id="ContenedorChipsUnidadesSeguimiento" class="chips chips-initial">
+                                @foreach (var Unidad in Model.UnidadesEjecutorasSeguimiento) {
+                                    <div class="chip blue-text font-bold" id="QuitarUnidad_@Unidad.IdUnidad">
+                                        @Unidad.Nombre
+                                    </div>
+                                }
+                            </div>
+                            <input id="EnviarCorreoUsuariosDeUnidades" type="checkbox" name="EnviarCorreoUsuariosDeUnidades" checked="checked">
+                            <label for="EnviarCorreoUsuariosDeUnidades">Enviar notificación a todos los usuarios de la unidad</label>
+                        </div>
+                    </div>
+
+                    @* Sección de botones *@
+                    <div class="row">
+                        <div class="col s12 m6 mb-1">
+                            <button type="submit" title="Guardar" id="GuardaSeguimiento" class="btn btn-small yellow black-text waves-effect waves-light font-bold">
+                                <span class="font-bold">Guardar</span>
+                            </button>
+
+                            <a title="Cancelar" href="@Url.Action("Inicio", "Seguimiento")" id="Cancelar" class="btn btn-small grey lighten-3 black-text waves-effect">
+                                Regresar
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+
+            @* Archivos adjuntos del seguimiento y avances *@
+            <div class="row">
+                <div class="col s12">
+                    <ul class="collapsible expandable">
+                        @* Archivos adjuntos relacionados del acuerdo *@
+                        <li>
+                            <div class="collapsible-header">
+                                <i class="fa fa-caret-right"></i>
+                                Archivos adjuntos
+                            </div>
+                            <div class="collapsible-body">
+                                @* Contenedor de los archivos adjuntos relacionados al acuerdo *@
+                                <div class="row">
+                                    <div class="col s12">
+                                        @* Tabla con archivos adjuntos relacionados al acuerdo *@
+                                        <table id="TablaArchivosAdjuntos" class="table responsive display width-100 bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Descripción</th>
+                                                    <th>Archivo</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                @* Contenedor para agregar un nuevo archivo adjunto al acuerdo *@
+                                <div class="row" id="SubirArchivoAdjunto">
+                                    <div class="col s12">
+                                        <p class="blue-text font-bold">Adjuntar nuevo archivo</p>
+                                    </div>
+
+                                    @* Selección de archivo *@
+                                    <div class="col s12 m4">
+                                        <div class="file-field input-field">
+                                            <div class="btn grey waves-effect waves-teal lighten-3 black-text">
+                                                <span>Archivo</span>
+                                                <input type="file" id="ArchivoAdjunto" name="ArchivoAdjunto" required="required">
+                                            </div>
+
+                                            <div class="file-path-wrapper">
+                                                <input class="file-path validate" type="text">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @* Detalle / observación del archivo *@
+                                    <div class="col s12 m6">
+                                        <div class="input-field">
+                                            <input placeholder="Detalle del archivo" id="DetalleArchivo" type="text" class="black-text validate">
+                                            <label for="DetalleArchivo" class="black-text">Detalle</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col s12 m2">
+                                        <label class="po-relative">Subir archivo</label>
+                                        <button id="SubirArchivo" type="button" class="btn waves-effect waves-teal yellow black-text font-bold width-100" title="Subir archivo seleccionado">
+                                            Cargar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="collapsible-header">
+                                <i class="fa fa-caret-right"></i>
+                                Avances del seguimiento
+                            </div>
+                            <div class="collapsible-body" id="ContenedorDetalles">
+                                <div class="row">
+                                    <div class="col s12 m6">
+                                        <button type="button" id="BtnAgregarNuevoAvance" data-target="ModalAgregarAvance" class="btn btn-small yellow black-text font-bold waves-effect modal-trigger">Agregar avance</button>
+                                    </div>
+
+                                    <div class="col s12 m6">
+                                        @* Boton para enviar correo de notificación a la secretaría técnica de la junta directiva" *@
+                                        <button type="button" title="Notificar" value="Notificar" id="BtnEnviarNotificacionSGJD" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold right" onclick="">
+                                            Notificar a STJD
+                                        </button>
+                                    </div>
+                                </div>
+
+                                @* Detalles / Avances del seguimiento *@
+                                @foreach (DetalleSeguimientoViewModel Avance in Model.Detalles) {
+                                    <div class="divider"></div>
+
+                                    <div id="ContenedorDetalle_@Avance.IdDetalle" class="row">
+
+                                        @* Título del avance *@
+                                        <div class="col s12 py-1">
+                                            <span class="blue-text">
+                                                Avance del <b>@Html.DisplayFor(model => Avance.Fecha)</b> por el usuario <b>@Html.DisplayFor(model => Avance.NombreUsuario)</b>
+                                            </span>
+                                        </div>
+
+                                        @* Detalle del avance *@
+                                        <div class="col s12">
+                                            <div class="input-field">
+                                                @Html.TextAreaFor(model => Avance.Descripcion, new { @id = "DetalleAvance_" + Avance.IdDetalle, @class = "materialize-textarea max-width-100 validate" })
+                                                @Html.LabelFor(model => Avance.Descripcion, new { @class = "black-text" })
+                                            </div>
+                                        </div>
+
+                                        <div class="col s12">
+                                            @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico")) {
+                                                <button type="button" title="Actualizar" class="btn-actualizar-seguimiento btn btn-small grey lighten-3 blue-text font-bold waves-effect" onclick="ActualizarAvance(@Avance.IdDetalle)">
+                                                    <i class="hide-on-med-and-up fas fa-save"></i>
+                                                    <span class="hide-on-small-and-down center">Actualizar</span>
+                                                </button>
+                                            }
+                                            <button type="button" title="Eliminar" class="btn-eliminar-seguimiento btn btn-small grey lighten-3 red-text font-bold waves-effect" onclick="EliminarAvance(@Avance.IdDetalle)">
+                                                <i class="hide-on-med-and-up fas fa-eraser"></i>
+                                                <span class="hide-on-small-and-down center">Eliminar</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_AgregarAvancePartial")
+@Html.Partial("_ElementosRelacionadosPartial")
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+@Styles.Render("~/Content/jqueryconfirm")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryconfirm")
+
+    <script type="text/javascript">
+        var unidadJson = new Array();
+        var TablaArchivosAdjuntos; // Tabla de archivos adjuntos
+        var TablaElementosRelacionados; // Tabla de elementos relacionados
+        var CorreoUnidades; // Variable para almacenar los correos de las unidades ejecutoras
+        var ListaActas = new Array();
+        var ListaAcuerdos = new Array();
+
+        $(document).ready(function () {
+            // Sobreescribir validador de jQuery para que verifique el formato de fecha
+            // Se coloca acá ya que para que funcione, en la vista se debe cargar primero jqueryval
+            $.validator.addMethod('date', function (value, element) {
+                if (this.optional(element)) {
+                    return true;
+                }
+                var valid = true;
+                try {
+                    $.datepicker.parseDate('dd/mm/yy', value);
+                }
+                catch (err) {
+                    valid = false;
+                }
+                return valid;
+            });
+
+            var SeguimientoAcuerdo = @Html.Raw(Json.Encode(Model)); //Convertir y guardar el ViewModel en un objeto JSON
+
+            CargarElementos(SeguimientoAcuerdo);
+
+            CargarUnidades(SeguimientoAcuerdo.UnidadesEjecutorasAcuerdo);
+
+            //Cargar la tabla con los archivos adjuntos relacionados al seguimiento
+            CargarArchivosAdjuntos(SeguimientoAcuerdo.IdSeguimiento);
+            CargarExtensiones(Extensiones);
+
+            CargarListaElementosRelacionadosActasAcuerdos();
+            CargarSelectElementosRelacionados();
+        });
+
+        // Cargar valores de los elementos necesarios en la vista
+        function CargarElementos(SeguimientoAcuerdo) {
+            // Datepicker
+            if (SeguimientoAcuerdo.CodigoEstado === "SA-NE") {
+                const DatePickers = document.querySelectorAll('.datepicker');
+                M.Datepicker.init(DatePickers, { format: 'dd/mm/yyyy', i18n: parametrosi18n, autoClose: true, container: ".main-container" });
+            }
+
+            // Establecer el porcentaje de avance
+            let SelectPorcentaje = $("#SelectPorcentaje");
+
+            for (var i = 0; i <= 100; i = i + 10) {
+                // Crear elemento HTML <option>
+                let itemOption = GenerarHtml("option", i, "", "", "", "", "", i, i + "%");
+                AdjuntarHtml(SelectPorcentaje, itemOption);
+            }
+
+            SelectPorcentaje.val(SeguimientoAcuerdo.PorcentajeAvance);
+
+            let BarraProgreso = $("#BarraAvance");
+
+            BarraProgreso.val(SeguimientoAcuerdo.PorcentajeAvance);
+
+            //Validar que el contenido en la fecha de vencimiento no se encuentre vacío y sea previo a la fecha actual
+            if ($("#FechaVencimiento").val() != '' && ($("#FechaVencimiento").val() < $.datepicker.formatDate('dd-mm-yy', new Date()))) {
+                //Validar que el estado actual del seguimiento sea En ejecución o No ejecutado
+                if (SeguimientoAcuerdo.CodigoEstado === "SA-EE" || SeguimientoAcuerdo.CodigoEstado === "SA-NE") {
+                    //Ocultar el botón de Notificar a Unidades, si se cumple con las condiciones
+                    $("#BtnNotificarUnidades").hide();
+                    $("#BtnSeguimientoEjecutado").hide();
+                }
+            }
+            else {
+                //Ocultar el botón de Notificar Vencimiento a Unidades, si no se cumple la condición
+                $("#BtnNotificarVencimientoUnidades").hide();
+            }
+
+            // Si el estado del seguimiento es en ejecucion se desabilitan todos los campos
+            //if (SeguimientoAcuerdo.CodigoEstado === "SA-EE") {
+            //      // Entradas del usuario
+            //    $("#FechaVencimiento").attr("readonly", true);
+            //    $("#FechaVencimiento").removeClass("datepicker");
+            //    $("#Observaciones").attr("readonly", true);
+            //}
+
+            // Si el estado del seguimiento es ejecutado se desabilitan todos los campos
+            if (SeguimientoAcuerdo.CodigoEstado === "SA-EJEC") {
+                  // Entradas del usuario
+                $("input").attr("disabled", "disabled");
+                $("select").attr("disabled", "disabled");
+                $("textarea").attr("disabled", "disabled");
+
+                // Botones
+                $("#GuardaSeguimiento").remove();
+                $("#Cancelar").remove();
+                $("#BtnNotificarVencimientoUnidades").remove();
+                $("#BtnNotificarUnidades").remove();
+                $("#SubirArchivoAdjunto").remove();
+                $("#BtnAgregarNuevoAvance").remove();
+                $("#BtnEnviarNotificacionSGJD").remove();
+                $(".btn-actualizar-seguimiento").remove();
+                $(".btn-eliminar-seguimiento").remove();
+            }
+
+             // Boton para notificar a las unidades ejecutoras del seguimiento vencido del acuerdo
+            $("#BtnNotificarVencimientoUnidades").click(function () {
+                // Solicitar confirmación
+                $.confirm({
+                    icon: 'fa fa-exclamation-circle yellow-text',
+                    title: 'Notificar a las unidades ejecutoras',
+                    content: '¿Está seguro que desea notificar a las unidades ejecutoras del acuerdo?',
+                    boxWidth: '30%',
+                    useBootstrap: false,
+                    buttons: {
+                        Confirmar: {
+                            btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                            action: function () {
+                                MostrarCargandoPagina(); // Mostrar carga de página
+
+                                var token = $('input[name="__RequestVerificationToken"]', this.form).val(); //Extraer el token
+
+                                // Ejecutar petición para enviar correo a unidades
+                                $.ajax({
+                                    type: "POST",
+                                    dataType: "json",
+                                    url: '@Url.Action("NotificarUnidadesDeSeguimientoVencido", "Seguimiento")',
+                                    data: {
+                                        __RequestVerificationToken: token,
+                                        IdSeguimiento: SeguimientoAcuerdo.IdSeguimiento,
+                                        EnviarCorreoUsuariosDeUnidades: $("#EnviarCorreoUsuariosDeUnidades").prop("checked")
+                                    },
+                                    success: function (data) {
+                                        if (data.success == true) {
+                                            MostrarMensajeExito("Unidades notificadas.");
+                                            location.reload(); // Refrescar la pagina
+                                        }
+                                        else {
+                                            MostrarMensajeError("Error al notificar a las unidades");
+                                        }
+                                    },
+                                    error: function () {
+                                        MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                    },
+                                    complete: function () {
+                                        DesaparecerCargandoPagina(); // Ocultar carga de página
+                                    }
+                                });
+                            }
+                        },
+                        Cancelar: {
+                            btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                        }
+                    }
+                });
+            });
+
+             // Boton para notificar a las unidades ejecutoras del seguimiento del acuerdo
+            $("#BtnNotificarUnidades").click(function () {
+                // Solicitar confirmación
+                $.confirm({
+                    icon: 'fa fa-exclamation-circle yellow-text',
+                    title: 'Notificar a las unidades ejecutoras',
+                    content: '¿Esta seguro que desea notificar a las unidades ejecutoras del acuerdo?',
+                    boxWidth: '25%',
+                    useBootstrap: false,
+                    buttons: {
+                        Confirmar: {
+                            btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                            action: function () {
+                                MostrarCargandoPagina(); // Mostrar carga de página
+
+                                var token = $('input[name="__RequestVerificationToken"]', this.form).val(); //Extraer el token
+
+                                // Ejecutar petición para enviar correo a unidades
+                                $.ajax({
+                                    type: "POST",
+                                    dataType: "json",
+                                    url: '@Url.Action("NotificarUnidadesDeSeguimiento", "Seguimiento")',
+                                    data: {
+                                        __RequestVerificationToken: token,
+                                        IdSeguimiento: SeguimientoAcuerdo.IdSeguimiento,
+                                        EnviarCorreoUsuariosDeUnidades: $("#EnviarCorreoUsuariosDeUnidades").prop("checked")
+                                    },
+                                    success: function (data) {
+                                        if (data.success == true) {
+                                            MostrarMensajeExito("Unidades notificadas.");
+                                            location.reload(); // Refrescar la pagina
+                                        }
+                                        else {
+                                            MostrarMensajeError("Error al notificar a las unidades");
+                                        }
+                                    },
+                                    error: function () {
+                                        MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                    },
+                                    complete: function () {
+                                        DesaparecerCargandoPagina(); // Ocultar carga de página
+                                    }
+                                });
+                            }
+                        },
+                        Cancelar: {
+                            btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                        }
+                    }
+                });
+            });
+
+            // Boton para notificar a la junta directiva que se agrego un avance al siguimiento
+            $("#BtnEnviarNotificacionSGJD").click(function () {
+                // Solicitar confirmación
+                $.confirm({
+                    icon: 'fa fa-exclamation-circle yellow-text',
+                    title: 'Notificar avance a Secretaría Técnica de Junta Directiva',
+                    content: '¿Esta seguro que desea notificar a la Secretaría Técnica de Junta Directiva sobre el avance?',
+                    boxWidth: '25%',
+                    useBootstrap: false,
+                    buttons: {
+                        Confirmar: {
+                            btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                            action: function () {
+                                MostrarCargandoPagina(); // Mostrar carga de página
+
+                                var token = $('input[name="__RequestVerificationToken"]', this.form).val(); //Extraer el token
+
+                                $.ajax({
+                                    type: "POST",
+                                    dataType: "json",
+                                    url: '@Url.Action("EnviarCorreoParaSTJD", "Seguimiento")',
+                                    data: {
+                                        __RequestVerificationToken: token,
+                                        IdSeguimiento: SeguimientoAcuerdo.IdSeguimiento,
+                                    },
+                                    success: function (data) {
+                                        if (data.success == true) {
+                                            MostrarMensajeExito(data.Mensaje);
+                                            location.reload(); // Refrescar la pagina
+                                        } else {
+                                            MostrarMensajeError();
+                                        }
+                                    },
+                                    error: function () {
+                                        MostrarMensajeError("Error al procesar la solicitud."); // Notificar error
+                                    },
+                                    complete: function () {
+                                        DesaparecerCargandoPagina(); // Ocultar carga de página
+                                    }
+                                });
+                            }
+                        },
+                        Cancelar: {
+                            btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                        }
+                    }
+                });
+            });
+
+            // Boton para Cambiar el estado del seguimiento como ejecutado
+            $("#BtnSeguimientoEjecutado").click(function () {
+                // Solicitar confirmación
+                $.confirm({
+                    icon: 'fa fa-exclamation-circle yellow-text',
+                    title: 'Marcar seguimiento como ejecutado',
+                    content: '¿Esta seguro que desea marcaar el seguimiento como ejecutado?',
+                    boxWidth: '25%',
+                    useBootstrap: false,
+                    buttons: {
+                        Confirmar: {
+                            btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                            action: function () {
+                                MostrarCargandoPagina(); // Mostrar carga de página
+
+                                var token = $('input[name="__RequestVerificationToken"]', this.form).val(); //Extraer el token
+
+                                $.ajax({
+                                    type: "POST",
+                                    dataType: "json",
+                                    url: '@Url.Action("SeguimientoEjecutado", "Seguimiento")',
+                                    data: {
+                                        __RequestVerificationToken: token,
+                                        IdSeguimiento: SeguimientoAcuerdo.IdSeguimiento
+                                    },
+                                    success: function (data) {
+                                        if (data.success == true) {
+                                            MostrarMensajeExito(data.Mensaje)
+                                            location.reload();
+                                        }
+                                        else {
+                                            MostrarMensajeError(data.Mensaje)
+                                        }
+                                    },
+                                    error: function () {
+                                        MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                    },
+                                    complete: function () {
+                                        DesaparecerCargandoPagina();  // Ocultar carga de página
+                                    }
+                                });
+                            }
+                        },
+                        Cancelar: {
+                            btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                        }
+                    }
+                });
+            });
+        }
+
+        //////////
+        // ELEMENTOS RELACIONADOS
+        //////////
+        function CargarListaElementosRelacionadosActasAcuerdos() {
+            $.each(@Html.Raw(Json.Encode(ViewBag.ListaActas)), function (key, value) {
+                ListaActas.push({ "value": value.Value, "text": value.Text });
+            });
+
+            $.each(@Html.Raw(Json.Encode(ViewBag.ListaAcuerdos)), function (key, value) {
+                ListaAcuerdos.push({ "value": value.Value, "text": value.Text });
+            });
+        }
+
+        function CargarSelectElementosRelacionados() {
+            $.each(ListaActas, function (index, value) {
+                $("select#ListaAcuerdoActa").append($("<option></option>").attr("value", value.value).text(value.text));
+            });
+        }
+
+        // Abrir modal para agregar un nuevo Articulo
+        function AbrirModalElementosRelacionados(IdSeguimiento, Titulo) {
+            $("#TituloSeguimiento").text(Titulo);
+            $("#Seguimiento").val(IdSeguimiento);
+
+            // Guardar el código de estado del Seguimiento para validar si mostrar o no el botón de eliminar elementos relacionados
+            var CodigoEstado = $("#CodigoEstado").val();
+
+             //Parámetros AJAX para cargar DataTable
+            var parametrosAJAX = {
+                url: '@Url.Action("ObtenerElementosRelacionados", "Seguimiento")',
+                type: "GET",
+                datatype: "json",
+                data: { IdSeguimiento: IdSeguimiento },
+                error: MensajeError
+            };
+
+            TablaElementosRelacionados = $("#TablaElementosRelacionados").DataTable();
+            TablaElementosRelacionados.destroy();
+
+            TablaElementosRelacionados = $("#TablaElementosRelacionados").DataTable({
+                ajax: parametrosAJAX,
+                columns: [
+                    {
+                        className: "no-wrap", render: function (data, type, row) {
+                            if (row['TipoElemento'] === "Acta") {
+                                var IdActa = row['IdActa'];
+                                var TituloActa = "Acta de " + row['TipoSesion'] + " " + row['NumeroSesion'] + " - " + row['FechaAno'];
+                                var LinkArchivo = "<a href='@Url.Action("Detalle", "Actas", new { Id = "IdActa" })' target='_blank'>" + TituloActa + "</a>";
+                                return LinkArchivo.replace('IdActa', IdActa);
+                            }
+                            else {
+                                var IdAcuerdo = row['IdAcuerdo'];
+                                var TituloAcuerdo = row['TituloAcuerdo'];
+                                var LinkArchivo = "<a href='@Url.Action("Detalles", "Acuerdo", new { Id = "IdAcuerdo" })' target='_blank'>" + TituloAcuerdo + "</a>";
+                                return LinkArchivo.replace('IdAcuerdo', IdAcuerdo);
+                            }
+                        }
+                    },
+                    { data: "TipoElemento", className: "no-wrap" },
+                    {
+                        className: "center", render: function (data, type, row) {
+                            var IdElementoRelacionado = row['Id'];
+                            var TipoElemento = row['TipoElemento']
+
+                            if (TipoElemento === "Acta") {
+                                var IdActa = row['IdActa'];
+                                var TituloActa = "Acta de " + row['TipoSesion'] + " " + row['NumeroSesion'] + " - " + row['FechaAno'];
+
+                                if (CodigoEstado === "SA-NE" && ('@User.IsInRole("Administrador")' || '@User.IsInRole("Secretario Tecnico")' || '@User.IsInRole("Profesional de apoyo")')) {
+                                    return "<a href='#' class='red-text font-bold btn-eliminar-archivo' title='Eliminar elemento relacionado' data-id='" + IdActa + "' data-tipo='" + TipoElemento + "' data-value='" + IdElementoRelacionado + "' data-nombre='" + TituloActa + "' onclick='EliminarElementoRelacionado(this)'><i class='fa fa-trash'>&nbsp;</i>Eliminar</button>";
+                                }
+                                else {
+                                    return "";
+                                }
+                            }
+                            else {
+                                var IdAcuerdo = row['IdAcuerdo'];
+                                var TituloAcuerdo = row['TituloAcuerdo'];
+
+                                if (CodigoEstado === "SA-NE" && ('@User.IsInRole("Administrador")' || '@User.IsInRole("Secretario Tecnico")' || '@User.IsInRole("Profesional de apoyo")')) {
+                                    return "<a href='#' class='red-text font-bold btn-eliminar-archivo' title='Eliminar elemento relacionado' data-id='" + IdAcuerdo + "' data-tipo='" + TipoElemento + "' data-value='" + IdElementoRelacionado + "' data-nombre='" + TituloAcuerdo + "' onclick='EliminarElementoRelacionado(this)'><i class='fa fa-trash'>&nbsp;</i>Eliminar</button>";
+                                }
+                                else {
+                                    return "";
+                                }
+                            }
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                paging: false,
+                searching: false,
+                responsive: true,
+                info: false,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true
+            });
+        }
+
+        $("#ListaTipoElemento").change(function () {
+            $("select#ListaAcuerdoActa").empty();
+
+            if ($("#ListaTipoElemento option:selected").text() === "Acta") {
+                $.each(ListaActas, function (index, value) {
+                    $("select#ListaAcuerdoActa").append($("<option></option>").attr("value", value.value).text(value.text));
+                });
+            }
+            else {
+                $.each(ListaAcuerdos, function (index, value) {
+                    $("select#ListaAcuerdoActa").append($("<option></option>").attr("value", value.value).text(value.text));
+                });
+            }
+        });
+
+        $("#AgregarElementoRelacionado").click(function () {
+            MostrarCargandoPagina(); // Mostrar carga de página
+
+            if ($("#ListaTipoElemento option:selected").text() === "Acta") {
+                // Crear un FormData para almacenar la información antes de enviarla al controlador
+                var formData = new FormData();
+                formData.append("__RequestVerificationToken", $('input[name="__RequestVerificationToken"]', this.form).val());
+                formData.append("IdActa", $("#ListaAcuerdoActa option:selected").val());
+                formData.append("IdSeguimiento", $("#Seguimiento").val());
+                formData.append("TipoElemento", "Acta");
+
+                $.ajax({
+                    url: '@Url.Action("AgregarElementoRelacionado", "Seguimiento")',
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.success) {
+                            ListaActas.splice(ListaActas.findIndex(er => er.text === $("#ListaAcuerdoActa option:selected").text()), 1);
+                            $("#ListaAcuerdoActa option:selected").remove();
+                            MostrarMensajeExito(data.Message);
+                            TablaElementosRelacionados.ajax.reload();
+                        } else {
+                            MostrarMensajeError(data.Message); // Notificar logro
+                        }
+                    }, error: function () {
+                        MostrarMensajeError(data.Message); // Notificar error
+                    },
+                    complete: function () {
+                        DesaparecerCargandoPagina(); // Ocultar carga de página
+                    }
+                });
+            }
+            else {
+                // Crear un FormData para almacenar la información antes de enviarla al controlador
+                var formData = new FormData();
+                formData.append("__RequestVerificationToken", $('input[name="__RequestVerificationToken"]', this.form).val());
+                formData.append("IdAcuerdo", $("#ListaAcuerdoActa option:selected").val());
+                formData.append("IdSeguimiento", $("#Seguimiento").val());
+                formData.append("TipoElemento", "Acuerdo");
+
+                $.ajax({
+                    url: '@Url.Action("AgregarElementoRelacionado", "Seguimiento")',
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.success) {
+                            ListaAcuerdos.splice(ListaAcuerdos.findIndex(er => er.text === $("#ListaAcuerdoActa option:selected").text()), 1);
+                            $("#ListaAcuerdoActa option:selected").remove();
+                            MostrarMensajeExito(data.Message);
+                            TablaElementosRelacionados.ajax.reload();
+                        } else {
+                            MostrarMensajeError(data.Message); // Notificar logro
+                        }
+                    }, error: function () {
+                        MostrarMensajeError(data.Message);; // Notificar error
+                    },
+                    complete: function () {
+                        DesaparecerCargandoPagina(); // Ocultar carga de página
+                    }
+                });
+            }
+        });
+
+        function EliminarElementoRelacionado(button) {
+            var IdElementoRelacionado = $(button).data("value");
+            var NombreElementoRelacionado = $(button).data("nombre");
+            var TipoElemento = $(button).data("tipo");
+            var IdElementoActaAcuerdo = $(button).data("id");
+
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Eliminar elemento relacionado',
+                content: '¿Está seguro que desea eliminar el elemento relacionado ' + NombreElementoRelacionado + '?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Confirmar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina(); // Mostrar carga de página
+
+                            var token = $('input[name="__RequestVerificationToken"]', this.form).val(); //Extraer el token
+
+                            //Ejecuta la petición eliminar un elemento relacionado según el id
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("EliminarElementoRelacionado", "Seguimiento")',
+                                data: {
+                                    __RequestVerificationToken: token,
+                                    IdElementoRelacionado: IdElementoRelacionado
+                                },
+                                success: function (data) {
+                                    if (data.success == true) {
+                                        if (TipoElemento === "Acta") {
+                                            ListaActas.push({ "value": IdElementoActaAcuerdo, "text": NombreElementoRelacionado });
+                                            $("#ListaTipoElemento").find("option:contains('Acta')").attr("selected", true).change();
+                                        }
+                                        else {
+                                            ListaAcuerdos.push({ "value": IdElementoActaAcuerdo, "text": NombreElementoRelacionado });
+                                            $("#ListaTipoElemento").find("option:contains('Acuerdo')").attr("selected", true).change();
+                                        }
+                                        MostrarMensajeExito(data.message);
+                                        TablaElementosRelacionados.ajax.reload();
+                                    } else {
+                                        MostrarMensajeError(data.message); // Notificar error
+                                    }
+                                },
+                                error: function () {
+                                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                },
+                                complete: function () {
+                                    DesaparecerCargandoPagina(); // Ocultar carga de página
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+        }
+        //////////
+        // FIN ELEMENTOS RELACIONADOS
+        //////////
+
+        // Calcular plazo en dias habiles segun las fechas de notificacion y vencimiento
+        $("#FechaVencimiento").change(function () {
+            var DFechaNotificacion = ConvertirFecha($("#TxtFechaNotificacion").val());
+            var DFechaVencimiento = ConvertirFecha($("#FechaVencimiento").val());
+            var DiasHabilesDeDiferencia = CalcularDiasHabiles(DFechaNotificacion, DFechaVencimiento);
+
+            DiasHabilesDeDiferencia = DiasHabilesDeDiferencia < 0 ? 0 : DiasHabilesDeDiferencia;
+
+            $("#TxtPlazoDias").val(DiasHabilesDeDiferencia);
+            $("#PlazoDias").val(DiasHabilesDeDiferencia);
+        });
+
+        async function AgregarUnidad(IdUnidad, NombreUnidad, IdSeguimientoAcuerdo) {
+            $("#AgregarUnidad_" + IdUnidad + " i").addClass("display-none");
+
+            MostrarMensajeInformacion("Agregando unidad al seguimiento");
+
+            // Crear un FormData para almacenar la información antes de enviarla al controlador
+            var formData = new FormData();
+            formData.append("__RequestVerificationToken", $('input[name="__RequestVerificationToken"]', this.form).val());
+            formData.append("IdUnidad", IdUnidad);
+            formData.append("IdSeguimientoAcuerdo", IdSeguimientoAcuerdo);
+
+            // Ejecutar petición AJAX para agregar la unidad al seguimiento
+            $.ajax({
+                url: '@Url.Action("AgregarUnidad", "Seguimiento")',
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data.success) {
+                        $("#AgregarUnidad_" + IdUnidad + " i").addClass("display-none");
+
+                        // Si la petición fue exitosa, se agregar el chip al contenedor para visualizarlo
+                        $("#ContenedorChipsUnidadesSeguimiento").append(
+                            "<div class='chip blue-text font-bold' id='QuitarUnidad_" + IdUnidad + "'>" +
+                            NombreUnidad + " " +
+                            "<i class='red-text c-pointer fa fa-times' onclick='QuitarUnidad(" + IdUnidad + ", " + IdSeguimientoAcuerdo + ")'></i>" +
+                            "</div>"
+                        );
+
+                        MostrarMensajeExito(data.Mensaje);
+                    } else {
+                        $("#AgregarUnidad_" + IdUnidad + " i").removeClass("display-none");
+                        MostrarMensajeError(data.Mensaje);
+                    }
+                }, error: function () {
+                    $("#AgregarUnidad_" + IdUnidad + " i").removeClass("display-none");
+                    MostrarMensajeError("Error al agregar unidad a seguimiento");
+                }
+            });
+        }
+
+        async function QuitarUnidad(IdUnidad, IdSeguimientoAcuerdo) {
+            $("#QuitarUnidad_" + IdUnidad + " i").addClass("display-none");
+
+            MostrarMensajeInformacion("Quitando unidad del seguimiento");
+
+            // Crear un FormData para almacenar la información antes de enviarla al controlador
+            var formData = new FormData();
+            formData.append("__RequestVerificationToken", $('input[name="__RequestVerificationToken"]', this.form).val());
+            formData.append("IdUnidad", IdUnidad);
+            formData.append("IdSeguimientoAcuerdo", IdSeguimientoAcuerdo);
+
+            // Ejecutar petición AJAX para agregar la unidad al seguimiento
+            $.ajax({
+                url: '@Url.Action("EliminarUnidad", "Seguimiento")',
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data.success) {
+                        $("#AgregarUnidad_" + IdUnidad + " i").removeClass("display-none");
+
+                        // Si la petición fue exitosa, se agregar el chip al contenedor para visualizarlo
+                        $("#ContenedorChipsUnidadesSeguimiento #QuitarUnidad_" + IdUnidad).remove();
+
+                        MostrarMensajeExito(data.Mensaje);
+                    } else {
+                        $("#QuitarUnidad_" + IdUnidad + " i").removeClass("display-none");
+                        MostrarMensajeError(data.Mensaje);
+                    }
+                }, error: function () {
+                    $("#QuitarUnidad_" + IdUnidad + " i").removeClass("display-none");
+                    MostrarMensajeError("Error al eliminar unidad a seguimiento");
+                }
+            });
+        }
+
+        // Cargar las unidades ejeccutoras en el contenedor de chips
+        function CargarUnidades(Unidades) {
+            //console.log(Unidades)
+
+            $.each(Unidades, function (index, value) {
+                //console.log(value.IdUnidad);
+                //console.log(value.Nombre);
+            });
+
+            //Html Abren etiquetas con metodo GenerarHtml(etiquita, id, class, name, type, title, src, value, text, href, onclick)
+            var divChip = "";
+
+            // Etiquetas de cierre
+            var cerrarDiv = GenerarCerrarHtml("div");
+
+            // Obtener todas las unidades del acuerdo
+            @*$.ajax({
+                type: "GET",
+                dataType: "json",
+                url: '@Url.Action("ObtenerUnidadAcuerdo", "Acuerdo")',
+                data: { IdAcuerdo: SeguimientoAcuerdo.IdAcuerdo },
+                success: function (data) {
+                    // Obtenida la lista con unidades del acuerdo, recorrer cada elemento de la lista, verificar si es de tipo
+                    // 0 [Ejecución] o 1 [Información] para construir los chips y colocarlos en el contenedor de chips correspondiente
+                    $.each(data.UnidadAcuerdo, function (i, UnidadAcuerdo) {
+                        if (UnidadAcuerdo.Tipo == 0) {
+                            //Html Abren etiquetas con metodo GenerarHtml(etiquita, id, class, name, type, title, src, value, text, href, onclick)
+                            divChip = GenerarHtml("div", "UnidadAcuerdo", "chip blue-text font-bold", "", "", "", "", "", "", "", "", "cursor:pointer");
+
+                            //adjunta el codigo html <option> al elemento div de los chips
+                            AdjuntarHtml($("#ContenedorChipsUnidadesAcuerdo"), divChip + UnidadAcuerdo.Unidad.Nombre + cerrarDiv);
+                        }
+                    });
+
+                    //unidadJson.push(objeto.unidad);
+
+                    // Si el usuario pertenece a la unidad que envia el correo
+                    if (UnidadUsuario == objeto.unidad.nombre && objeto.autorizacion == true) {
+                            $("#contenedor").show();
+                            $("#textoNotificacion").text("Notificar a Junta Directiva");
+                            $("#btnNotificar").attr("onclick", "PopUpFormCorreo(3,'Secretaría Técnica de Junta Directiva', '" + SeguimientoAcuerdo.idEstadoAviso + "')");
+                            $("#UnidadAcuerdo"+objeto.unidad.id).css("background-color", "#eba93a");
+                            console.log($("#UnidadAcuerdo"+objeto.unidad.id));
+                        }
+                        idUnidad = objeto.unidad.id;
+
+                       //si el usuario pertenece a la unidad que envia el correo
+                        if(objeto.autorizacion == true){
+                            $("#UnidadAcuerdo" + idUnidad).css("background-color", "#eba93a");
+                            console.log($("#UnidadAcuerdo" + idUnidad));
+                        }
+
+                    $("#contenedor").show();
+                    $("#textoNotificacion").text("Notificar a Unidades");
+                    $("#btnNotificar").attr("onclick", "PopUpFormCorreo('" + idUnidad + "','" + SeguimientoAcuerdo.idEstadoAviso + "')");
+                },
+                error: function () {
+                    MostrarMensajeError(data.message); // Notificar error
+                }
+            });*@
+        }
+
+        //////////
+        // Archivos adjuntos
+        //////////
+
+        // Cargar los archivos adjuntos del seguimiento
+        function CargarArchivosAdjuntos(IdSeguimiento) {
+            //Parámetros AJAX para cargar DataTable
+            var parametrosAJAX = {
+                url: '@Url.Action("ObtenerArchivosSeguimiento", "Seguimiento")',
+                type: "GET",
+                datatype: "json",
+                data: { IdSeguimiento: IdSeguimiento},
+                error: MensajeError
+            };
+
+            TablaArchivosAdjuntos = $("#TablaArchivosAdjuntos").DataTable({
+                ajax: parametrosAJAX,
+                columns: [
+                    { data: "Observacion", className: "no-wrap" },
+                    // Botones
+                    {
+                        data: "UrlArchivo", className: "center", render: function (data) {
+                            return "<a class='btn btn-small grey waves-effect waves-red lighten-3 mx-1 blue-text font-bold' target='blank' title='Ver archivo' href=" + data + ">Ver</a>";
+                        }
+                    },
+                    {
+                        className: "center", render: function (data, type, row) {
+                            const IdArchivo = row['IdArchivoAdjunto'];
+                            return "<button type='button' class='btn btn-small grey waves-effect waves-red lighten-3 mx-1 blue-text font-bold btn-eliminar-archivo' title='Eliminar Archivo' onclick=PopUpForm('@Url.Action("Eliminar", "ArchivoAdjunto")/" + IdArchivo + "')>Eliminar</button>";
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                responsive: true,
+                info: false,
+                pageLength: 10,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true
+            });
+        }
+
+        // Agregar/ subir un nuevo archivo adjunto al seguimiento
+        $("#SubirArchivo").click(function () {
+            // Validar si archivo adjunto ha sido seleccionado para subir
+            if ($("#ArchivoAdjunto").val() == "") {
+                MostrarMensajeError("Debe seleccionar un archivo");
+                return false;
+            }
+
+            // Validar que detalle haya sido ingresado
+            if ($("#DetalleArchivo").val() == "") {
+                MostrarMensajeError("Debe digitar el detalle del archivo");
+                return false;
+            }
+
+            MostrarCargandoPagina();
+
+            // Crear un FormData para almacenar la información antes de enviarla al controlador
+            var formData = new FormData();
+            formData.append("__RequestVerificationToken", $('input[name="__RequestVerificationToken"]', this.form).val());
+            formData.append("IdObjeto", '@Model.IdSeguimiento');
+            formData.append("Detalle", $("#DetalleArchivo").val());
+            formData.append("Archivo", $("#ArchivoAdjunto")[0].files[0]);
+            formData.append("NombreObjeto", '@Model.NombreObjeto');
+
+            $.ajax({
+                url: '@Url.Action("AgregarArchivoAdjunto", "Seguimiento")',
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data.success) {
+                        TablaArchivosAdjuntos.ajax.reload();
+                        $("#DetalleArchivo").val("");
+                        $("#ArchivoAdjunto").val("");
+                        $(".file-path").val("");
+                        MostrarMensajeExito(data.Message);
+                    } else {
+                        MostrarMensajeError(data.Message);
+                    }
+                }, error: function () {
+                    MostrarMensajeError("Error al subir el archivo");
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina();
+                }
+            });
+        });
+
+        // Cargar las extensiones de archivos permitidos para subir adjuntos al acuerdo
+        var Extensiones = new Array(); // Variable para almacenar la lista de extensiones permitidas que se pueden subir en los archivos adjuntos
+        function CargarExtensiones(Extensiones) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("ObtenerDatos", "TipoArchivo")',
+                success: function (data) {
+                    // Variable que contiene las restricciones que se le añadiran a la propiedad accept del input file #ArchivoAdjunto
+                    var Accept = "";
+
+                    // Llenar la variable con las extensiones que el input dejará seleccionar
+                    for (var j = 0; j < data.data.length; j++) {
+                        Accept += data.data[j].Nombre + ", ";
+                        Extensiones.push(data.data[j]);
+                    }
+
+                    // Aadir propiedad al input file ArchivoAdjunto
+                    $("#ArchivoAdjunto").prop("accept", Accept);
+                },
+                error: function () {
+                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                }
+            });
+
+            // Verificar la extensión del archivo, cuando se selecciona en el input file ArchivoAdjunto y ArchivoAcuerdoFirmado
+            $("#ArchivoAdjunto").change(function () {
+                // Extraer la extensión del archivo seleccionado en el input file para verificar que sea correcta
+                var Archivo = $(this).val();
+                var Extension = Archivo.substr((Archivo.lastIndexOf('.'))).toLowerCase();
+
+                // Recorrer las extensiones permitidas para saber si la extensión del archivo subido es permitido
+                let ArchivoPermitido = false;
+                $.each(Extensiones, function (i, val) {
+                    if (Extension === val.Nombre) {
+                        ArchivoPermitido = true;
+                    }
+                });
+
+                if (!ArchivoPermitido) {
+                    MostrarMensajeError("Archivo no permitido");
+                    $(this).val(""); // Borrar valor del input
+                }
+            });
+
+            return Extensiones;
+        }
+        //////////
+        // Fin de archivos adjuntos
+        //////////
+
+        // Guardar el seguimiento
+        function SubmitFormEditarSeguimiento(form) {
+            // Validar que los campos del formulario estén llenos y tengan valores correctos
+            $.validator.unobtrusive.parse(form);
+            if ($(form).valid()) {
+                MostrarCargandoPagina(); // Mostrar carga de página
+
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            //Validar que el contenido en la fecha de vencimiento no se encuentre vacío y sea previo a la fecha actual
+                            if ($("#FechaVencimiento").val() != '' && ($("#FechaVencimiento").val() < $.datepicker.formatDate('dd-mm-yy', new Date()))) {
+                                $("#BtnNotificarUnidades").hide();
+                                $("#BtnNotificarVencimientoUnidades").show();
+                            }
+                            else {
+                                $("#BtnNotificarUnidades").show();
+                                $("#BtnNotificarVencimientoUnidades").hide();
+                            }
+                            MostrarMensajeExito(data.Mensaje); //Notificar
+                        } else {
+                            MostrarMensajeError(data.Mensaje); // Notificar error
+                        }
+                    },
+                    error: function () {
+                        MostrarMensajeError("Error al procesar la información."); // Notificar error
+                    },
+                    complete: function () {
+                        DesaparecerCargandoPagina(); // Ocultar carga de página
+                    }
+                });
+            }
+
+            return false;
+        }
+
+        //////////
+        // Eventos
+        //////////
+        // Ilustrar el porcentaje según lo seleccionado en el select de porcentaje de avance
+        $("#SelectPorcentaje").on('change', function () {
+            $("#BarraAvance").val($(this).val());
+            $("#PorcentajeAvance").val($(this).val());
+        });
+
+        // Agregar nuevo tema a una sección
+        function AgregarAvance() {
+            MostrarCargandoPagina();
+
+            // Crear objeto JSON para Detalle/Avance
+            const AvanceJSON = {
+                IdSeguimientoAcuerdo: $("#IdSeguimiento").val(),
+                Descripcion: $("#DetalleNuevoAvance").val()
+            }
+
+            // Ejecutar petición para agregar el tema
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("AgregarAvance", "Seguimiento")',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(),
+                    AvanceJSON: JSON.stringify(AvanceJSON)
+                },
+                success: function (data) {
+                    if (data.success > 0) {
+                        AgregarAvanceEnContenedor(data.IdNuevoDetalle, $("#DetalleNuevoAvance").val());
+                        $("#DetalleNuevoAvance").val('');
+                        $(".modal-content label").removeClass("active");
+                        MostrarMensajeExito(data.Mensaje);
+                    }
+                    else {
+                        MostrarMensajeError("Error al agregar avance"); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError("Error al agregar el avance"); // Notificar error
+                },
+                complete: function () {
+                    M.Modal.getInstance($("#ModalAgregarAvance")).close(); // Cerrar modal
+                    DesaparecerCargandoPagina(); //Ocultar carga de página
+                }
+            });
+        }
+
+
+
+        // Agregar o añadir contenedor de nuevo tema creado al contenedor de seccion con el id respectivo
+        function AgregarAvanceEnContenedor(IdNuevoAvance, Detalle) {
+            var Fecha = new Date();
+
+            $("#ContenedorDetalles").append(
+                // Divisor
+                "<div class='divider'></div>" +
+
+                // Contenedor del avance
+                "<div id='ContenedorDetalle_" + IdNuevoAvance + "' class='row border-lightblue py-1'>" +
+
+                // Título del avance
+                "<div class='col s12 py-1'>" +
+                "<span class='blue-text'>" +
+                "Avance del <b>" + Fecha.getDate() + "/" + (Fecha.getMonth() + 1) + "/" + Fecha.getFullYear() + "</b> por el usuario <b>@User.NombreCompleto()</b>" +
+                "</span>" +
+                "</div>" + // Cierre de título de tema
+
+                // Detalle del avance
+                "<div class='col s12'>" +
+                "<div class='input-field'>" +
+                "<textarea id='DetalleAvance_" + IdNuevoAvance + "' class='materialize-textarea max-width-100 validate' name='Avance.Detalle'>" + Detalle + "</textarea>" +
+                "<label class='black-text active' for='Avance.Detalle'>Detalle</label>" +
+                "</div>" +
+                "</div>" + // Cierre de contenido de tema
+
+                // Acciones del tema
+                "<div class='col s12'>" +
+
+                // Actualizar
+                "<button type='button' title='Actualizar' class='btn btn-small grey lighten-3 blue-text font-bold waves-effect' onclick='ActualizarAvance(" + IdNuevoAvance + ")'>" +
+                "<i class='hide-on-med-and-up fas fa-save'></i>" +
+                "<span class='hide-on-small-and-down center'>Actualizar</span>" +
+                "</button>&nbsp;" + // Cierre de actualizar
+
+                // Eliminar
+                "<button type='button' title='Eliminar' class='btn btn-small grey lighten-3 red-text font-bold waves-effect' onclick='EliminarAvance(" + IdNuevoAvance + ")'>" +
+                "<i class='hide-on-med-and-up fas fa-eraser'></i>" +
+                "<span class='hide-on-small-and-down center'>Eliminar</span>" +
+                "</button>&nbsp;" + // Cierre de eliminar
+
+                "</div>" + // Cierre de acciones de avance
+
+                "</div>" // Cierre de contenedor de avance
+            );
+        }
+
+        //Actualiza el detalle
+        function ActualizarAvance(IdAvance) {
+            MostrarCargandoPagina();
+
+            // Crear objeto JSON para Avance
+            var AvanceJSON = {
+                Id: IdAvance,
+                Descripcion: $("#DetalleAvance_" + IdAvance).val()
+            }
+
+            // Ejecutar petición para actualizar el avance
+            $.ajax({
+                method: "POST",
+                dataType: "json",
+                url: '@Url.Action("ActualizarAvance", "Seguimiento")',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(),
+                    AvanceJSON: JSON.stringify(AvanceJSON)
+                },
+                success: function (data) {
+                    if (data.success) {
+                        MostrarMensajeExito(data.Mensaje);
+                        location.reload(); // Refrescar la pagina
+                    }
+                    else {
+                        MostrarMensajeError("Error al actualizar el avance"); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError("Error al actualizar el avance"); // Notificar error
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina(); //Ocultar carga de página
+                }
+            });
+        }
+
+        // Eliminar avance
+        function EliminarAvance(IdAvance) {
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle red-text',
+                title: 'Eliminar avance',
+                content: '¿Está seguro de eliminar el avance?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                //type: 'orange',
+                buttons: {
+                    Eliminar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina();
+
+                            // Ejecutar petición para eliminar el tema
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("EliminarAvance", "Seguimiento")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(),
+                                    IdDetalle: IdAvance
+                                },
+                                success: function (data) {
+                                    if (data.success) {
+                                        $("#ContenedorDetalle_" + IdAvance).remove(); // Eliminar contenedor del tema y todo lo que contiene
+                                        MostrarMensajeExito(data.Mensaje);
+                                    }
+                                    else {
+                                        MostrarMensajeError("Error al actualizar el tema"); // Notificar error
+                                    }
+                                },
+                                error: function () {
+                                    MostrarMensajeError("Error al actualizar el tema"); // Notificar error
+                                },
+                                complete: function () {
+                                    DesaparecerCargandoPagina(); //Ocultar carga de página
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+        }
+
+    </script>
+}

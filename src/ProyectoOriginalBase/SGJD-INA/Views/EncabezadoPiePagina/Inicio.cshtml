@@ -1,0 +1,84 @@
+﻿@using SGJD_INA.Models.Entities
+
+@model IEnumerable<EncabezadoPiePagina>
+
+
+@{
+    ViewBag.Title = "Encabezados y Pie de Página";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniEncPie" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Administracion", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Encabezados y Pie de Página
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="#" class="breadcrumb">Encabezados y Pie de Página</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m10 mb-1">
+                    <span class="fz-1-2r font-bold">
+                        Encabezados y Pie de Página
+                    </span>
+                </div>
+
+                <div class="col s12 m2">
+                    @* Botón agregar *@
+                    <a class="btn btn-small yellow black-text font-bold waves-effect right" id="BtnAgregar" title="Agregar Encabezado y Pie de Página" href="@Url.Action("Agregar", "EncabezadoPiePagina")">
+                        Agregar
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                @foreach (var item in Model) {
+                    <div class="col s12 m4">
+                        <div class="card-panel grey lighten-5 center">
+                            <h6 class="blue-text font-bold mt-0">@Html.DisplayFor(modelItem => item.TipoObjeto.Descripcion)</h6>
+
+                            @* Botón [Editar] *@
+                            <a href="@Url.Action("Editar", "EncabezadoPiePagina", new { Id = item.Id })" class="btn btn-small grey lighten-3 blue-text" title='Editar'>
+                                Editar
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        let EncabezadoPieGuardado;
+
+        // Si la vista se carga despues de guardar un encabezado y pie de página se verifica si existe el mensaje dentro del ViewBag para mostrarlo como notificación
+        @if (ViewBag.EncabezadoPieGuardado != null) {
+            @:EncabezadoPieGuardado = '@ViewBag.EncabezadoPieGuardado';
+        }
+
+        if (EncabezadoPieGuardado === 'true') {
+            MostrarMensajeExito("Encabezado y pie de página guardado correctamente");
+        }
+    </script>
+}

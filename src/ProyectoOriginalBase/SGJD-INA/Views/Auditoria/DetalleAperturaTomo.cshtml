@@ -1,0 +1,196 @@
+﻿@using SGJD_INA.Models.ViewModels;
+
+@model DetalleAperturaTomoViewModel
+@{
+    ViewBag.Title = "Detalle de Apertura Tomo";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="DetApeAud" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Tomos", "Auditoria")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Libro de Actas
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Actas", "Inicio")" class="breadcrumb">Módulo de Actas</a>
+                    <a href="@Url.Action("Tomos", "Auditoria")" class="breadcrumb">Libro de Actas</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m7">
+                    <span class="fz-1-2r font-bold">Razón de Apertura del @Model.NombreTomo </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    @if (@Model.Encabezado != null) {
+                        <div class="ql-container">
+                            <div class="ql-editor">
+                                @Html.Raw(Model.Encabezado)
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row">
+                        <div class="col s12">
+                            <p class="text-justified">
+                                La Auditoría Interna del Instituto Nacional de Aprendizaje, cumpliendo con lo
+                                dispuesto en el Art. 22 literal e) de la Ley General de Control Interno No. 8292
+                                hace constar que aquí inicia el tomo No. <span class="font-strong">@Html.DisplayFor(model => model.NumeroTomo)</span> del libro
+                                <span class="font-strong">@Html.DisplayFor(model => model.NombreLibro)</span>
+                                utilizado por <span class="font-strong">@Html.DisplayFor(model => model.UnidadEjecutora)</span>.
+                            </p>
+                            <p>
+                                <span class="font-strong">Observaciones de apertura: </span> @Html.Raw(Model.ObservacionApertura)<br />
+                            </p>
+                            <p>
+                                San José, <span class="font-strong">@Html.DisplayFor(model => model.FechaApertura.Day)</span> de <span class="font-strong">@Html.Raw(Model.FechaApertura.ToString("MMMM"))</span> del <span class="font-strong">@Html.DisplayFor(model => model.FechaApertura.Year)</span><br />
+                            </p>
+                            <p>
+                                Auditor(a) Interno(a): <span class="font-strong">@Html.DisplayFor(model => model.UsuarioApertura)</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col s12">
+                            @* Boton para generar tomo Apertura en pdf *@
+                            <a href="@Model.UrlOficioApertura" target="_blank" class="btn btn-small grey lighten-3 blue-text font-bold">Descargar PDF </a>
+
+                            @* Boton para subir oficio de apertura firmado *@
+                            <button id="BtnCargarAperturaFirmado" type="button" class="btn btn-small waves-effect yellow black-text font-bold ml-1" title="Subir oficio apertura firmado">
+                                Subir firmado
+                            </button>
+                        </div>
+                    </div>
+
+                    @* Contenedor para subir el oficio de apertura firmado *@
+                    <div class="row" id="SubirAperturaFirmado" hidden>
+                        @* Selección de archivo *@
+                        <div class="col s12 m8">
+                            <div class="file-field input-field mt-1">
+                                <div class="btn grey waves-effect waves-teal lighten-3 black-text">
+                                    <span>Archivo</span>
+                                    <input type="file" id="ArchivoAperturaFirmado" name="ArchivoAperturaFirmado" required="required">
+                                </div>
+
+                                <div class="file-path-wrapper">
+                                    <input class="file-path validate" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        @* Boton para subir el oficio de apertura firmado *@
+                        <div class="col s12 m3">
+                            <label class="po-relative">Subir archivo</label>
+                            <button id="BtnSubirAperturaFirmado" type="button" class="btn waves-effect waves-teal yellow black-text font-bold width-100" title="Subir archivo seleccionado">
+                                Subir
+                            </button>
+                        </div>
+                    </div>
+
+                    @if (@Model.PiePagina != null) {
+                        @*Pie Página*@
+                        <div class="row">
+                            <div class="col s12">
+                                <hr />
+                                <div>@Html.Raw(Model.PiePagina)</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script type="text/javascript">
+        var TomoGuardado;
+
+        $(document).ready(function () {
+            const Tomo = @Html.Raw(Json.Encode(Model));  // convertir y guardar el viewModel en un objeto JSON
+
+            // Cargar evento de los botones de oficio de apertura firmado
+            RegistrarEventos(Tomo.IdTomo, Tomo.NombreObjeto);
+        });
+
+        // Si la vista se carga despues de crear un tomo se verifica si existe el mensaje dentro del ViewBag para mostrarlo como notificación
+        @if (ViewBag.TomoGuardado != null) {
+            @:TomoGuardado = '@ViewBag.TomoGuardado';
+        }
+
+        if (TomoGuardado === 'true') {
+            MostrarMensajeExito("Tomo guardado correctamente");
+        }
+
+        function RegistrarEventos(IdTomo, NombreObjeto) {
+            // Mostrar el panel de carga el oficio de apertura firmado al hacer click en el botón "Subir firmado"
+            $("#BtnCargarAperturaFirmado").click(function () {
+                $("#SubirAperturaFirmado").show("slide");
+                $("#BtnCargarAperturaFirmado").hide("slide");
+            });
+
+            // Subir el archivo del oficio de apertura firmado
+            $("#BtnSubirAperturaFirmado").click(function () {
+                // Validar si archivo adjunto ha sido seleccionado para subir
+                if ($("#ArchivoAperturaFirmado").val() == "") {
+                    MostrarMensajeError("Debe seleccionar un archivo"); // Notificar error
+                    return false;
+                }
+
+                MostrarCargandoPagina(); // Mostrar carga de página
+
+                // Crear un FormData para almacenar la información antes de enviarla al controlador
+                var formData = new FormData();
+                formData.append("__RequestVerificationToken", $('input[name="__RequestVerificationToken"]', this.form).val());
+                formData.append("IdTomo", IdTomo);
+                formData.append("Archivo", $("#ArchivoAperturaFirmado")[0].files[0]);
+                formData.append("NombreObjeto", NombreObjeto);
+
+                $.ajax({
+                    url: '@Url.Action("AgregarAperturaFirmado", "Auditoria")',
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.success) {
+                            $("#BtnCargarAperturaFirmado").show("slide");
+                            $("#SubirAperturaFirmado").hide("slide");
+                            $("#ArchivoAperturaFirmado").val("");
+                            $(".file-path").val("");
+                            MostrarMensajeExito(data.Message);
+                            location.reload(); // Refrescar la pagina para mostrar el nuevo archivo que se subio
+                        } else {
+                            MostrarMensajeError(data.Message); // Notificar error
+                        }
+                    }, error: function () {
+                        MostrarMensajeError("Error al subir el archivo"); // Notificar error
+                    },
+                    complete: function () {
+                         DesaparecerCargandoPagina(); //Oculta pantalla de carga
+                    }
+                });
+            });
+        }
+
+    </script>
+}

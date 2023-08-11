@@ -1,0 +1,43 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model OlvidoContrasenaViewModel
+
+@{
+    ViewBag.Title = "¿Olvidó su contraseña?";
+    Layout = "~/Views/Shared/_LayoutLogIn.cshtml";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="OlviContrac" />
+
+@using (Html.BeginForm("OlvidoContrasena", "Cuenta", FormMethod.Post, new { autocomplete = "off" })) {
+    @*@Html.AntiForgeryToken()*@
+
+    <h6 class="center mb-2">Restablecer contraseña</h6>
+
+    @* Correo electrónico *@
+    <div class="input-field">
+        @Html.TextBoxFor(m => m.CorreoElectronico, new { @class = "validate" })
+        @Html.LabelFor(m => m.CorreoElectronico, new { @class = "black-text" })
+        @Html.ValidationMessageFor(m => m.CorreoElectronico, "", new { @class = "helper-text" })
+    </div>
+
+    <div class="center red-text font-bold">
+        @Html.ValidationSummary(true, "", new { @class = "data-error" })
+    </div>
+
+    <button type="submit" value="Enviar correo" class="btn btn-small waves-effect waves-light font-bold white-text blue width-100">
+        <i class="fa fa-envelope left"></i>
+        Enviar correo
+    </button>
+
+    <div class="input-field center">
+        <a href="@Url.Action("IniciarSesion", "Cuenta")" title="Iniciar sesión" class="blue-text">
+            Iniciar sesión
+        </a>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

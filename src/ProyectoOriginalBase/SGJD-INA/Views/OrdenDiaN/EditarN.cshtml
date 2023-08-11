@@ -1,0 +1,1079 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model EditarOrdenDiaViewModel
+
+@{
+    ViewBag.Title = "Editar Orden del Día";
+
+    // Verificar si el orden del dia esta aprobada
+    bool OrdenDiaAprobada = (Model.CodigoEstado.Equals("OD-APROB")) ? true : false;
+
+    // Si el usuario tiene los siguientes roles, si deberia poder adjuntar archivos SIEMPRE Y CUANDO el orden del dia este convocada
+    bool UsuarioConRolAutorizado = (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Profesional Secretaría Técnica") || User.IsInRole("Coordinación Actas")) ? true : false;
+    bool OrdenDiaConvocada = (Model.CodigoEstado.Equals("OD-CONV")) ? true : false;
+
+    // Si el orden del dia esta aprobada, no se debe poder subir adjuntos, aunque sea un rol administrador, si el orden del dia esta convocada, si deberia permitirse subir adjuntos si es un usuario con rol autorizado
+    if (OrdenDiaAprobada) {
+        ViewBag.PuedeSubirAdjuntos = false;
+    }
+    else if (UsuarioConRolAutorizado & OrdenDiaConvocada) {
+        ViewBag.PuedeSubirAdjuntos = true;
+    }
+    else {
+        ViewBag.PuedeSubirAdjuntos = false;
+    }
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="EditOrDi" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "Sesion")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Ordenes del Día
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Actas", "Inicio")" class="breadcrumb">Módulo de Actas</a>
+                    <a href="@Url.Action("Inicio", "Sesion")" class="breadcrumb">Sesión</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            @Html.HiddenFor(m => m.IdOrdenDia)
+            @Html.HiddenFor(m => m.IdSesion)
+            @Html.HiddenFor(m => m.IdEstado)
+            @Html.HiddenFor(m => m.CodigoEstado)
+
+            <div class="row">
+                @* Título y estado del orden del día que se está editando *@
+                <div class="col s12 m6">
+                    <span class="fz-1-1r">
+                        Editar <span class="font-bold">Orden del Día</span> de @Model.TipoSesion <span class="font-bold"> @Model.NumeroSesion - @Model.AnnoSesion</span>
+                    </span>
+                    <span class="grey-text display-block">@Html.LabelFor(ModeItem => Model.NombreEstado) <b>@Helpers.Estado(Model.CodigoEstado, Model.NombreEstado)</b></span>
+                </div>
+
+                <div class="col s12 m6">
+                </div>
+            </div>
+
+            @* Formulario para agregar secciones al orden del día *@
+            @* Si el estado del Orden del Día es diferente a [Convocado] o el usuario tiene el rol de Secretario Tecnico, aunque esté
+                convocado, se permite la inserción de nuevas secciones *@
+            @if (Model.CodigoEstado.Equals("OD-BORR") || Model.CodigoEstado.Equals("OD-VB") || (Model.CodigoEstado.Equals("OD-CONV") && User.IsInRole("Secretario Técnico") || User.IsInRole("Administrador") || User.IsInRole("Administrador Datasoft"))) {
+                using (Html.BeginForm("AgregarSeccion", "OrdenDiaN", FormMethod.Post, htmlAttributes: new { id = "FrmAgregarSeccion", onsubmit = "return SubmitFormAgregarSeccion(this)", novalidate = "novalidate", autocomplete = "off" })) {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "data-error" })
+
+                    if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas")) {
+
+                        <div class="row">
+                            <div class="col s12">
+                                <span class="yellow-text">
+                                    Agregar nueva sección
+                                </span>
+                            </div>
+
+                            <div class="col s12">
+                                <div class="row">
+                                    <div class="col s12 m6">
+                                        <div class="blue lighten-5 p-1">
+                                            @Html.DropDownList("IdNuevaSeccion", new SelectList(ViewBag.ListaSecciones, "Value", "Text"), new { @class = "browser-default select-small z-depth-2" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col s12 m6 center-on-small">
+                                        <div class="py-1">
+                                            <button type="submit" id="BtnAgregarSeccion" title="Agregar sección" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold">
+                                                Agregar sección seleccionada
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            }
+
+            @*Contenedor de encabezado / convocatoria del Orden del Día *@
+            @using (Html.BeginForm("Editar", "OrdenDiaN", FormMethod.Post, htmlAttributes: new { id = "FrmEditarOrdenDia", onsubmit = "return SubmitFormEditarOrdenDia(this)", novalidate = "novalidate", autocomplete = "off" })) {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.IdOrdenDia)
+
+                <div class="row mb-0">
+                    <div class="col s12">
+                        <ul class="collapsible z-depth-0">
+                            <li>
+                                <div class="collapsible-header font-bold">
+                                    <i class="fa fa-caret-right"></i>
+                                    @Html.DisplayNameFor(modelItem => Model.Encabezado)
+                                </div>
+                                <div class="collapsible-body p-1">
+                                    <div class="row">
+                                        <div class="col s12 mb-1">
+                                            <div class="input-field">
+                                                @Html.TextAreaFor(model => model.Encabezado, new { @class = "validate materialize-textarea" })
+                                                @Html.LabelFor(model => model.Encabezado, new { @class = "black-text" })
+                                            </div>
+                                        </div>
+
+                                        @* Botón guardar Orden del Día *@
+                                        <div class="col s12" id="BtnGuardarOrdenDia">
+                                            <button type="submit" class="btn btn-small yellow waves-effect black-text font-bold">
+                                                Guardar
+                                            </button>
+                                        </div>
+
+                                        @* Preloader guardar Orden del Día *@
+                                        <div id="PreloaderGuardarOrdenDia" class="col s12" hidden>
+                                            <div class="progress">
+                                                <div class="indeterminate"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            }
+
+            @* Contenedor de las secciones y temas del Orden del Día *@
+            <div class="row mb-0">
+                <div class="col s12">
+                    <span class="blue-text">
+                        Secciones del Orden del Día
+                    </span>
+                </div>
+
+                <div class="col s12">
+                    <div class="row">
+                        <div class="col s12">
+                            <ul class="collapsible expandable z-depth-0">
+                                @* Seccion *@
+                                @foreach (SeccionViewModel Seccion in Model.Secciones) {
+                                    <li id="ContenedorCollapsible_@Seccion.IdSeccion">
+                                        <div class="collapsible-header yellow lighten-5 font-bold">
+                                            <i class="fa fa-caret-right"></i>
+                                            @Html.DisplayFor(modelItem => Seccion.NombreSeccion)
+                                        </div>
+                                        <div id="ContenedorSeccion_@Seccion.IdSeccion" class="collapsible-body p-1">
+                                            @if ((Model.CodigoEstado.Equals("OD-BORR") || Model.CodigoEstado.Equals("OD-VB") || Model.CodigoEstado.Equals("OD-CONV")) && User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas")) {
+                                                <div class="row">
+                                                    <div class="col s12">
+                                                        <button type="button" onclick="EliminarSeccion('@Model.IdOrdenDia', '@Seccion.IdSeccion', '@Seccion.NombreSeccion')" class="btn-eliminar-seccion btn btn-small grey lighten-3 red-text font-bold waves-effect">Eliminar sección</button>
+                                                        <button type="button" onclick="AbrirModalNuevoTema('@Seccion.IdSeccion', '@Seccion.NombreSeccion', '@Model.IdOrdenDia')" data-target="ModalAgregarTema" class="btn-agregar-tema btn btn-small yellow black-text font-bold waves-effect modal-trigger">Agregar tema</button>
+                                                        <button type="button" onclick="PopUpFormTemaPendiente();" title="Temas Pendientes" class="btn-temas-pendientes btn btn-small grey lighten-3 blue-text font-bold waves-effect right display-none">Temas Pendientes</button>
+                                                    </div>
+                                                </div>
+                                            }
+
+                                            @* Temas de sección *@
+                                            @foreach (TemaViewModel Tema in Seccion.Temas) {
+                                                <div id="ContenedorTema_@Tema.IdTema" class="row border-lightblue mx-0 py-1">
+
+                                                    @* Título del tema *@
+                                                    <div class="col s12">
+                                                        <div class="input-field">
+                                                            @Html.TextAreaFor(modelItem => Tema.Titulo, new { id = "TituloTema_" + Tema.IdTema, @class = "materialize-textarea max-width-100 validate font-bold" })
+                                                            @Html.LabelFor(model => Tema.Titulo, new { @class = "black-text" })
+                                                        </div>
+                                                    </div>
+
+                                                    @* Contenido del tema *@
+                                                    <div class="col s12">
+                                                        <div class="input-field">
+                                                            @Html.TextAreaFor(model => Tema.Resumen, new { @id = "ResumenTema_" + Tema.IdTema, @class = "materialize-textarea max-width-100 validate" })
+                                                            @Html.LabelFor(model => Tema.Resumen, new { @class = "black-text" })
+                                                        </div>
+                                                    </div>
+
+                                                    @* Observaciones al tema *@
+                                                    @if ((Model.CodigoEstado.Equals("OD-CONV") && User.IsInRole("Secretario Tecnico")) || !Model.CodigoEstado.Equals("OD-APROB")) {
+                                                        <div class="col s12">
+                                                            <div class="input-field">
+                                                                @Html.TextAreaFor(model => Tema.Observacion, new { @id = "ObservacionTema_" + Tema.IdTema, @class = "txt-area-observacion materialize-textarea max-width-100 validate" })
+                                                                @Html.LabelFor(model => Tema.Observacion, new { @class = "black-text" })
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    @* Acciones del tema *@
+                                                    <div class="col s12">                                                      
+                                                        @if ((Model.CodigoEstado.Equals("OD-BORR") || Model.CodigoEstado.Equals("OD-VB") || Model.CodigoEstado.Equals("OD-CONV")) && User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas")) {
+                                                            <button type="button" title="Actualizar" class="btn-actualizar-tema btn btn-small grey lighten-3 blue-text font-bold waves-effect" onclick="ActualizarTema(@Tema.IdTema)">
+                                                                <i class="hide-on-med-and-up fas fa-save"></i>
+                                                                <span class="hide-on-small-and-down center">Actualizar</span>
+                                                            </button>
+                                                            <button type="button" title="Eliminar" class="btn-eliminar-tema btn btn-small grey lighten-3 red-text font-bold waves-effect" onclick="EliminarTema(@Tema.IdTema)">
+                                                                <i class="hide-on-med-and-up fas fa-eraser"></i>
+                                                                <span class="hide-on-small-and-down center">Eliminar</span>
+                                                            </button>
+                                                        }
+
+                                                        <button type="button" title="Adjuntos" class="btn-adjuntos-tema btn btn-small grey lighten-3 black-text font-bold waves-effect modal-trigger" onclick="AbrirModalAdjuntosTema(@Tema.IdTema, '@Tema.Titulo')" data-target="ModalAdjuntos">
+                                                            <i class="hide-on-med-and-up fas fa-folder-open"></i>
+                                                            <span class="hide-on-small-and-down center">Adjuntos</span>
+                                                        </button>
+                                                    </div>
+
+                                                </div> @* Fin de ContenedorTema *@
+                                            }
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    @* Boton para ver detalles de la orden del día" *@
+                    @Html.ActionLink("Ver Detalles", "DetalleN", "OrdenDiaN", routeValues: new { IdOrdenDia = @Model.IdOrdenDia }, htmlAttributes: new { @class = "btn btn-small grey lighten-3 black-text font-bold waves-effect", target = "_blank" })
+
+                    @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas")) {
+                        <button type="button" onclick="EnviarNotificacionPorCorreo(@Model.IdOrdenDia)" class="btn btn-small grey lighten-3 black-text font-bold waves-effect right">
+                            Enviar por correo
+                        </button>
+                    }
+
+                    @if (Model.CodigoEstado.Equals("OD-BORR") && (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas"))) {
+                        @* Boton para dar visto bueno" *@
+                        <button type="button" title="Dar visto bueno al Orden del Día" value="Dar visto bueno al Orden del Día" id="BtnVistoBueno" class="btn btn-small grey lighten-3 waves-effect waves-teal blue-text font-bold mx-1 right">
+                            Dar visto bueno
+                        </button>
+                    }
+
+                    @if (Model.CodigoEstado.Equals("OD-VB") && (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas"))) {
+                        @* Boton para convocar *@
+                        <button title="Convocar sesión" value="Convocar sesion" id="BtnConvocado" class="btn btn-small grey lighten-3 waves-effect waves-teal mx-1 blue-text font-bold right">
+                            Convocar
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_AgregarTemaPartial")
+@Html.Partial("_AdjuntosTemaPartial")
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+@Styles.Render("~/Content/jqueryconfirm")
+@Styles.Render("~/Content/quill")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryconfirm")
+    @Scripts.Render("~/bundles/quill")
+
+    <script type="text/javascript">
+        var TablaArchivosAdjuntos; // Tabla de archivos adjuntos
+        var TablaTemasPendientes; // Tabla de temas pendientes
+
+        $(document).ready(function () {
+            const OrdenDia = @Html.Raw(Json.Encode(Model)); // Convertir y guardar el ViewModel en un objeto JSON
+
+            // Cargar ciertos valores cuando se carga la vista
+            CargarElementos(OrdenDia.CodigoEstado);
+
+            // Cargar eventos de los botones para cambios de estado y envio de notificaciones
+            RegistrarEventos(OrdenDia.IdOrdenDia);
+
+        }); // Fin de $(document).ready
+
+        // Cambiar la orientación de las flechas al abrir y cerrar un elemento del collapsible
+        $(".collapsible").on("click", "li div.collapsible-header", function () {
+            if ($(this).parent().attr("class") == "active") {
+                $(this).find("i").removeClass("fa fa-caret-down").addClass("fa fa-caret-right");
+            }
+            else {
+                $(this).find("i").removeClass("fa fa-caret-right").addClass("fa fa-caret-down");
+            }
+        });
+
+        // Cargar ciertos valores en los controles HTML cuando se carga la vista
+        function CargarElementos(CodigoEstado) {
+            // Si el estado del orden del dia es aprobado y/o convocado se desabilitan todos los campos
+            if (CodigoEstado === "OD-APROB") {
+                // Entradas de texto permitir redactar el detalle del archivo adjunto y, en el modal, el título del tema nuevo
+                $("input:not(#DetalleArchivo, #TituloNuevoTema)").prop('readonly', true);
+
+                // Permitir redactar, en el modal, la descripción del tema nuevo y las observaciones de los temas
+                $("textarea:not(#ResumenNuevoTema, .txt-area-observacion)").prop('readonly', true);
+
+                // Botones
+                $("#BtnGuardarOrdenDia").remove();
+            }
+        }
+
+        //////////
+        // SECCIONES
+        //////////
+        function SubmitFormAgregarSeccion(form) {
+            MostrarCargandoPagina(); // Mostrar carga de página
+
+            $("#BtnAgregarSeccion").attr('disabled', 'disabled');
+
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(),
+                    IdOrdenDia: $("#IdOrdenDia").val(),
+                    IdNuevaSeccion: $("#IdNuevaSeccion").val()
+                },
+                success: function (data) {
+                    if (data.success) {
+                        MostrarMensajeExito(data.message + " Refrescando."); // Notificar
+                        location.reload(); // Recargar página
+                    } else {
+                        MostrarMensajeError(data.message); // Notificar el error
+                        $("#BtnAgregarSeccion").removeAttr('disabled');
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError(); //Notificar error
+                    $("#BtnAgregarSeccion").removeAttr('disabled');
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina(); // Ocultar carga de página
+                }
+            });
+
+            return false;
+        }
+
+        function EliminarSeccion(IdOrdenDia, IdSeccion, TituloSeccion){
+            $("#IdOrdenDia").val(IdOrdenDia);
+            $("#IdSeccion").val(IdSeccion);
+
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle red-text',
+                title: 'Eliminar sección',
+                content: '¿Desea eliminar la sección  ' + TituloSeccion+' ? (Esto eliminará todos los temas de la sección y sus adjuntos)',
+                boxWidth: '25%',
+                useBootstrap: false,
+                //type: 'orange',
+                buttons: {
+                    Eliminar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina();
+
+                            // Ejecutar petición para eliminar el tema
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("EliminarSeccion", "OrdenDiaN")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(),
+                                    IdOrdenDia: IdOrdenDia,
+                                    IdSeccion: IdSeccion
+                                },
+                                success: function (data) {
+                                    if (data.success) {
+                                        $("#ContenedorCollapsible_" + IdSeccion).remove(); // Eliminar contenedor del tema y todo lo que contiene
+                                        MostrarMensajeExito(data.message);
+                                    }
+                                    else {
+                                        MostrarMensajeError(data.message);
+                                    }
+                                },
+                                error: function () {
+                                    MostrarMensajeError("Error al eliminar la sección"); // Notificar error
+                                },
+                                complete: function () {
+                                    DesaparecerCargandoPagina(); //Ocultar carga de página
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+        }
+        //////////
+        // Fin de secciones
+        //////////
+
+        //////////
+        // TEMAS
+        //////////
+        // Abrir modal para agregar un nuevo tema o un tema pendiente a una sección
+        function AbrirModalNuevoTema(IdSeccion, NombreSeccion, IdOrdenDia) {
+            $("#TituloNuevoTema, #ResumenNuevoTema").val('');
+
+            $("#NombreSeccion").text(NombreSeccion);
+            $("#IdSeccion").val(IdSeccion);
+
+            //Parámetros AJAX para cargar DataTable
+            var parametrosAJAX = {
+                url: '@Url.Action("ObtenerTemasPendientes", "OrdenDiaN")',
+                type: "GET",
+                datatype: "json",
+                data: { IdOrdenDia: IdOrdenDia},
+                error: MensajeError
+            };
+
+            TablaTemasPendientes = $("#TablaTemaPendiente").DataTable();
+            TablaTemasPendientes.destroy();
+
+            TablaTemasPendientes = $("#TablaTemaPendiente").DataTable({
+                ajax: parametrosAJAX,
+                columns: [
+                    { data: "Titulo", className: 'no-wrap' },
+                    { data: "Resumen", className: 'no-wrap' },
+                    {
+                        className: "center", render: function (data, type, row) {
+                            var IdTema = row['Id'];
+                            var TituloTema = row['Titulo'];
+                            var Descripcion = row['Resumen'];
+                            return "<a href='#' class='btn waves-effect waves-teal yellow black-text font-bold' title='Agregar Tema' onclick='AgregarTemaPendiente(&#39;" + IdTema + "&#39;, &#39;" + $("#IdOrdenDia").val() + "&#39;, &#39;" + $("#IdSeccion").val() + "&#39; , &#39;" + TituloTema + "&#39;, &#39" + Descripcion + "&#39)'>Agregar</button>";
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                pageLength: 5,
+                searching: false,
+                responsive: true,
+                info: false,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true
+            });
+        }
+
+        // Agregar tema pendiente a una sección
+        function AgregarTemaPendiente(IdTema, IdOrdenDia, IdSeccion, TituloTema, ResumenTema) {
+            MostrarCargandoPagina();
+
+            // Ejecutar petición para agregar el tema
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("AgregarTemaPendiente", "OrdenDiaN")',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(),
+                    IdTema: IdTema,
+                    IdOrdenDia: IdOrdenDia,
+                    IdSeccion: IdSeccion
+                },
+                success: function (data) {
+                    if (data.success) {
+                        AgregarNuevoTemaEnSeccion(IdSeccion, IdTema, TituloTema, ResumenTema);
+                        TablaTemasPendientes.ajax.reload();
+                        MostrarMensajeExito(data.Mensaje);
+                    }
+                    else {
+                        MostrarMensajeError(data.Mensaje); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError(data.Mensaje); // Notificar error
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina(); //Ocultar carga de página
+                }
+            });
+        }
+
+        // Agregar nuevo tema a una sección
+        function AgregarNuevoTema() {
+            MostrarCargandoPagina();
+
+            // Crear objeto JSON para Tema
+            const TemaJSON = {
+                IdOrdenDia: $("#IdOrdenDia").val(),
+                IdSeccion: $("#IdSeccion").val(),
+                Titulo: $("#TituloNuevoTema").val(),
+                Resumen: $("#ResumenNuevoTema").val()
+            }
+
+            // Ejecutar petición para agregar el tema
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("AgregarTema", "OrdenDiaN")',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(),
+                    TemaJSON: JSON.stringify(TemaJSON)
+                },
+                success: function (data) {
+                    if (data.success > 0) {
+                        //Limpiar campos modal agregarTemaPartial
+                        AgregarNuevoTemaEnSeccion($("#IdSeccion").val(), data.IdNuevoTema, $("#TituloNuevoTema").val(), $("#ResumenNuevoTema").val());
+                        $("#TituloNuevoTema, #ResumenNuevoTema").val('');
+                        $(".modal-content label").removeClass("active");
+                        MostrarMensajeExito(data.Mensaje);
+                    }
+                    else {
+                        MostrarMensajeError("Error al agregar tema"); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError("Error al agregar el tema"); // Notificar error
+                },
+                complete: function () {
+                    M.Modal.getInstance($(".modal")).close(); // Cerrar modal
+                    DesaparecerCargandoPagina(); //Ocultar carga de página
+                }
+            });
+        }
+
+        // Agregar o añadir contenedor de nuevo tema creado al contenedor de seccion con el id respectivo
+        function AgregarNuevoTemaEnSeccion(IdSeccion, IdNuevoTema, Titulo, Contenido) {
+            $("#ContenedorSeccion_" + IdSeccion).append(
+                // Contenedor del tema
+                "<div id='ContenedorTema_" + IdNuevoTema + "' class='row border-lightblue mx-0 py-1'>" +
+
+                // Título del tema
+                "<div class='col s12'>" +
+                "<div class='input-field'>" +
+                "<input id='TituloTema_" + IdNuevoTema + "' class='validate text-box single-line font-bold' name='Tema.Titulo' type='text' value='" + Titulo + "' />" +
+                "<label class='black-text active' for='Tema.Titulo'>Título del tema</label>" +
+                "</div>" +
+                "</div>" + // Cierre de título de tema
+
+                // Contenido del tema
+                "<div class='col s12'>" +
+                "<div class='input-field'>" +
+                "<textarea id='ResumenTema_" + IdNuevoTema + "' class='materialize-textarea max-width-100 validate' name='Tema.Resumen'>" + Contenido + "</textarea>" +
+                "<label class='black-text active' for='Tema.Resumen'>Resumen o descripción del tema</label>" +
+                "</div>" +
+                "</div>" + // Cierre de contenido de tema
+
+                // Observaciones del tema
+                "<div class='col s12'>" +
+                "<div class='input-field'>" +
+                "<textarea id='ObservacionTema_" + IdNuevoTema + "' class='materialize-textarea max-width-100 validate' name='Tema.Observacion'></textarea>" +
+                "<label class='black-text' for='Tema.Observacion'>Observaciones al tema</label>" +
+                "</div>" +
+                "</div>" + // Cierre de observaciones de tema
+
+                // Acciones del tema
+                "<div class='col s12'>" +
+
+                // Actualizar
+                "<button type='button' title='Actualizar' class='btn btn-small grey lighten-3 blue-text font-bold waves-effect' onclick='ActualizarTema(" + IdNuevoTema + ")'>" +
+                "<i class='hide-on-med-and-up fas fa-save'></i>" +
+                "<span class='hide-on-small-and-down center'>Actualizar</span>" +
+                "</button>&nbsp;" + // Cierre de actualizar
+
+                // Eliminar
+                "<button type='button' title='Eliminar' class='btn btn-small grey lighten-3 red-text font-bold waves-effect' onclick='EliminarTema(" + IdNuevoTema+ ")'>" +
+                "<i class='hide-on-med-and-up fas fa-eraser'></i>" +
+                "<span class='hide-on-small-and-down center'>Eliminar</span>" +
+                "</button>&nbsp;" + // Cierre de eliminar
+
+                // Adjuntos
+                "<button type='button' title='Adjuntos' class='btn btn-small grey lighten-3 black-text font-bold waves-effect modal-trigger' onclick='AbrirModalAdjuntosTema(" + IdNuevoTema + "&#44;&#39;" + Titulo + "&#39;)' data-target='ModalAdjuntos'>" +
+                "<i class='hide-on-med-and-up fas fa-folder-open'></i>" +
+                "<span class='hide-on-small-and-down center'>Adjuntos</span>" +
+                "</button>&nbsp;" + // Cierre de adjuntos
+
+                // Posicionar arriba
+                //"<button type='button' title='Arriba' class='btn btn-small grey lighten-3 black-text font-bold waves-effect' display-none>" +
+                //"<i class='fas fa-arrow-up'></i>" +
+                //"</button>&nbsp;" + // Cierre de posicionar arriba
+
+                //// Posicionar abajo
+                //"<button type='button' title='Abajo' class='btn btn-small grey lighten-3 black-text font-bold waves-effect' display-none>" +
+                //"<i class='fas fa-arrow-down'></i>" +
+                //"</button>&nbsp;" + // Cierre de posicionar abajo
+
+                "</div>" + // Cierre de acciones de tema
+
+                "</div>" // Cierre de contenedor de tema
+            );
+        }
+
+        // Actualizar el título, resumen y observación de un tema
+        function ActualizarTema(IdTema) {
+            MostrarCargandoPagina();
+
+            // Crear objeto JSON para Tema
+            var TemaJSON = {
+                Id: IdTema,
+                Titulo: $("#TituloTema_" + IdTema).val(),
+                Resumen: $("#ResumenTema_" + IdTema).val(),
+                Observacion: $("#ObservacionTema_" + IdTema).val()
+            }
+
+            // Ejecutar petición para actualizar el tema
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("ActualizarTema", "OrdenDiaN")',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(),
+                    TemaJSON: JSON.stringify(TemaJSON)
+                },
+                success: function (data) {
+                    if (data.success) {
+                        MostrarMensajeExito(data.Mensaje);
+                    }
+                    else {
+                        MostrarMensajeError("Error al actualizar el tema"); // Notificar error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError("Error al actualizar el tema"); // Notificar error
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina(); //Ocultar carga de página
+                }
+            });
+        }
+
+        // Eliminar un tema de una seccion
+        function EliminarTema(IdTema) {
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle red-text',
+                title: 'Eliminar tema',
+                content: '¿Está seguro que desea eliminar el tema?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                //type: 'orange',
+                buttons: {
+                    Eliminar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina();
+
+                            // Ejecutar petición para eliminar el tema
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("EliminarTema", "OrdenDiaN")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(),
+                                    IdTema: IdTema
+                                },
+                                success: function (data) {
+                                    if (data.success) {
+                                        $("#ContenedorTema_" + IdTema).remove(); // Eliminar contenedor del tema y todo lo que contiene
+                                        MostrarMensajeExito(data.Mensaje);
+                                    }
+                                    else {
+                                        MostrarMensajeError("Error al actualizar el tema"); // Notificar error
+                                    }
+                                },
+                                error: function () {
+                                    MostrarMensajeError("Error al actualizar el tema"); // Notificar error
+                                },
+                                complete: function () {
+                                    DesaparecerCargandoPagina(); //Ocultar carga de página
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+        }
+        //////////
+        // Fin de temas
+        //////////
+
+        //////////
+        // ADJUNTOS
+        //////////
+        // Abrir modal para ver y agregar los adjuntos de un tema
+        function AbrirModalAdjuntosTema(IdTema, TituloTema) {
+            $("#IdTema").val(IdTema);
+            $("#TituloTema").text(TituloTema);
+
+            // Guardar el código de estado del Orden del Día para validar si mostrar o no el botón de eliminar adjuntos
+            var CodigoEstado = $("#CodigoEstado").val();
+
+            //Parámetros AJAX para cargar DataTable
+            var parametrosAJAX = {
+                url: '@Url.Action("ObtenerArchivosTema", "OrdenDiaN")',
+                type: "GET",
+                datatype: "json",
+                data: { IdTema: IdTema},
+                error: MensajeError
+            };
+
+            TablaArchivosAdjuntos = $("#TablaArchivosAdjuntos").DataTable();
+            TablaArchivosAdjuntos.destroy();
+
+            TablaArchivosAdjuntos = $("#TablaArchivosAdjuntos").DataTable({
+                ajax: parametrosAJAX,
+                columns: [
+                    {
+                        className: "no-wrap", render: function (data, type, row) {
+                            var Nombre = row['Observacion'];
+                            var URLArchivo = row['UrlArchivo'];
+                            var LinkArchivo = "<a href='"+ URLArchivo + "' target='_blank'>" + Nombre + "</a>";
+                            return LinkArchivo;
+                        }
+                    },
+                    {
+                        className: "center", render: function (data, type, row) {
+                            var IdArchivo = row['IdArchivoAdjunto'];
+                            var NombreArchivo = row['Observacion'];
+
+                            if (CodigoEstado === "OD-BORR" || CodigoEstado === "OD-VB" || CodigoEstado === "OD-CONV") {
+                                    return "<a href='#' class='red-text font-bold btn-eliminar-archivo' title='Eliminar adjunto' data-value='" + IdArchivo + "' data-nombre='" + NombreArchivo + "' onclick='EliminarArchivoAdjunto(this)'><i class='fa fa-trash'>&nbsp;</i>Eliminar</button>";
+                            }
+                            else {
+                                return "";
+                            }
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                paging: false,
+                searching: false,
+                responsive: true,
+                info: false,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true
+            });
+        }
+
+        // Subir y agregar un archivo adjunto a un tema
+        $("#SubirArchivo").click(function () {
+            // Validar si archivo adjunto ha sido seleccionado para subir
+            if ($("#ArchivoAdjunto").val() == "") {
+                MostrarMensajeError("Debe seleccionar un archivo");
+                return false;
+            }
+
+            // Validar que detalle haya sido ingresado
+            if ($("#DetalleArchivo").val() == "") {
+                MostrarMensajeError("Debe digitar el detalle del archivo");
+                return false;
+            }
+
+            MostrarCargandoPagina();
+
+            // Crear un FormData para almacenar la información antes de enviarla al controlador
+            var formData = new FormData();
+            formData.append("__RequestVerificationToken", $('input[name="__RequestVerificationToken"]', this.form).val());
+            formData.append("IdObjeto", $("#IdTema").val());
+            formData.append("Detalle", $("#DetalleArchivo").val());
+            formData.append("Archivo", $("#ArchivoAdjunto")[0].files[0]);
+            formData.append("NombreObjeto", '');
+
+            $.ajax({
+                url: '@Url.Action("AgregarArchivoAdjunto", "OrdenDiaN")',
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data.success) {
+                        $("#DetalleArchivo").val("");
+                        $("#ArchivoAdjunto").val("");
+                        $(".file-path").val("");
+                        MostrarMensajeExito(data.Message);
+                        TablaArchivosAdjuntos.ajax.reload();
+                    } else {
+                        MostrarMensajeError(data.Message);
+                    }
+                }, error: function () {
+                    MostrarMensajeError("Error al subir el archivo");
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina();
+                }
+            });
+        });
+
+        // Eliminar un adjunto de un tema
+        function EliminarArchivoAdjunto(button) {
+            var IdArchivo = $(button).data("value");
+            var NombreArchivo = $(button).data("nombre");
+
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Eliminar archivo adjunto',
+                content: '¿Está seguro que desea eliminar el archivo adjunto '+ NombreArchivo +'?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Confirmar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina(); // Mostrar carga de página
+
+                            var token = $('input[name="__RequestVerificationToken"]', this.form).val(); //Extraer el token
+
+                            //Ejecuta la petición eliminar un archivo adjunto segun el id
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("Eliminar", "ArchivoAdjunto")',
+                                data: {
+                                    __RequestVerificationToken: token,
+                                    IdArchivo: IdArchivo
+                                },
+                                success: function (data) {
+                                    if (data.success == true) {
+                                        MostrarMensajeExito(data.message)
+                                       TablaArchivosAdjuntos.ajax.reload();
+                                    } else {
+                                        MostrarMensajeError(data.message)
+                                    }
+                                },
+                                error: function () {
+                                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                },
+                                complete: function () {
+                                    DesaparecerCargandoPagina(); // Ocultar carga de página
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+        }
+        //////////
+        // Fin de adjuntos
+        //////////
+
+        // Guardar el Orden del Día
+        function SubmitFormEditarOrdenDia(form) {
+            MostrarMensajeInformacion("Guardando información");
+
+            $("#BtnGuardarOrdenDia").hide();
+            $("#PreloaderGuardarOrdenDia").show();
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("EditarN", "OrdenDiaN")',
+                data: $(form).serialize(),
+                success: function (data) {
+                    if (data.success) {
+                        MostrarMensajeExito(data.Mensaje); // Notificar
+                    } else {
+                        MostrarMensajeError(data.Mensaje); // Notificar el error
+                    }
+                },
+                error: function () {
+                    MostrarMensajeError(); //Notificar error
+                },
+                complete: function () {
+                    $("#BtnGuardarOrdenDia").show();
+                    $("#PreloaderGuardarOrdenDia").hide();
+                }
+            });
+
+            return false;
+        }
+
+        // Cambiar el estado del Orden del Día a visto bueno
+        function DarVistoBueno(IdOrdenDia) {
+            var Diferido = $.Deferred();
+
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Dar visto bueno al orden del día',
+                content: '¿Esta seguro de dar el visto bueno al orden del día redactado?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Confirmar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina(); // Mostrar carga de página
+
+                            // Ejecutar la petición de dar visto bueno del orden del día segun el id
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("VistoBueno", "OrdenDiaN")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                                    IdOrdenDia: IdOrdenDia
+                                },
+                                success: function (data) {
+                                    DesaparecerCargandoPagina(); //Oculta pantalla de carga
+
+                                    if (data.success == true) {
+                                        MostrarMensajeExito(data.Mensaje);
+                                    } else {
+                                        MostrarMensajeError(data.Mensaje); // Notificar error
+                                    }
+
+                                    Diferido.resolve();
+                                },
+                                error: function () {
+                                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+
+            return Diferido.promise();
+        }
+
+        // Cambiar el estado del Orden del Día a convocado
+        function Convocado(IdOrdenDia) {
+            var Diferido = $.Deferred();
+
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Notificar el orden del día',
+                content: '¿Esta seguro que desea notificar el orden del día redactado?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Confirmar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                             MostrarCargandoPagina(); // Mostrar carga de página
+
+                            // Ejecutar petición de convocar el orden del día segun id
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("Convocar", "OrdenDiaN")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                                    IdOrdenDia: IdOrdenDia
+                                },
+                                success: function (data) {
+                                    if (data.success == true) {
+                                        MostrarMensajeExito(data.Mensaje);
+                                    } else {
+                                        MostrarMensajeError(data.Mensaje); // Notificar error
+                                    }
+
+                                    Diferido.resolve();
+                                },
+                                error: function () {
+                                    MostrarMensajeError("Error al procesar la información."); // Notificar error
+                                    return false;
+                                },
+                                complete: function () {
+                                    DesaparecerCargandoPagina(); //Oculta pantalla de carga
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text'
+                    }
+                }
+            });
+
+            return Diferido.promise();
+        }
+
+        // Cargar eventos de los botones para cambios de estado y envio de notificaciones
+        function RegistrarEventos(IdOrdenDia) {
+            // Cambiar el estado del orden del día de borrador a visto bueno
+            $("#BtnVistoBueno").click(function () {
+                DarVistoBueno(IdOrdenDia).done(function () {
+                    // Dar visto bueno fue completado, llamar a enviar notificación
+                    EnviarNotificacionPorCorreo(IdOrdenDia);
+                });
+            });
+
+            // Cambiar el estado del orden del día visto bueno a notificado
+            $("#BtnConvocado").click(function () {
+                Convocado(IdOrdenDia).done(function () {
+                    // Cambiar a convocado fue completado, llamar a enviar notificación
+                    EnviarNotificacionPorCorreo(IdOrdenDia);
+                });
+            });
+        }
+
+        // Enviar notificacion por correo electronico
+        function EnviarNotificacionPorCorreo(IdOrdenDia) {
+            // Solicitar confirmación
+            $.confirm({
+                icon: 'fa fa-exclamation-circle yellow-text',
+                title: 'Enviar notificación',
+                content: '¿Desea enviar la notificación?',
+                boxWidth: '25%',
+                useBootstrap: false,
+                buttons: {
+                    Enviar: {
+                        btnClass: 'btn btn-small waves-effect yellow black-text font-bold',
+                        action: function () {
+                            MostrarCargandoPagina(); // Mostrar carga de página
+
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: '@Url.Action("EnviarCorreo", "OrdenDiaN")',
+                                data: {
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]', this.form).val(), //Extraer el token
+                                    IdOrdenDia: IdOrdenDia,
+                                },
+                                success: function (data) {
+                                    DesaparecerCargandoPagina();
+
+                                    if (data.success == true) {
+                                        MostrarMensajeExito("Correo enviado.");
+                                        location.reload(); // Refrescar la pagina
+                                    } else {
+                                        MostrarMensajeError("");
+                                    }
+                                },
+                                error: function () {
+                                    DesaparecerCargandoPagina();
+                                    MostrarMensajeError(""); // Notificar error
+                                }
+                            });
+                        }
+                    },
+                    Cancelar: {
+                        btnClass: 'btn btn-small font-semibold waves-effect grey lighten-3 black-text',
+                        action: function () {
+                            location.reload(); // Refrescar la pagina
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}

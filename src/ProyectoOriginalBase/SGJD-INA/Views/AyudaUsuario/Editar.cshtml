@@ -1,0 +1,156 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model  EditarAyudaUsuarioViewModel
+
+@{
+    ViewBag.Title = "Editar ayuda usuario";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="EditAyUsu" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "AyudaUsuario")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Ayuda a Usuario
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="@Url.Action("Inicio", "AyudaUsuario")" class="breadcrumb">Ayuda Usuario</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            @using (Html.BeginForm("Editar", "AyudaUsuario", FormMethod.Post, htmlAttributes: new { onsubmit = "return SubmitFormAyudaUsuario(this)", autocomplete = "off" })) {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "data-error" })
+
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.Abreviatura)
+
+                // Se guarda aqui los valores del campo para manipularlo y actualizarlo con los nuevos valores del
+                // editor de texto antes de enviar a guardar los cambios
+                @Html.HiddenFor(model => model.MensajeAyuda)
+
+                <div class="row">
+                    <div class="col s12 m10 mb-1">
+                        <span class="fz-1-2r font-bold">
+                            Ayuda a Usuario
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row mb-0">
+                    <div class="col s12 m5">
+                        <div class="input-field">
+                            @Html.EditorFor(model => model.NombreModulo)
+                            @Html.LabelFor(model => model.NombreModulo)
+                        </div>
+                    </div>
+                    <div class="col s12 m5">
+                        <div class="input-field">
+                            @Html.EditorFor(model => model.NombreVista)
+                            @Html.LabelFor(model => model.NombreVista, new { @class = "active" })
+                        </div>
+                    </div>
+                    <div class="col s12 m2">
+                        <div class="input-field">
+                            @Html.TextBoxFor(model => model.Abreviatura, new { disabled = "disabled" })
+                            @Html.LabelFor(model => model.Abreviatura, new { @class = "active" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col s12">
+                        @Html.LabelFor(model => model.MensajeAyuda, new { @class = "font-bold black-text" })
+                        <div id="EditorMensajeAyuda">
+                            @Html.Raw(Model.MensajeAyuda)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col s12">
+                        <button type="submit" id="BtnGuardar" title="Guardar" value="Guardar" class="btn btn-small yellow black-text font-bold waves-effect waves-light">
+                            Guardar
+                        </button>
+
+                        <a title="Cancelar" href="@Url.Action("Inicio", "AyudaUsuario")" class="btn btn-small grey lighten-3 red-text waves-effect">
+                            Cancelar
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/quill")
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/quill")
+
+    <script type="text/javascript">
+        // Definición de objetos para cargar el editor de texto enriquecido WYSIWYG QuillJS
+        var EditorMensajeAyuda = new Quill("#EditorMensajeAyuda", OpcionesQuillJS);
+
+        // Guardar ayuda a usuario
+        function SubmitFormAyudaUsuario(form) {
+            // Obtener el valor del editor, incluyendo formato HTML y guardarlo en los inputs establecidos en Razor
+            $("#MensajeAyuda").val(EditorMensajeAyuda.root.innerHTML);
+            console.log($("#MensajeAyuda").val());
+
+            // Validar que los campos del formulario estén llenos y tengan los valores correctos
+            $.validator.unobtrusive.parse(form);
+
+            if ($(form).valid()) {
+                MostrarCargandoPagina(); // Mostrar carga de página
+
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            MostrarMensajeExito(data.Mensaje); // Notificar
+                        } else {
+                            MostrarMensajeError(data.Mensaje); // Notificar el error
+                        }
+                    },
+                    error: function () {
+                        MostrarMensajeError("Error al procesar la información."); //Notificar error
+                    },
+                    complete: function () {
+                        DesaparecerCargandoPagina(); // Ocultar carga de página
+                    }
+                });
+            }
+
+            return false;
+        }
+    </script>
+
+    @* Se llama en esta posición puesto que necesita que primero se ejecute el script local *@
+    @Scripts.Render("~/bundles/quillextra")
+}
+
+
+
+
+
+

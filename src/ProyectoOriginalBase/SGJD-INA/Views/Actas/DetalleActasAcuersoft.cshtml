@@ -1,0 +1,107 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model ActaAcuersoftViewModel
+
+@{
+    ViewBag.Title = "Acta Acuersoft";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="DetActAcu" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("InicioActasAcuersoft", "Actas")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Actas de Acuersoft
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Actas", "Inicio")" class="breadcrumb">Módulo de Actas</a>
+                    <a href="@Url.Action("InicioActasAcuersoft", "Actas")" class="breadcrumb">Actas de Acuersoft</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            @* Título del acta que se visualizando*@
+            <div class="row">
+                <div class="col s12">
+                    <span class="fz-1-1r">
+                        <span class="font-bold">Acta</span> <span class="blue-text font-bold">@Model.NumeroActa</span>
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                @* Fecha en que se realizo la sesión*@
+                <div class="col s12 m6">
+                    <div class="input-field">
+                        @Html.EditorFor(model => model.Fecha, new { htmlAttributes = new { @class = "validate", @readonly = true } })
+                        @Html.LabelFor(model => model.Fecha, new { @class = "active black-text" })
+                    </div>
+                </div>
+
+                @* Lugar en que se realizo la sesión*@
+                <div class="col s12 m6">
+                    <div class="input-field">
+                        @Html.EditorFor(model => model.Lugar, new { htmlAttributes = new { @class = "validate", @readonly = true } })
+                        @Html.LabelFor(model => model.Lugar, new { @class = "active black-text" })
+                    </div>
+                </div>
+
+                @* Quien preside la sesión*@
+                <div class="col s12 m6">
+                    <div class="input-field">
+                        @Html.EditorFor(model => model.Preside, new { htmlAttributes = new { @class = "validate", @readonly = true } })
+                        @Html.LabelFor(model => model.Preside, new { @class = "active black-text" })
+                    </div>
+                </div>
+
+                @* Secretario cuando se realizo la sesión*@
+                <div class="col s12 m6">
+                    <div class="input-field">
+                        @Html.EditorFor(model => model.Secretario, new { htmlAttributes = new { @class = "validate", @readonly = true } })
+                        @Html.LabelFor(model => model.Secretario, new { @class = "active black-text" })
+                    </div>
+                </div>
+            </div>
+
+            @* Secretario cuando se realizo la sesión*@
+            <div class="row">
+                <div class="col s12">
+                    <h6>Detalle del Acta</h6>
+                </div>
+                <div class="col s12">
+                    <ul class="collapsible expandable z-depth-0">
+                        @foreach (var DetalleActa in Model.DetalleActaAcuersoft.OrderBy(x => x.Indice)) {
+                            <li>
+                                <div class="collapsible-header grey lighten-5 font-bold">
+                                    <i class="fa fa-caret-right"></i>
+                                    <span class="blue-text">@Helpers.DescripcionComoTitulo(DetalleActa.Detalle)</span>
+                                </div>
+                                <div class="collapsible-body">
+                                    @DetalleActa.Detalle
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+    </script>
+}

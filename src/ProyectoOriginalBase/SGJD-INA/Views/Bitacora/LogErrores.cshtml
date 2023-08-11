@@ -1,0 +1,118 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<ErroresViewModel>
+
+@{
+    ViewBag.Title = "Log de Errores";
+}
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Administracion", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Log de errores
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="#" class="breadcrumb">Log de errores</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 mb-1">
+                    <span class="fz-1-2r font-bold">Log de errores</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <table id="TablaErrores" class="table responsive width-100 display bordered cell-border">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.Fecha)</th>
+                                <th>@Html.DisplayNameFor(model => model.Error)</th>
+                                <th>@Html.DisplayNameFor(model => model.NombreArchivo)</th>
+                                <th>@Html.DisplayNameFor(model => model.NombreMetodo)</th>
+                                <th>@Html.DisplayNameFor(model => model.CodigoExcepcion)</th>
+                                <th>@Html.DisplayNameFor(model => model.LineaError)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           @foreach (var LogError in Model) {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => LogError.Fecha)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => LogError.Error)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => LogError.NombreArchivo)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => LogError.NombreMetodo)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => LogError.CodigoExcepcion)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => LogError.LineaError)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        var PopUp;
+
+        $(document).ready(function () {
+            $("#TablaErrores").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                sorting: false,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                ordering: false,
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 }
+                ]
+            });
+        });
+
+    </script>
+}
+

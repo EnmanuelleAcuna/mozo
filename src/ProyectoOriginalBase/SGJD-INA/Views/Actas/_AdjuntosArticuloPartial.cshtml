@@ -1,0 +1,82 @@
+﻿<!-- Modal para ver una lista de archivos adjuntos y agregar un archivo adjunto -->
+<div id="ModalAdjuntos" class="modal">
+    <div class="modal-content px-0 py-1">
+        <input hidden type="text" id="IdArticulo" />
+
+        <div class="row mb-0">
+            <div class="col s12">
+                <ul class="tabs tabs-fixed-width">
+                    <li class="tab col s3">
+                        <a href="#TabAdjuntos" class="active blue-text">
+                            Archivos adjuntos de
+                            <span id="TituloArticulo" class="font-bold"></span>
+                        </a>
+                    </li>
+                    @if (ViewBag.ACFirmadoAprobado == false) {
+                        <li class="tab col s3">
+                            <a class="blue-text" href="#TabNuevoAdjunto">
+                                Subir nuevo adjunto
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            <div id="TabAdjuntos" class="col s12">
+                @* Tabla con archivos adjuntos relacionados al tema *@
+                <table id="TablaArchivosAdjuntos" class="table responsive display width-100 bordered mt-1">
+                    <thead>
+                        <tr>
+                            <th>Archivo</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            @if (ViewBag.ACFirmadoAprobado == false) {
+                <div id="TabNuevoAdjunto" class="col s12">
+                    @* Contenedor para agregar un nuevo archivo adjunto al tema *@
+                    <div class="row mt-1 mb-0" id="SubirArchivoAdjunto">
+                        @* Selección de archivo *@
+                        <div class="col s12 m4">
+                            <div class="file-field input-field">
+                                <div class="btn grey waves-effect waves-teal lighten-3 black-text">
+                                    <span>Archivo</span>
+                                    <input type="file" id="ArchivoAdjunto" name="ArchivoAdjunto" required="required">
+                                </div>
+
+                                <div class="file-path-wrapper">
+                                    <input class="file-path validate" type="text">
+                                </div>
+                            </div>
+                        </div>
+
+                        @* Detalle / observación del archivo *@
+                        <div class="col s12 m6">
+                            <div class="input-field">
+                                <input placeholder="Detalle del archivo" id="DetalleArchivo" type="text" class="active black-text validate">
+                                <label for="DetalleArchivo" class="black-text">Detalle</label>
+                            </div>
+                        </div>
+
+                        <div class="col s12 m2">
+                            <label class="po-relative">Subir archivo</label>
+                            <button id="SubirArchivo" type="button" class="btn waves-effect waves-teal yellow black-text font-bold width-100" title="Subir archivo seleccionado">
+                                Subir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="modal-footer text-center">
+        <a class="modal-close btn btn-small grey lighten-3 waves-effect blue-text">Cerrar</a>
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+}

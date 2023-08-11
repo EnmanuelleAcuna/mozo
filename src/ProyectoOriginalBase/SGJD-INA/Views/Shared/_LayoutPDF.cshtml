@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="es-CR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="text/html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="X-UA-Compatible Content-Type" content="ie=edge">
+
+    @Styles.Render("~/Content/normalize")
+    @Styles.Render("~/Content/materialize")
+
+    @Styles.Render("~/Content/helpers")
+    @Styles.Render("~/Content/customcss")
+</head>
+
+<body onload="subst()">
+    @RenderBody()
+
+    <script type="text/javascript">
+        function subst() {
+            var vars = {};
+            var query_strings_from_url = document.location.search.substring(1).split('&');
+            for (var query_string in query_strings_from_url) {
+                if (query_strings_from_url.hasOwnProperty(query_string)) {
+                    var temp_var = query_strings_from_url[query_string].split('=', 2);
+                    vars[temp_var[0]] = decodeURI(temp_var[1]);
+                }
+            }
+            var css_selector_classes = ['page', 'frompage', 'topage', 'webpage', 'section', 'subsection', 'date', 'isodate', 'time', 'title', 'doctitle', 'sitepage', 'sitepages'];
+            for (var css_class in css_selector_classes) {
+                if (css_selector_classes.hasOwnProperty(css_class)) {
+                    var element = document.getElementsByClassName(css_selector_classes[css_class]);
+                    for (var j = 0; j < element.length; ++j) {
+                        element[j].textContent = vars[css_selector_classes[css_class]];
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

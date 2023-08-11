@@ -1,0 +1,195 @@
+﻿@helper HelperName(string name) {
+    // your helper can contain code and/or markup, e.g.
+    // var msg = "Hello " + name;
+    // <p>@msg</p>
+    // For more information, visit https://go.microsoft.com/fwlink/?LinkID=204658
+}
+
+@helper Estado(string Codigo, string Nombre) {
+    switch (Codigo) {
+        // Sesiones
+        case "SES-PEND":
+            <span class="blue-grey-text">
+                <i class="fa fa-fw fa-user-clock">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "SES-EJEC":
+            <span class="teal-text">
+                <i class="fa fa-fw fa-user-check">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        // Fin sesiones
+
+        // Ordenes del Día
+        case "OD-BORR":
+            <span class="blue-grey-text">
+                <i class="fa fa-fw fa-edit">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "OD-VB":
+            <span class="green-text">
+                <i class="fa fa-fw fa-user-check">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "OD-CONV":
+            <span class="blue-grey-text">
+                <i class="fa fa-fw fa-user-clock">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "OD-APROB":
+            <span class="green-text">
+                <i class="fa fa-fw fa-check">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "OD-EJEC ":
+            <span class="blue-grey-text">
+                <i class="fa fa-fw fa-archive">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        // Fin de Ordenes del Día
+
+        // Acuerdos
+        case "ACU-BORR":
+            <span class="blue-grey-text">
+                <i class="fa fa-fw fa-edit">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-VB":
+            <span class="green-text">
+                <i class="fa fa-fw fa-user-check">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-FIRM":
+            <span class="blue-text">
+                <i class="fa fa-fw fa-signature">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-NOTI":
+            <span class="red-text">
+                <i class="fa fa-fw fa-paper-plane">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-VA":
+            <span class="grey-text">
+                <i class="fa fa-fw fa-archive">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-EE":
+            <span class="green-text">
+                <i class="fa fa-fw fa-play">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-EJEC":
+            <span class="orange-text">
+                <i class="fa fa-fw fa-archive">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "ACU-REV":
+            <span class="red-text">
+                <i class="fa fa-fw fa-archive">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        // Fin acuerdos
+
+        // Actas
+        case "AC-TRANS":
+            <span class="blue-grey-text">
+                <i class="fa fa-fw fa-keyboard">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "AC-VB":
+            <span class="green-text">
+                <i class="fa fa-fw fa-user-check">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "AC-CC":
+            <span class="orange-text">
+                <i class="fa fa-fw fa-tasks">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "AC-APROB":
+            <span class="green-text">
+                <i class="fa fa-fw fa-check">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "AC-FIRM":
+            <span class="blue-text">
+                <i class="fa fa-fw fa-signature">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        // Fin actas
+
+        //Tomos
+        case "TOM-ABIE":
+            <span class="green-text">
+                <i class="fa fa-fw fa-book-open">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "TOM-CERR":
+            <span class="blue-grey-text">
+                <i class="fa fa-fw fa-book">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        // Fin tomos
+
+        //Seguimientos
+        case "SA-NE":
+            <span class="blue-grey-text">
+                <i class="fa fa-fw fa-stop">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "SA-EE":
+            <span class="green-text">
+                <i class="fa fa-fw fa-play">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+        case "SA-EJEC":
+            <span class="deep-orange-text">
+                <i class="fa fa-fw fa-archive">&nbsp;</i>
+                @Nombre
+            </span>
+            break;
+            // Fin seguimientos
+    }
+}
+
+@helper Descripcion(string Texto) {
+    if (Texto.Length > 256) {
+        <span>@string.Format("{0}...", Texto.Substring(0, 255))</span>
+    }
+    else {
+        <span>@Texto</span>
+    }
+}
+
+@helper DescripcionComoTitulo(string Texto) {
+    if (Texto.Length > 50) {
+        <span>@string.Format("{0}...", Texto.Substring(0, 50))</span>
+    }
+    else {
+        <span>@Texto</span>
+    }}

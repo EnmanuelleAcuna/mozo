@@ -1,0 +1,59 @@
+﻿@using SGJD_INA.Models.Entities
+
+@model Repositorio
+
+@{
+    Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+<h6 class="center text-uppercase font-bold">
+    <label class="fz-1r black-text">Agregar Repositorio</label>
+</h6>
+
+@using (Html.BeginForm("Agregar", "Repositorio", FormMethod.Post, new { onsubmit = "return SubmitForm(this); return false;", autocomplete = "off" })) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "data-error" })
+
+    <section class="section">
+        <div class="input-field">
+            @Html.EditorFor(model => model.Nombre, new { @class = "validate" })
+            @Html.LabelFor(model => model.Nombre)
+            @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "helper-text" })
+        </div>
+        <div class="input-field m-0">
+            @Html.TextBoxFor(model => model.Ruta, new { @class = "validate", @id = "txtRuta", @disabled = "disabled" })
+            @Html.ValidationMessageFor(model => model.Ruta, "", new { @class = "helper-text" })
+        </div>
+        <div class="input-field">
+            <button type="button" title="Elegir carpeta" value="Elegir carpeta" class="btn btn-small grey lighten-3 blue-text font-bold btn-block waves-effect waves-light" onclick="ExtractorDir();">
+                Elegir carpeta
+            </button>
+        </div>
+    </section>
+
+    //Repositorio Datasoft
+    <iframe id="exploradorAdmin" src="../../RepositorioSGJD" class="width-100" height="200"></iframe>
+
+    <section class="section center">
+        <button type="submit" title="Agregar" value="Agregar" class="btn btn-small yellow black-text font-bold waves-effect waves-light btn-accion">
+            Agregar
+        </button>
+        <button type="button" title="Cancelar" value="Cancelar" class="btn btn-small grey lighten-3 red-text font-bold waves-effect btn-accion" onclick="CerrarDialog()">
+            Cancelar
+        </button>
+    </section>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+                        //$(document).ready(function () {
+                        //    OcultarAccesos();
+                        //});
+                        //function OcultarAccesos() {
+                        //    var iframes = document.getElementById("exploradorAdmin").contentDocument.head.innerHTML;
+                        //    console.log(iframes);
+                        //}
+
+    </script>
+}

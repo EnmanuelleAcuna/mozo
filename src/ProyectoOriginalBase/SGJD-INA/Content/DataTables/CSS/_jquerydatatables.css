@@ -1,0 +1,33 @@
+﻿table.dataTable thead tr th,
+table.dataTable thead tr td {
+    padding: 0.5rem 1rem 0.5rem 0.2rem;
+}
+
+table.dataTable tbody tr td {
+    padding: 0.2rem;
+}
+
+.dataTables_paginate {
+    float: left !important;
+}
+
+
+/*table.dataTable tbody td,*/
+.bordered {
+    border: 1px solid #ddd;
+}
+
+table.dataTable thead tr th,
+table.dataTable tfoot tr td,
+table.dataTable.no-footer {
+    border-color: #ddd !important;
+    /*border-bottom: 0 !important;*/
+}
+
+/* Estilos para dispositivos móviles */
+@media only screen and (max-width: 600px) {
+    /* Ícono de expandir fila */
+    table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before, table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
+        top: 13px;
+    }
+}

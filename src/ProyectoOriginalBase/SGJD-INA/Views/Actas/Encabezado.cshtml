@@ -1,0 +1,21 @@
+﻿@using SGJD_INA.Models.Entities
+
+@model EncabezadoPiePagina
+
+@{
+    Layout = "~/Views/Shared/_LayoutPDF.cshtml";
+}
+
+<div class="row mb-0 p-0">
+    <div class="col s12 pl-2">
+        <div class="col 9">
+            <div class="px-0 fz-1-1r">@Html.Raw(Model.Encabezado)</div>
+        </div>
+        <div class="right col s3 fz-1-1r pl-2">
+            N° <span class="page"></span>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/estilosimpresion")
+@Styles.Render("~/Content/quill")

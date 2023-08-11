@@ -1,0 +1,117 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<InicioGestionTipoSeguimientoViewModel>
+@{
+    ViewBag.Title = "Seguimiento de Acuerdos";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="TipSeg" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Acuerdos", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Seguimiento de Acuerdos
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Acuerdos", "Inicio")" class="breadcrumb">Modulo de Acuerdos</a>
+                    <a href="#" class="breadcrumb">Seguimiento de Acuerdos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 m8 mb-1">
+                    <span class="fz-1-2r font-bold">Lista de Acuerdos</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <span class="blue-text">
+                        <i class="fa fa-info-circle"></i>
+                        Los Acuerdos que se muestran en la lista son lo que se encuentran en estado Notificado
+                    </span>
+                </div>
+                <div class="col s12">
+                    <ul class="collection">
+                        @foreach (var Acuerdo in Model) {
+                            if (Acuerdo.CodigoEstado.Equals("ACU-NOTI")) {
+                                <li class="collection-item">
+                                    <span class="dtr-title font-bold">
+                                        Acuerdo @Html.DisplayFor(modelItem => Acuerdo.Titulo)
+                                    </span>
+                                    <p>
+                                        @Html.LabelFor(modelItem => Acuerdo.FechaFirmeza)&nbsp;@Html.DisplayFor(modelItem => Acuerdo.FechaFirmeza)
+                                        &#124;
+                                        @Html.LabelFor(modelItem => Acuerdo.EstadoAcuerdo)&nbsp;@Html.DisplayFor(modelItem => Acuerdo.EstadoAcuerdo)
+                                        &#124;
+                                        @Html.LabelFor(modelItem => Acuerdo.Revision)&nbsp;@Html.DisplayFor(modelItem => Acuerdo.Revision)
+                                    </p>
+                                    <div class="row">
+                                        <div class="col s12 m8 text-justified">
+                                            <p class="mt-0">
+                                                @Html.LabelFor(modelItem => Acuerdo.Asunto)&nbsp;@Html.DisplayFor(modelItem => Acuerdo.Asunto)
+                                            </p>
+                                        </div>
+                                        <div class="col s12 m4">
+                                            @Html.DropDownListFor(modelItem => Acuerdo.TipoSeguimiento, new SelectList(ViewBag.ListaTipoSeguimiento, "Value", "Text", Acuerdo.TipoSeguimiento.ToString()), new { id = "SelectorTipoSeguimientoAcuerdo" + Acuerdo.IdAcuerdo, @class = "select-tipoSeguimiento browser-default select-small z-depth-2", data_value = Acuerdo.IdAcuerdo })
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(".select-tipoSeguimiento").change(function (e) {
+            MostrarCargandoPagina(); // Mostrar carga de página
+
+            var token = $('input[name="__RequestVerificationToken"]', this.form).val();
+            let ObjAcuerdo = {
+                Id: $(this).data('value'),
+                TipoSeguimiento: $(this).children("option:selected").val()
+            };
+
+            // Ejecutar petición para actualizar voto
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("EditarTipoSeguimiento", "Seguimiento")',
+                data: {
+                    __RequestVerificationToken: token,
+                    IdAcuerdo: $(this).data('value'),
+                    TipoSeguimiento: $(this).children("option:selected").val()
+                },
+                success: function (data) {
+                    MostrarMensajeExito(data.message);
+                },
+                error: function (data) {
+                    MostrarMensajeError(data.message); // Notificar error
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina(); // Ocultar carga de página
+                }
+            });
+        });
+    </script>
+}

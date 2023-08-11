@@ -1,0 +1,291 @@
+﻿@using SGJD_INA.Models.ViewModels;
+
+@model  DetalleActaViewModel
+
+@{
+    Layout = "~/Views/Shared/_LayoutPDF.cshtml";
+}
+
+<div class="container">
+    <div class="page-break-after"></div>
+
+    <div class="row">
+        <div class="col s12 center text-uppercase mt-2 font-arial fz-16">
+            <h6 class="font-bold blue-text font-arial fz-16">
+                @Html.DisplayFor(model => model.Titulo)
+            </h6>
+        </div>
+
+        <div class="col s12 text-justified mt-0 font-arial fz-16">
+            <p class="font-bold font-arial fz-16">
+                @Html.Raw(Model.EncabezadoActa)
+            </p>
+        </div>
+    </div>
+
+    @if (Model.ListaCapitulos != null) {
+        int ContadorCapitulos = 1;
+        int ContadorArticulos = 1;
+        foreach (DetalleCapituloViewModel Capitulo in Model.ListaCapitulos) {
+            <div class="row">
+                <div class="col s12">
+                    <h6 class="text-uppercase center font-bold mb-0 font-arial fz-16">Capítulo @NumeroOrdinal(ContadorCapitulos)</h6>
+                    <h6 class="text-uppercase center font-bold mt-0 font-arial fz-16">@Html.DisplayFor(model => Capitulo.Titulo)</h6>
+
+                    @if (Capitulo.Titulo.Equals("Presentación del orden del día") && Model.OrdenDiaViewModel.IdOrdenDia > 0) {
+                        if (Capitulo.ListaArticulos != null) {
+                            foreach (DetalleArticuloViewModel Articulo in Capitulo.ListaArticulos) {
+                                <div class="row">
+                                    <div class="col s12">
+                                        <h6 class="font-bold text-uppercase text-underline mb-0 font-arial fz-16">Artículo @NumeroOrdinal(ContadorArticulos)</h6>
+                                        <h6 class="font-bold text-underline text-justified mt-0 font-arial fz-16">@Html.DisplayFor(model => Articulo.Titulo): @Html.DisplayFor(model => Articulo.ResumenTema)</h6>
+
+                                        <div class="row">
+                                            <div class="col s12 ql-editor-pdf normal-space font-arial fz-16 text-justified">
+                                                @Html.Raw(Articulo.Contenido)
+                                            </div>
+                                        </div>
+
+                                        @* Orden del Día aprobada *@
+                                        <p class="font-arial fz-16">
+                                            Se aprueba el Orden del Día de la siguiente manera:
+                                        </p>
+
+                                        @* Secciones *@
+                                        <ol class="pl-0">
+                                            @foreach (SeccionViewModel Seccion in Model.OrdenDiaViewModel.Secciones) {
+                                                if (Seccion.Temas.Any()) {
+                                                    <li>
+                                                        @* Nombre de sección *@
+                                                        <span class="font-bold text-underline font-arial fz-16">@Html.DisplayFor(modelItem => Seccion.NombreSeccion)</span>
+
+                                                        @* Temas *@
+                                                        <ol>
+                                                            @foreach (TemaViewModel Tema in Seccion.Temas) {
+                                                                <li class="font-arial fz-16 text-justified">
+                                                                    @* Titulo de tema *@
+                                                                    <span class="font-bold text-underline font-arial fz-16">@Html.DisplayFor(modelItem => Tema.Titulo)</span>.&nbsp;
+
+                                                                    @* Contenido de tema *@
+                                                                    @Html.DisplayFor(modelItem => Tema.Resumen)
+                                                                </li>
+                                                            }
+                                                        </ol>
+                                                    </li>
+                                                }
+                                            }
+                                        </ol>
+
+                                        @* Acuerdo *@
+                                        @if (Articulo.AcuerdoArticulo.IdAcuerdo > 0) {
+                                            <h6 class="text-uppercase text-underline font-bold mt-0 font-arial fz-16">@TituloAcuerdo(Articulo.AcuerdoArticulo.Titulo, Articulo.AcuerdoArticulo.NumeroVersion)</h6>
+                                            <h6 class="text-uppercase text-underline font-bold mt-0 font-arial fz-16">@Html.DisplayNameFor(modelitem => Articulo.AcuerdoArticulo.DetalleConsiderando)</h6>
+
+                                            <div class="row">
+                                                <div class="col s12 ql-editor-pdf normal-space font-arial fz-16 text-justified">
+                                                    @Html.Raw(Articulo.AcuerdoArticulo.DetalleConsiderando)
+                                                </div>
+                                            </div>
+
+                                            <h6 class="text-uppercase text-underline font-bold mt-0 font-arial fz-16">@Html.DisplayNameFor(modelitem => Articulo.AcuerdoArticulo.DetallePortanto)</h6>
+
+                                            <div class="row">
+                                                <div class="col s12 ql-editor-pdf normal-space font-arial fz-16 text-justified">
+                                                    @Html.Raw(Articulo.AcuerdoArticulo.DetallePortanto)
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @{ContadorArticulos += 1;}
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                    else {
+
+                        foreach (DetalleArticuloViewModel Articulo in Capitulo.ListaArticulos) {
+                            if (Articulo.Confidencial == false) {
+                                if (Capitulo.ListaArticulos != null) {
+                                    <div class="row">
+                                        <div class="col s12">
+                                            <h6 class="font-bold text-uppercase text-underline mb-0 font-arial fz-16">Artículo @NumeroOrdinal(ContadorArticulos)</h6>
+                                            <h6 class="font-bold text-underline text-justified mt-0 font-arial fz-16">@Html.DisplayFor(model => Articulo.Titulo): @Html.DisplayFor(model => Articulo.ResumenTema)</h6>
+
+                                            <div class="row">
+                                                <div class="col s12 ql-editor-pdf normal-space font-arial fz-16 text-justified">
+                                                    @Html.Raw(Articulo.Contenido)
+                                                </div>
+                                            </div>
+
+                                            @* Acuerdo *@
+                                            @if (Articulo.AcuerdoArticulo.IdAcuerdo != 0) {
+                                                <h6 class="text-uppercase text-underline font-bold mt-0 font-arial fz-16">@TituloAcuerdo(Articulo.AcuerdoArticulo.Titulo, Articulo.AcuerdoArticulo.NumeroVersion)</h6>
+                                                <h6 class="text-uppercase text-underline font-bold mt-0 font-arial fz-16">@Html.DisplayNameFor(modelitem => Articulo.AcuerdoArticulo.DetalleConsiderando)</h6>
+
+                                                <div class="row">
+                                                    <div class="col s12 ql-editor-pdf normal-space font-arial fz-16 text-justified">
+                                                        @Html.Raw(Articulo.AcuerdoArticulo.DetalleConsiderando)
+                                                    </div>
+                                                </div>
+
+                                                <h6 class="text-uppercase text-underline font-bold mt-0 font-arial fz-16">@Html.DisplayNameFor(modelitem => Articulo.AcuerdoArticulo.DetallePortanto)</h6>
+
+                                                <div class="row">
+                                                    <div class="col s12 ql-editor-pdf normal-space font-arial fz-16 text-justified">
+                                                        @Html.Raw(Articulo.AcuerdoArticulo.DetallePortanto)
+                                                    </div>
+                                                </div>
+                                            }
+
+                                            @{ContadorArticulos += 1;}
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                    }
+
+                    @{ContadorCapitulos += 1;}
+                </div>
+            </div>
+        }
+    }
+
+    <div class="row">
+        <div class="col s12 text-justified">
+            <p class="text-justified font-arial fz-16">
+                @Html.DisplayFor(model => model.ParrafoCierre)
+            </p>
+        </div>
+    </div>
+
+    @* Campo para firmas de usuario que preside y secretario tecnico*@
+    <div class="row mt-10">
+        <div class="col s12 left">
+            <p class="font-bold fz-14 left font-arial">
+                ________________________________________
+                <br />
+                Lic. @Html.DisplayFor(model => model.NombreUsuarioPreside)
+                <br />
+                Presidente
+            </p>
+            @if (string.IsNullOrEmpty(Model.NombreUsuarioSecretario)) {
+                <label class="black-text font-bold fz-14 right font-arial">El secretario no estuvo presente</label>
+            }
+            else {
+                <p class="font-bold fz-14 right font-arial">
+                    ________________________________________
+                    <br />
+                    Lic. @Html.DisplayFor(model => model.NombreUsuarioSecretario)
+                    <br />
+                    Secretario Técnico
+                </p>
+            }
+        </div>
+    </div>
+
+    @* Campos para notas de votos desidentes*@
+    <div class="row">
+        <div class="col s12 ql-editor-pdf text-justified font-arial fz-16">
+            @Html.Raw(Model.NotasVotosDisidentes)
+        </div>
+    </div>
+
+    @* Campos para indicar la sesión y la fecha en que se aprobo el acta *@
+    <div class="row">
+        <div class="col s12">
+            <p class="font-bold fz-0-7r center font-arial">
+                Aprobado en la  @Model.SesionActaAprobada
+                <br />
+                el @Model.FechaSesionAprobada
+                <br />
+                ------------------------------ ULTIMA LINEA ------------------------------
+
+            </p>
+        </div>
+    </div>
+</div>
+
+@helper NumeroOrdinal(int Numero) {
+    if (Numero <= 0) {
+        <b>Numero.ToString()</b>
+    }
+    else {
+        string Ordinal = string.Empty;
+
+        switch (Numero.ToString().Substring(Numero.ToString().Length - 1, 1)) {
+            case "1":
+                Ordinal = "primero";
+                break;
+            case "2":
+                Ordinal = "segundo";
+                break;
+            case "3":
+                Ordinal = "tercero";
+                break;
+            case "4":
+                Ordinal = "cuarto";
+                break;
+            case "5":
+                Ordinal = "quinto";
+                break;
+            case "6":
+                Ordinal = "sexto";
+                break;
+            case "7":
+                Ordinal = "séptimo";
+                break;
+            case "8":
+                Ordinal = "octavo";
+                break;
+            case "9":
+                Ordinal = "noveno";
+                break;
+        }
+
+        // Concatenar si es mayor a 10 hasta 99
+        if (Numero >= 10) {
+            <span>décimo @Ordinal</span>
+        }
+        else if (Numero >= 20) {
+            <span>vigésimo @Ordinal</span>
+        }
+        else if (Numero >= 30) {
+            <span>trigésimo @Ordinal</span>
+        }
+        else if (Numero >= 40) {
+            <span>cuadragésimo @Ordinal</span>
+        }
+        else if (Numero >= 50) {
+            <span>quincuagésimo @Ordinal</span>
+        }
+        else if (Numero >= 60) {
+            <span>sexagésimo @Ordinal</span>
+        }
+        else if (Numero >= 70) {
+            <span>septuagésimo @Ordinal</span>
+        }
+        else if (Numero >= 80) {
+            <span>octogésimo @Ordinal</span>
+        }
+        else if (Numero >= 90) {
+            <span>nonagésimo @Ordinal</span>
+        }
+        else {
+            <span>@Ordinal</span>
+        }
+    }
+}
+
+@helper TituloAcuerdo(string Titulo, int NumeroVersion) {
+    if (NumeroVersion > 1) {
+        <span class="black-text">Comunicación de Acuerdo @Titulo V.@NumeroVersion</span>
+    }
+    else {
+        <span class="black-text">Comunicación de Acuerdo @Titulo</span>
+    }
+}
+
+@Styles.Render("~/Content/estilosimpresion")
+@Styles.Render("~/Content/quill")

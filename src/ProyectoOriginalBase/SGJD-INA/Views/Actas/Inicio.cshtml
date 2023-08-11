@@ -1,0 +1,322 @@
+﻿@using SGJD_INA.Models.ViewModels;
+
+@model IEnumerable<InicioActaViewModel>
+
+@{
+    ViewBag.Title = "Actas";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniAct" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Actas", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Actas de Sesión
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Actas", "Inicio")" class="breadcrumb">Módulo de Actas</a>
+                    <a href="#" class="breadcrumb">Actas de Sesión</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+
+            <div class="row">
+                <div class="col s12 mb-2">
+                    <ul class="tabs tabs-fixed-width z-depth-1">
+                        <li class="tab col s3">
+                            <a href="#Actas" class="active blue-text font-bold">
+                                Todas las Actas
+                            </a>
+                        </li>
+                        <li class="tab col s3">
+                            <a href="#Buscar" class="blue-text">
+                                <i class="fa fa-search">&nbsp;</i>
+                                Buscar en Actas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                @* Contenedor de pestaña [TODAS LAS ACTAS] *@
+                <div id="Actas" class="col s12">
+                    <div class="row">
+                        <div class="col s12 m6">
+                            <button id="BtnFiltrar" type="button" value="Filtrar" title="Filtrar" class="btn btn-small grey lighten-3 waves-effect black-text font-bold">
+                                <i class="fa fa-filter left"></i>
+                                Filtrar
+                            </button>
+                        </div>
+
+                        @*<div class="col s12 m6">
+                                <a id="BtnTranscribir" href="@Url.Action("Inicio", "TranscripcionActas")" title="Transcribir Acta" class="btn btn-small blue waves-effect white-text font-bold right-on-large">
+                                    <i class="fa fa-microphone left"></i>
+                                    Transcribir Acta
+                                </a>
+                            </div>*@
+                    </div>
+
+                    <div class="row">
+                        <div class="col s12">
+                            <table id="TablaActas" class="table responsive display width-100 bordered cell-border">
+                                <thead>
+                                    <tr>
+                                        <th nowrap>Acta</th>
+                                        <th nowrap>@Html.DisplayNameFor(model => model.DescripcionEstado)</th>
+                                        <th nowrap>@Html.DisplayNameFor(model => model.TipoSesion)</th>
+                                        <th nowrap>@Html.DisplayNameFor(model => model.IdSesion)</th>
+                                        <th nowrap>@Html.DisplayNameFor(model => model.Tomo)</th>
+                                        <th nowrap class="center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var Acta in Model) {
+                                        <tr>
+                                            <td>
+                                                @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas") || User.IsInRole("Abogado Secretaría Técnica") || User.IsInRole("Profesional Secretaría Técnica") || User.IsInRole("Archivo")) {
+                                                    <a href="@Url.Action("Editar", "Actas", new { IdSesion = Acta.IdSesion })" target="_blank" class="black-text">
+                                                        Acta&nbsp;<span class="blue-text"><b>@Html.DisplayFor(modelItem => Acta.NumeroSesion)</b> - @Html.DisplayFor(modelItem => Acta.AnnoSesion)</span>
+                                                    </a>
+                                                }
+                                                else {
+                                                    <a class="black-text">
+                                                        Acta&nbsp;<span class="blue-text"><b>@Html.DisplayFor(modelItem => Acta.NumeroSesion)</b> - @Html.DisplayFor(modelItem => Acta.AnnoSesion)</span>
+                                                    </a>
+                                                }
+                                            </td>
+                                            <td>
+                                                @Helpers.Estado(Acta.CodigoEstado, Acta.DescripcionEstado)
+                                            </td>
+                                            <td>
+                                                @Sesion(Acta.TipoSesion, Acta.NumeroSesion, Acta.FechaSesion)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => Acta.IdSesion)
+                                            </td>
+                                            <td>
+                                                <a class="black-text" href="@Url.Action("DetalleTomo", "Auditoria",  new { Id = Acta.IdTomo })" target="_blank">
+                                                    @Html.DisplayFor(modelItem => Acta.Tomo)
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@Acta.IdActa'>
+                                                    <i class="fa fa-caret-down blue-text"></i>
+                                                </a>
+
+                                                <ul id="dropdown_@Acta.IdActa" class='dropdown-content'>
+                                                    @if (Acta.CodigoEstado.Equals("AC-FIRM")) {
+                                                        <li>
+                                                            <a class="blue-text" title='Ver Acta' href="@Url.Action("Detalle", "Actas",  new { Id = Acta.IdActa })" target="_blank">
+                                                                Ver Acta
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                    @if (User.IsInRole("Administrador Datasoft") || User.IsInRole("Administrador") || User.IsInRole("Secretario Técnico") || User.IsInRole("Coordinación Actas") || User.IsInRole("Abogado Secretaría Técnica") || User.IsInRole("Profesional Secretaría Técnica") || User.IsInRole("Archivo")) {
+                                                        <li class="divider"></li>
+                                                        <li>
+                                                            <a class="blue-text" title='Editar usuario' href="@Url.Action("Editar", "Actas", new { IdSesion = Acta.IdSesion })">
+                                                                Editar
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                    @if (Acta.CodigoEstado.Equals("AC-TRANS") && (User.IsInRole("Administrador Datasoft"))) {
+                                                        <li>
+                                                            <a class="red-text" title="Eliminar" onclick="PopUpForm('@Url.Action("Eliminar", "Actas", new { Id = Acta.IdActa } )')">
+                                                                Eliminar
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                @* Contenedor de pestaña [BUSCAR EN ACTAS] *@
+                <div id="Buscar" class="col s12">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input placeholder="Contenido del Acta" id="PalabraClave" type="text" class="">
+                            <label for="PalabraClave">Buscar en contenido de las Actas</label>
+                        </div>
+
+                        <div class="col s6 pt-2">
+                            <button type="button" id="btn-buscar" class="btn btn-small yellow black-text font-bold z-depth-0">Buscar</button>
+                        </div>
+
+                        <div class="col s12 mb-1">
+                            <span id="LblInfo" class="" hidden></span>
+                        </div>
+
+                        <div class="col s12">
+                            <table id="TablaFiltro" class="table responsive display width-100 bordered cell-border">
+                                <thead>
+                                    <tr>
+                                        <th nowrap>Acta</th>
+                                        <th>Sesión</th>
+                                        <th>Tomo</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@helper Sesion(string TipoSesion, int NumeroSesion, string FechaSesion) {
+    @TipoSesion <span class="black-text"> <b>@NumeroSesion</b> @FechaSesion</span>
+}
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        var dataTable, fechaInicio, fechaFinal;
+        fechaInicio = '';
+        fechaFinal = '';
+        //Extraer el token
+        var token = $('input[name="__RequestVerificationToken"]', this.form).val();
+
+        $(document).ready(function () {
+            $("#TablaActas").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: true,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true,
+                order: [3, "desc"],
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 },
+                    { targets: 3, visible: false }
+                ],
+                initComplete: CambiarPropiedadesFiltro
+            });
+
+            $("#TablaFiltro").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                responsive: true,
+                info: false,
+                pageLength: 10,
+                autoWidth: true,
+                lengthChange: false,
+                columns: Columnas,
+                ordering: false
+            });
+        });
+
+        let Columnas = [
+            {
+                className: "dt-nowrap", render: function (data, type, row) {
+                    var IdActa = row['IdActa'];
+                    console.log(IdActa);
+                    var NumeroSesion = row['NumeroSesion'];
+                    var AnnoSesion = row['AnnoSesion'];
+
+                    var EnlaceVer = "<a href='/Actas/Detalle/"+ IdActa +"' target='_blank' class='blue-text'><b><i class='fa fa-fw fa-align-justify'>&nbsp;</i>Ver Acta</b></a>";
+                    var EnlaceEditar = "<a href='/Actas/Editar/ "+ IdActa +"' target='_blank' class='blue-text'>Editar Acta</a>";;
+
+                    var TituloActa = "Acta <span class='blue-text'><b>" + NumeroSesion + "</b> - " + AnnoSesion + "</span>";
+
+                    return TituloActa + "</br>" + EnlaceVer;
+                }
+            },
+            {
+                className: "dt-nowrap", render: function (data, type, row) {
+                    var IdSesion = row['IdSesion'];
+                    var TipoSesion = row['TipoSesion'];
+                    var NumeroSesion = row['NumeroSesion'];
+                    var FechaSesion = row['FechaSesion'];
+
+                    var TituloSesion = "<span class = 'blue-text'>" + TipoSesion + " <b>" + NumeroSesion + "</b> " + FechaSesion + "</span>";
+
+                    return TituloSesion;
+                }
+            },
+            {
+                className: "dt-nowrap", render: function (data, type, row) {
+                    var IdTomo = row['IdTomo'];
+                    var NombreTomo = row['NombreTomo'];
+
+                    var EnlaceTomo = "<a href = '/Auditoria/DetalleTomo/" + IdTomo + "' class = 'blue-grey-text' target = '_blank'>" + NombreTomo + "</a>";
+
+                    return EnlaceTomo;
+                }
+            }
+        ];
+
+        // Eventos para ejecutar petición de búsqueda de actas
+        $('#PalabraClave').keyup(function (e) {
+            if (e.keyCode == 13) {
+                BuscarActasPorPalabraClave();
+            }
+        });
+
+        $("#btn-buscar").click(function () {
+            BuscarActasPorPalabraClave();
+        });
+
+        async function BuscarActasPorPalabraClave() {
+            MostrarCargandoPagina();
+
+            let PalabraClave = $("#PalabraClave").val();
+
+            // Ejecutar petición AJAX para obtener los Acuerdo de acuerdo al filtro
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("ObtenerTodosPorPalabraClave", "Actas")',
+                data: {
+                    Palabra: PalabraClave
+                },
+                success: function (data) {
+                    $("#TablaFiltro").dataTable().fnClearTable();
+                    $("#TablaFiltro").dataTable().fnAddData(data.Lista);
+                    $("#LblInfo").text("Se encontró [ " + PalabraClave + " ] en " + data.Registros + " Acta(s)");
+                    $("#LblInfo").show();
+                },
+                error: function () {
+                    MostrarMensajeError(); // Notificar error
+                },
+                complete: function () {
+                    DesaparecerCargandoPagina();
+                }
+            });
+        }
+    </script>
+}

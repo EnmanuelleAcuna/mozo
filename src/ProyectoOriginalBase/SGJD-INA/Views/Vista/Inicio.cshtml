@@ -1,0 +1,179 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model IEnumerable<InicioVistaViewModel>
+
+@{
+    ViewBag.Title = "Inicio de Vistas";
+    ViewBag.BreadCrumb = Html.ActionLink("Administración", "Administracion", "Inicio", null, new { @class = "black-text" }) + " / Parámetros del Sistema / Vistas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int NivelPermiso = (int)Session["NivelPermiso"];
+}
+
+<section class="section mx-1 pt-0">
+    <div class="card-panel">
+        <nav class="mb-2 z-depth-0 white">
+            <div class="nav-wrapper">
+                <ul class="left">
+                    <li>
+                        <a title="Regresar" href="@Url.Action("Administracion", "Inicio")" class="pl-0 regresar">
+                            <i class="fa fa-arrow-left blue-text"></i>
+                        </a>
+                    </li>
+                </ul>
+                <span class="brand-logo center-on-medium black-text font-bold fz-1-25r mt-1-on-small">
+                    Vistas
+                </span>
+                <ul class="right">
+                    <li>
+                        @switch (NivelPermiso) {
+                            case 1:
+                            case 3:
+                            case 5:
+                            case 7:
+                                <a class="btn btn-small yellow black-text font-bold waves-effect waves-teal mr-0" id="agregar" title="Agregar Vista" onclick="PopUpForm('@Url.Action("Agregar", "Vista")')">
+                                    <span class="hide-on-small-and-down mx-1">Agregar</span>
+                                </a>
+                                break;
+                        }
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <table id="tablaVistas" class="table responsive display width-100 bordered cell-border">
+            <thead>
+                <tr>
+                    <th nowrap>@Html.DisplayNameFor(model => model.NombreVista)</th>
+                    <th nowrap>@Html.DisplayNameFor(model => model.DireccionVista)</th>
+                    <th nowrap class="center">Perfiles</th>
+                    <th nowrap class="center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var Vista in Model) {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => Vista.NombreVista)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Vista.DireccionVista)
+                        </td>
+                        <td class="center">
+                            <a class='btn btn-small btn-action  grey lighten-3 waves-effect waves-teal blue-text font-bold' title='Ver usuarios' onclick=PopUpForm('@Url.Action("PerfilesVista", "Vista" , new { IdVista=Vista.IdVista } )')><span class='hide-on-med-and-down'>Ver</span></a>
+                        </td>
+                        <td class="center">
+                            @switch (NivelPermiso) {
+                                case 6:
+                                case 7:
+                                    <a class='btn btn-small grey lighten-3 waves-effect waves-teal mx-1 blue-text font-bold' id='editar' title='Editar' onclick=PopUpForm('@Url.Action("Editar", "Vista" , new { IdVista=Vista.IdVista })')><span class='hide-on-med-and-down'>Editar</span></a>
+                                    <a class='btn btn-small grey lighten-3 waves-effect waves-red mx-1 blue-text font-bold' id='borrar' title='Eliminar' onclick=PopUpForm('@Url.Action("Eliminar", "Vista" , new { IdVista=Vista.IdVista })')><span class='hide-on-med-and-down'>Borrar</span></a>
+                                    break;
+                                case 2:
+                                case 3:
+                                    <a class='btn btn-small grey lighten-3 waves-effect waves-teal mx-1 blue-text font-bold' id='editar' title='Editar' onclick=PopUpForm('@Url.Action("Editar", "Vista" , new { IdVista=Vista.IdVista })')><span class='hide-on-med-and-down'>Editar</span></a>
+                                    break;
+                                case 4:
+                                case 5:
+                                    <a class='btn btn-small grey lighten-3 waves-effect waves-red mx-1 blue-text font-bold' id='borrar' title='Eliminar' onclick=PopUpForm('@Url.Action("Eliminar", "Vista" , new { IdVista=Vista.IdVista })')><span class='hide-on-med-and-down'>Borrar</span></a>
+                                    break;
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        var PopUp, dataTable;
+
+        $(document).ready(function () {
+            //Desaparece la carga de pagina
+            DesaparecerCargandoPagina();
+
+            $("#tablaVistas").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,               
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,               
+            })
+        });
+
+        @*function CargarDatatable() {
+             //Parámetros AJAX para cargar DataTable
+            var parametrosAJAX = {
+                url: '@Url.Action("ObtenerDatos", "Vista")',
+                type: "GET",
+                datatype: "json",
+                error: MensajeError
+            };
+
+            dataTable = $("#tablaVistas").DataTable({
+                initComplete: function () {
+                    //Desaparece la carga de pagina
+                    DesaparecerCargandoPagina();
+                },
+                ajax: parametrosAJAX,
+                columns: [
+                    //Nombre de vista
+                    { data: "NombreVista", className: "no-wrap" },
+                    //Direccion de la vista
+                    { data: "DireccionVista", className: "no-wrap" },
+                    //Perfil de la vista
+                    {
+                        data: "Id", className: "no-wrap", render: function (data) {
+                            var permiso = '@Session["NivelPermiso"]';
+                            if (permiso > 0 ) {
+                                return "<a class='btn btn-small btn-action  grey lighten-3 waves-effect waves-teal blue-text font-bold' title='Ver usuarios' onclick=PopUpForm('@Url.Action("PerfilesVista", "Vista")/" + data + "')><span class='hide-on-med-and-down'>Ver</span></a>";
+                            }
+                            else {
+                                return "";
+                            }
+                        }
+                    },
+                     // Editar y eliminar
+                    {
+                        data: "Id", className: "center no-wrap", render: function (data) {
+                            var permiso = '@Session["NivelPermiso"]';
+                            if (permiso == 6 || permiso == 7) {
+                                return "<a class='btn btn-small grey lighten-3 waves-effect waves-teal mx-1 blue-text font-bold' title='Editar' onclick=PopUpForm('@Url.Action("Editar", "Vista")/" + data + "')><span class='hide-on-med-and-down'>Editar</span></a>" +
+                                    "<a class='btn btn-small grey lighten-3 waves-effect waves-red mx-1 blue-text font-bold' title='Eliminar' onclick=PopUpForm('@Url.Action("Eliminar", "Vista")/" + data + "')><span class='hide-on-med-and-down'>Borrar</span></a>";
+                            } else if (permiso == 2 || permiso == 3) {
+                                return "<a class='btn btn-small grey lighten-3 waves-effect waves-teal mx-1 blue-text font-bold' title='Editar' onclick=PopUpForm('@Url.Action("Editar", "Vista")/" + data + "')><span class='hide-on-med-and-down'>Editar</span></a>";
+                            } else if (permiso == 4 || permiso == 5) {
+                                return "<a class='btn btn-small grey lighten-3 waves-effect waves-red mx-1 blue-text font-bold' title='Eliminar' onclick=PopUpForm('@Url.Action("Eliminar", "Vista")/" + data + "')><span class='hide-on-med-and-down'>Borrar</span></a>";
+                            } else {
+                                return "";
+                            }
+                        }
+                    }
+                ],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                sorting: true,
+                responsive: true,
+                info: false,
+                pageLength: 10,
+                autoWidth: true,
+                lengthChange: false,
+                ordering: true
+            });
+        }*@
+
+        $("#tablaVistas").on("draw.dt", function () {
+            $("#tablaVistas_paginate span a").each(function () {
+                dataTable.responsive.recalc();
+            });
+        });
+    </script>
+}

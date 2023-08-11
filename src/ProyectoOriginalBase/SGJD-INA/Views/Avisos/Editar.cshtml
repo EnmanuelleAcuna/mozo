@@ -1,0 +1,397 @@
+﻿@using SGJD_INA.Models.ViewModels;
+
+@model EditarAvisoViewModel
+
+@{
+    ViewBag.Title = "Editar Avisos";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="EditAvis" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "Avisos")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Avisos
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="@Url.Action("Inicio", "Avisos")" class="breadcrumb">Avisos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 mb-1">
+                    <span class="fz-1-2r font-bold">Editar aviso @Html.DisplayFor(model => model.Nombre)</span>
+                </div>
+            </div>
+
+            @using (Html.BeginForm("Editar", "Avisos", FormMethod.Post, new { id = "frmEditarAviso", autocomplete = "off" })) {
+                @Html.AntiForgeryToken()
+
+                @Html.HiddenFor(model => model.IdAviso)
+
+                // Se guarda aqui los valores del campo para manipularlo y actualizarlo con los nuevos valores del
+                // editor de texto antes de enviar a guardar los cambios
+                @Html.HiddenFor(model => model.Mensaje)
+                @Html.HiddenFor(model => model.Usuarios)
+
+                // Nombre y tipo de aviso
+                <div class="row mb-0">
+                    <div class="col s12 m6">
+                        <div class="input-field">
+                            @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "validate" } })
+                            @Html.LabelFor(model => model.Nombre, new { @class = "black-text" })
+                            @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "helper-text" })
+                        </div>
+                    </div>
+
+                    <div class="col s12 m6">
+                        @Html.LabelFor(model => model.Tipo, new { @class = "po-relative font-bold" })
+                        @Html.DropDownListFor(model => model.Tipo, new SelectList(ViewBag.TiposAviso, "Value", "Text"), "Seleccione un tipo de aviso", new { @class = "browser-default" })
+                        @Html.ValidationMessageFor(model => model.Tipo, "", new { @class = "helper-text" })
+                    </div>
+                </div>
+
+                // Tipo de destinatario, unidad y usuarios
+                <div class="row">
+                    <div class="col s12 m6">
+                        @Html.LabelFor(model => model.TipoDestinatario, new { @class = "po-relative font-bold" })
+                        @Html.DropDownListFor(model => model.TipoDestinatario, new SelectList(ViewBag.TiposDestinatario, "Value", "Text"), "Seleccione un tipo de destinatario", new { @class = "browser-default" })
+                        @Html.ValidationMessageFor(model => model.TipoDestinatario, "", new { @class = "helper-text" })
+                    </div>
+
+                    <div class="col s12 m6" id="SelectorUnidad" hidden>
+                        @Html.LabelFor(model => model.IdUnidad, new { @class = "po-relative font-bold" })
+                        @Html.DropDownListFor(model => model.IdUnidad, new SelectList(ViewBag.Unidades, "Value", "Text"), "Seleccione una unidad", new { @class = "browser-default" })
+                    </div>
+                </div>
+
+                @* Administrar los usuarios de destino *@
+                <div class="row mb-0" id="SelectorUsuarios" hidden>
+                    <div class="col s12">
+                        <h6 class="blue-text">Seleccionar usuarios destinatarios</h6>
+
+                        <div class="row">
+                            <div class="col s12 m6">
+                                <label class="black-text">Usuarios activos</label>
+                                <table id="TablaUsuarios" class="table compact width-100">
+                                    <thead style="display: none;">
+                                    </thead>
+                                </table>
+                            </div>
+
+                            <div class="col s12 m6">
+                                <label class="black-text">Usuarios seleccionados para recibir el aviso</label>
+                                <table id="TablaDestinatarios" class="table compact width-100">
+                                    <thead style="display: none;">
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* Mensaje *@
+                <div class="row">
+                    <div class="col s12">
+                        @Html.LabelFor(model => model.Mensaje, new { @class = "po-relative font-bold black-text" })
+                    </div>
+
+                    <div class="col s12">
+                        <div id="EditorMensaje">@Html.Raw(Model.Mensaje)</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col s12">
+                        <div class="input-field red-text font-bold">
+                            @Html.ValidationSummary(true, "", new { @class = "data-error" })
+                        </div>
+                    </div>
+
+                    <div class="col s12">
+                        <button type="submit" id="AgregarAviso" title="Agregar" value="Agregar" class="btn btn-small yellow black-text waves-effect waves-light font-bold">
+                            <span class="font-bold">Guardar</span>
+                        </button>
+
+                        <a title="Regresar" id="Regresar" href='@Url.Action("Inicio", "Avisos" )' class="btn btn-small grey lighten-3 black-text waves-effect">
+                            Regresar a lista de avisos
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/quill")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/quill")
+
+    <script type="text/javascript">
+        // Definición de objetos para cargar el editor de texto enriquecido WYSIWYG QuillJS
+        var EditorMensaje = new Quill('#EditorMensaje', OpcionesQuillJS);
+        var AvisoGuardado;
+
+        // Si la vista se carga despues de crear un usuario se verifica si existe el mensaje dentro del ViewBag para mostrarlo como notificación
+        @if (ViewBag.AvisoGuardado != null) {
+            @:AvisoGuardado = '@ViewBag.AvisoGuardado';
+        }
+
+        if (AvisoGuardado === 'true') {
+            MostrarMensajeExito("Aviso guardado correctamente");
+        }
+
+        $(document).ready(function () {
+            if ('@Model.TipoDestinatario' === 'Unidad') {
+                // Mostrar selector de Unidad y ocultar selector de Usuarios
+                $("#SelectorUnidad").show("slideDown");
+                $("#SelectorUsuarios").hide("slideUp");
+            }
+            else if ('@Model.TipoDestinatario' === 'Usuarios') {
+                // Mostrar selector de Usuarios y ocultar selector de Unidad
+                $("#SelectorUnidad").hide("slideUp");
+                $("#SelectorUsuarios").show("slideDown");
+            }
+            else {
+                $("#SelectorUnidad").hide("slideUp");
+                $("#SelectorUsuarios").hide("slideDown");
+            }
+
+            $("#TipoDestinatario").change(function (e) {
+                ValidarTipoDestinatarioSeleccionado(this);
+            });
+
+            // Cargar tabla con usuarios activos del sistema
+            CargarDataTableUsuarios();
+
+            // Cargar tabla con usuarios destinatarios
+            CargarDataTableDestinatarios();
+        });
+
+        // Función para controlar la aparición del selector de Unidad o de Usuarios del tipo de
+        // destinatarios del aviso, controlar la aparición del selector de Unidad o de Usuarios y establecer el valor del
+        // atributo tipoDestinatario  basado en el radio seleccionado
+        function ValidarTipoDestinatarioSeleccionado(element) {
+            let ValueSelected = element.value;
+
+            if (ValueSelected === 'Unidad') {
+                // Mostrar selector de Unidad y ocultar selector de Usuarios
+                $("#SelectorUnidad").show("slideDown");
+                $("#SelectorUsuarios").hide("slideUp");
+            }
+            else if (ValueSelected === 'Usuarios') {
+                // Mostrar selector de Usuarios y ocultar selector de Unidad
+                $("#SelectorUnidad").hide("slideUp");
+                $("#SelectorUsuarios").show("slideDown");
+            }
+            else {
+                $("#SelectorUnidad").hide("slideUp");
+                $("#SelectorUsuarios").hide("slideDown");
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Selección de usuarios destinatarios
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        var TablaUsuarios;
+        var TablaDestinatarios;
+        var JsonUsuarios = new Array();
+        var JsonDestinatarios = new Array();
+        var ListaDestinatarios = new Array();
+
+        // Cargar los usuarios activos del sistema
+        function CargarDataTableUsuarios() {
+            const ParametrosAJAXUsuarios = {
+                url: '@Url.Action("ObtenerTodosActivos", "Usuario")',
+                type: "GET",
+                datatype: "json",
+                error: MostrarMensajeError,
+                dataSrc: function (json) {
+                    // Llenar el objeto JsonUsuarios con lo obtenido en la petición AJAX
+                    for (let i = 0; i < json.data.length; i++) {
+                        JsonUsuarios.push({
+                            'Id': json.data[i].Id,
+                            'Nombre': json.data[i].Nombre
+                        })
+                    }
+
+                    return JsonUsuarios;
+                }
+            };
+
+            TablaUsuarios = $("#TablaUsuarios").DataTable({
+                ajax: ParametrosAJAXUsuarios,
+                columns: [{
+                    className: "no-wrap", render: function (data, type, row) {
+                        //El nombre debe tratarse antes de ser incrustado en el evento OnClick ya que normalmente al construirse los parámetros de la
+                        //función en el primer espacio inserta ", por lo que los espacios se sustituyen por _
+                        let idUsuario = row['Id'];
+                        let nombre = row['Nombre'].trim().replace(/\s+/g, '_');
+                        let nombreUsuario = row['Nombre'];
+                        return "<a class='btn btn-small grey lighten-3 waves-effect waves-red black-text text-left width-100' title='Agregar' onclick=AgregarDestinatario('" + idUsuario + "','" + nombre + "')><i class='fa fa-caret-right blue-text right'></i>" + nombreUsuario + "</a>";
+                    }
+                }],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                sorting: false,
+                responsive: false,
+                info: false,
+                pageLength: 5,
+                autoWidth: true,
+                lengthChange: false,
+                ordering: true,
+                filtering: false
+            });
+        }
+
+        // Cargar tabla de destinatarios
+        function CargarDataTableDestinatarios() {
+            // La lista de destinatarios del aviso viene en la propiedad Usuarios del ViewModel
+            // por lo que semanipula para insertarlos en el JsonUsuarios
+            let Destinatarios = '@Model.Usuarios';
+
+            if (Destinatarios != '') {
+                let ListaDestinatarios = Destinatarios.replace(/\,$/, '').split(",");
+
+                $.each(ListaDestinatarios, function (index, value) {
+                    let Destinatario = value.split(".");
+
+                    JsonDestinatarios.push({
+                        'Id': Destinatario[0],
+                        'Nombre': Destinatario[1].replace(/_/g, ' ')
+                    })
+                });
+            }
+
+            TablaDestinatarios = $("#TablaDestinatarios").DataTable({
+                data: JsonDestinatarios,
+                columns: [{
+                    className: "no-wrap", render: function (data, type, row) {
+                        //El nombre debe tratarse antes de ser incrustado en el evento OnClick ya que normalmente al construirse los parámetros de la
+                        //función en el primer espacio inserta ", por lo que los espacios se sustituyen por _
+                        let idDestinatario = row['Id'];
+                        let nombre = row['Nombre'].trim().replace(/\s+/g, '_');
+                        let nombreDestinatario = row['Nombre'];
+                        return "<a class='btn btn-small grey lighten-3 waves-effect waves-red black-text text-left width-100' title='Quitar' onclick=QuitarDestinatario('" + idDestinatario + "','" + nombre + "')><i class='fa fa-caret-left red-text left'></i>" + nombreDestinatario + "</a>";
+                    }
+                }],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                sorting: false,
+                responsive: false,
+                info: false,
+                pageLength: 5,
+                autoWidth: true,
+                lengthChange: false,
+                ordering: true,
+                filtering: false
+            });
+        }
+
+        // Agregar un usuario de la lista de usuario al array de usuariosDestino y a la tabla para su visualización
+        function AgregarDestinatario(IdUsuario, NombreUsuario) {
+            // Quitar usuario del arreglo de usuarios
+            JsonUsuarios.forEach(function (currentValue, index, arr) {
+                if (JsonUsuarios[index].Id == IdUsuario) {
+                    JsonUsuarios.splice(index, 1);
+                }
+            })
+
+            // Actualizar la tabla de usuarios con el array actualizado
+            TablaUsuarios.clear();
+            TablaUsuarios.rows.add(JsonUsuarios);
+            TablaUsuarios.draw();
+
+            // Agregar destinatario al JSON de destinatarios
+            // El nombre debe tratarse antes de ser insertado en el Json array, ya que viene con _ en vez de espacios y para mostrarlo en el botón
+            // correctamente se reemplaza los _ con espacio
+            JsonDestinatarios.push({
+                'Id': IdUsuario,
+                'Nombre': NombreUsuario.replace(/_/g, ' ')
+            })
+
+            //Actualizar la tabla de destinatarios con el array actualizado
+            TablaDestinatarios.clear();
+            TablaDestinatarios.rows.add(JsonDestinatarios);
+            TablaDestinatarios.draw();
+        }
+
+        function QuitarDestinatario(IdMiembro, NombreMiembro) {
+            // Quitar destinatario del arreglo de destinatarios
+            JsonDestinatarios.forEach(function (currentValue, index, arr) {
+                if (JsonDestinatarios[index].Id == IdMiembro) {
+                    JsonDestinatarios.splice(index, 1);
+                }
+            })
+
+            // Actualizar la tabla de destinatarios con el array actualizado
+            TablaDestinatarios.clear();
+            TablaDestinatarios.rows.add(JsonDestinatarios);
+            TablaDestinatarios.draw();
+
+            // Agregar usuario
+            // El nombre debe tratarse antes de ser insertado en el Json array, ya que viene con _ en vez de espacios y para mostrarlo en el botón
+            // correctamente se reemplaza los _ con espacio
+            JsonUsuarios.push({
+                'Id': IdMiembro,
+                'Nombre': NombreMiembro.replace(/_/g, ' ')
+            })
+
+            // Actualizar la tabla de usuarios con el array actualizado
+            TablaUsuarios.clear();
+            TablaUsuarios.rows.add(JsonUsuarios);
+            TablaUsuarios.draw();
+        }
+
+        // Antes de realizar el submit, llenas los valores de encabezado y pie con el contenido del editor de texto
+        $('#frmEditarAviso').submit(function (e) {
+            // Obtener el valor del editor, incluyendo formato HTML y guardarlo en los inputs establecidos en Razor
+            $("#Mensaje").val(EditorMensaje.root.innerHTML);
+
+            // Verificar si se seleccionó tipo de destinatario "Usuario" que la lista de destinataraios no esté vacía
+            let ValueSelected = $("#TipoDestinatario option:selected").val();
+
+            if (ValueSelected === 'Usuarios') {
+                if (JsonDestinatarios.length <= 0) {
+                    e.preventDefault();
+                    MostrarMensajeError("Debe seleccionar usuarios para recibir el aviso");
+                }
+                else {
+                    $.each(JsonDestinatarios, function (index, value) {
+                        ListaDestinatarios.push(value['Id']);
+                    });
+
+                    $("#Usuarios").val(ListaDestinatarios);
+
+                }
+            }
+        });
+    </script>
+
+    @* Se llama en esta posición puesto que necesita que primero se ejecute el script local *@
+    @Scripts.Render("~/bundles/quillextra")
+}

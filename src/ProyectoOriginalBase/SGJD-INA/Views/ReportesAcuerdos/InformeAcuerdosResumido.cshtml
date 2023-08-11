@@ -1,0 +1,290 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model InformeAcuerdosResumidoViewModel
+
+@{
+    ViewBag.Title = "Informe de Acuerdos Resumido";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="InfAcuRes" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Acuerdos", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Informes de Acuerdos
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Acuerdos", "Inicio")" class="breadcrumb">Modulo de Acuerdos</a>
+                    <a href="#" class="breadcrumb">Informes de Acuerdos</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            @using (Html.BeginForm("InformeAcuerdosResumido", "ReportesAcuerdos", FormMethod.Post, new { onsubmit = "return SubmitForm(this)", autocomplete = "off" })) {
+
+                <div class="row">
+                    <div class="col s12 mb-1">
+                        <span class="fz-1-2r font-bold">Informe de Acuerdos resumido</span>
+                    </div>
+
+                    @* Fecha inicial *@
+                    <div class="input-field col s12 m4">
+                        @Html.EditorFor(model => model.FechaInicio, string.Format("{0:d}", Model.FechaInicio), new { htmlAttributes = new { @class = "datepicker validate" } })
+                        @Html.LabelFor(model => model.FechaInicio)
+                    </div>
+
+                    @* Fecha final *@
+                    <div class="input-field col s12 m4">
+                        @Html.EditorFor(model => model.FechaFin, string.Format("{0:d}", Model.FechaFin), new { htmlAttributes = new { @class = "datepicker validate" } })
+                        @Html.LabelFor(model => model.FechaFin)
+                    </div>
+
+                    @*Boton de buscar*@
+                    <div class="col s12 m2">
+                        <button type="submit" id="BtnBuscar" class="btn btn-small grey lighten-3 waves-effect blue-text font-bold mt-2">
+                            Consultar
+                        </button>
+                    </div>
+                </div>
+
+                <ul class="collection">
+                    <li class="collection-item">
+                        <div class="row">
+                            @* Tabla Total de acuerdos *@
+                            <div class="col s12 m6">
+                                <table id="TablaAcuerdos" class="table responsive width-100 display striped">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="4" class="text-center font-bold blue-text fz-1-2r">Total de Acuerdos</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">@Html.DisplayNameFor(model => model.DatosReporte.FirstOrDefault().TotalAcuerdo)</th>
+                                            <th class="text-center">@Html.DisplayNameFor(model => model.DatosReporte.FirstOrDefault().Seguimiento)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var InformeAcuerdo in Model.DatosReporte) {
+                                            <tr>
+                                                <td class="text-center">
+                                                    @Html.DisplayFor(modelItem => InformeAcuerdo.TotalAcuerdo)
+                                                </td>
+                                                <td class="text-center">
+                                                    @Html.DisplayFor(modelItem => InformeAcuerdo.Seguimiento)
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            @* Grafico de total de acuerdos*@
+                            <div class="col s12 m6">
+                                @* Si la fechas van vacias solo muestra el titulo de la grafica*@
+                                @if (Model.FechaInicio.Equals("") && Model.FechaFin.Equals("")) {
+                                    <h6 class="blue-text font-bold center">Total de acuerdos</h6>
+                                }
+                                @* Si las dos fechas van con datos muestra el titulo y el rango de fechas solicitado*@
+                                else if (Model.FechaInicio != "" && Model.FechaFin != "") {
+                                    <h6 class="blue-text font-bold center">Total de acuerdos</h6>
+                                    <p class="black-text center font-bold">
+                                        @Html.DisplayFor(model => model.FechaInicio) al @Html.DisplayFor(model => model.FechaFin)
+                                    </p>
+                                }
+                                @* Si la fecha de inicio lleva datos pero la fecha fin no, muestra como fecha fin la fecha actual*@
+                                else {
+                                    <h6 class="blue-text font-bold center">Total de acuerdos</h6>
+                                    <p class="black-text center font-bold">
+                                        @Html.DisplayFor(model => model.FechaInicio) al @System.DateTime.Now.ToString("dd/MM/yyyy")
+                                    </p>
+                                }
+                                @* El canvas donde se encuentra el grafico contenido*@
+                                <canvas id="myChart1" style="display: block; height: 350px; width: 608px;"></canvas>
+                                @* Fuente de donde se extrae la información*@
+                                <p class="black-text font-bold center">Fuente: Actas de Junta Directiva del INA</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="collection-item">
+                        <div class="row">
+                            @*Tabla de total de acuerdos con seguimiento*@
+                            <div class="col s12 m6">
+                                <table id="TablaSeguimientos" class="table responsive width-100 display striped">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="4" class="text-center font-bold blue-text fz-1-2r">Acuerdos con seguimiento</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">@Html.DisplayNameFor(model => model.DatosReporte.FirstOrDefault().AcuEjecucion)</th>
+                                            <th class="text-center">@Html.DisplayNameFor(model => model.DatosReporte.FirstOrDefault().AcuEjecutado)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var InformeAcuerdo in Model.DatosReporte) {
+                                            <tr>
+                                                <td class="text-center">
+                                                    @Html.DisplayFor(modelItem => InformeAcuerdo.AcuEjecucion)
+                                                </td>
+                                                <td class="text-center">
+                                                    @Html.DisplayFor(modelItem => InformeAcuerdo.AcuEjecutado)
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            @* Grafico de total de acuerdos con seguimiento*@
+                            <div class="col s12 m6">
+                                @* Si la fechas van vacias solo muestra el titulo de la grafica*@
+                                @if (Model.FechaInicio.Equals("") && Model.FechaFin.Equals("")) {
+                                    <h6 class="blue-text font-bold center">Acuerdos con seguimiento</h6>
+                                }
+                                @* Si las dos fechas van con datos muestra el titulo y el rango de fechas solicitado*@
+                                else if (Model.FechaInicio != "" && Model.FechaFin != "") {
+                                    <h6 class="blue-text font-bold center">Acuerdos con seguimiento</h6>
+                                    <p class="black-text center font-bold">
+                                        @Html.DisplayFor(model => model.FechaInicio) al @Html.DisplayFor(model => model.FechaFin)
+                                    </p>
+                                }
+                                @* Si la fecha de inicio lleva datos pero la fecha fin no, muestra como fecha fin la fecha actual*@
+                                else {
+                                    <h6 class="blue-text font-bold center">Acuerdos con seguimiento</h6>
+                                    <p class="black-text center font-bold">
+                                        @Html.DisplayFor(model => model.FechaInicio) al @System.DateTime.Now.ToString("dd/MM/yyyy")
+                                    </p>
+                                }
+                                @* El canvas donde se encuentra el grafico contenido*@
+                                <canvas id="myChart2" style="display: block; height: 350px; width: 608px;"></canvas>
+                                @* Fuente de donde se extrae la información*@
+                                <p class="black-text font-bold center">Fuente: Actas de Junta Directiva del INA</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/bundles/chart")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Reconfigurar selectores de fecha para que limite la fecha de fin y esta no sea menor a la seleccionada en la fecha de inicio
+            const DatePickerFechaInicio = $('#FechaInicio');
+            M.Datepicker.init(DatePickerFechaInicio, {
+                firstDay: 1,
+                format: 'dd/mm/yyyy',
+                i18n: parametrosi18n,
+                autoClose: true,
+                onSelect: function (selected) {
+                    const DatePickerFechaFin = $('#FechaFin');
+                    M.Datepicker.init(DatePickerFechaFin, {
+                        minDate: selected,
+                        firstDay: 1,
+                        format: 'dd/mm/yyyy',
+                        i18n: parametrosi18n,
+                        autoClose: true
+                    });
+                },
+                onClose: function () {
+                    $("#FechaFin").val("");
+                }
+            });
+        });
+
+        // Grafica de acuerdos y seguimientos
+        var Informe = @Html.Raw(Json.Encode(Model.DatosReporte)); // Convertir y guardar el ViewModel en un objeto JSON
+
+        // Construir array con etiquetas para la propiedad labels del gráfico
+        var Acuerdos = new Array();
+        $.each(Informe, (index, value) => Acuerdos.push(value.TotalAcuerdo - value.Seguimiento));
+
+        var Seguimientos = new Array();
+        $.each(Informe, (index, value) => Seguimientos.push(value.Seguimiento));
+
+         var Datos = {
+             labels: ['Acuerdos sin seguimiento', 'Acuerdos con seguimientos'],
+             text: 'Fuente',
+             datasets: [{
+                 data: [Acuerdos, Seguimientos],
+                 backgroundColor: ['#ddd', '#36A2EB',],
+                 borderWidth: 1,
+                 borderColor: '#777',
+                 hoverBorderWidth: 2,
+                 hoverBorderColor: '#000'
+             }]
+        };
+
+        let MyChart1 = document.getElementById('myChart1').getContext('2d');
+        Chart.defaults.global.defaultFontColor = '#777';
+
+        let MassPopChart1 = new Chart(MyChart1, {
+            type: 'pie', // bar, horizontalBar, pie, line, radar, polarArea, doughnut
+            data: Datos,
+            options: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        fontColor: '#1F5098'
+                    }
+                },
+            }
+        });
+
+        // Grafica de acuerdos con seguimiento
+        // Construir array con etiquetas para la propiedad labels del gráfico
+         var EnEjecucion = new Array();
+        $.each(Informe, (index, value) => EnEjecucion.push(value.AcuEjecucion));
+
+         var Ejecutados = new Array();
+        $.each(Informe, (index, value) => Ejecutados.push(value.AcuEjecutado));
+
+         var Datos = {
+            labels: ['Acuerdos en ejecucion', 'Acuerdos ejecutados'],
+            datasets: [{
+                data: [EnEjecucion, Ejecutados],
+                backgroundColor: ['#4BC0C0', '#FFCD56'],
+                borderWidth: 1,
+                borderColor: '#777',
+                hoverBorderWidth: 2,
+                hoverBorderColor: '#000'
+             }]
+        };
+
+        let MyChart2 = document.getElementById('myChart2').getContext('2d');
+        Chart.defaults.global.defaultFontColor = '#777';
+
+        let MassPopChart2 = new Chart(MyChart2, {
+            type: 'pie', // bar, horizontalBar, pie, line, radar, polarArea, doughnut
+            data: Datos,
+            options: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        fontColor: '#1F5098'
+                    }
+                }
+            }
+        });
+
+    </script>
+}

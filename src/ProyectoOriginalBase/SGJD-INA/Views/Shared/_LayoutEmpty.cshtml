@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html lang="es-CR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="text/html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>@ViewBag.Title - SGJD</title>
+
+    @Scripts.Render("~/bundles/modernizr")
+    @Styles.Render("~/Content/normalize")
+    @Styles.Render("~/Content/materialize")
+
+    @Styles.Render("~/Content/helpers")
+    @Styles.Render("~/Content/customcss")
+</head>
+
+<body>
+    @RenderBody()  
+
+    @RenderSection("scripts", required: false)
+   
+</body>
+</html>

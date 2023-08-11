@@ -1,0 +1,147 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model EditarUsuarioViewModel
+
+@{
+    ViewBag.Title = "Editar usuario";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="EditUsu" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "Usuario")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Usuarios
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="@Url.Action("Inicio", "Usuario")" class="breadcrumb">Usuarios</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            @using (Html.BeginForm("Editar", "Usuario", FormMethod.Post, new { id = "frmEditarUsuario", autocomplete = "off" })) {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.IdUsuario)
+
+                <div class="row">
+                    <div class="col s12 m12">
+                        <span class="fz-1-2r font-bold">Editar usuario</span>
+                    </div>
+                </div>
+
+                <div class="row mb-0">
+                    <div class="col s12 m6 l4">
+                        <div class="input-field">
+                            @Html.EditorFor(model => model.Cedula, new { htmlAttributes = new { @class = "validate", @autocomplete = "off" } })
+                            @Html.LabelFor(model => model.Cedula, new { @class = "black-text" })
+                            @Html.ValidationMessageFor(model => model.Cedula, "", new { @class = "helper-text" })
+                        </div>
+                    </div>
+
+                    <div class="col s12 m6 l4">
+                        <div class="input-field">
+                            @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "validate", @autocomplete = "off" } })
+                            @Html.LabelFor(model => model.Nombre, new { @class = "black-text" })
+                            @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "helper-text" })
+                        </div>
+                    </div>
+
+                    <div class="col s12 m6 l4">
+                        <div class="input-field">
+                            @Html.EditorFor(model => model.Usuario, new { htmlAttributes = new { @class = "validate", @readonly = "readonly" } })
+                            @Html.LabelFor(model => model.Usuario, new { @class = "black-text LblUsuario" })
+                            @Html.ValidationMessageFor(model => model.Usuario, "", new { @class = "helper-text" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-0">
+                    <div class="col s12 m6 l4">
+                        <div class="input-field">
+                            @Html.EditorFor(model => model.CorreoElectronico, new { htmlAttributes = new { @class = "validate", autocomplete = "off", autofill = "off" } })
+                            @Html.LabelFor(model => model.CorreoElectronico, new { @class = "black-text" })
+                            @Html.ValidationMessageFor(model => model.CorreoElectronico, "", new { @class = "helper-text" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-0">
+                    <div class="col s12 m6 l4">
+                        @Html.LabelFor(model => model.NombreRol, new { @class = "po-relative font-bold" })
+                        @Html.DropDownListFor(model => model.NombreRol, new SelectList(ViewBag.Perfil, "Name", "Name", Model.NombreRol), new { @class = "browser-default" })
+                        @Html.ValidationMessageFor(model => model.NombreRol, "", new { @class = "helper-text" })
+                    </div>
+
+                    <div class="col s12 m6 l4">
+                        @Html.LabelFor(model => model.IdUnidad, new { @class = "po-relative font-bold" })
+                        @Html.DropDownListFor(model => model.IdUnidad, new SelectList(ViewBag.Unidad, "id", "nombre"), new { @class = "browser-default" })
+                        @Html.ValidationMessageFor(model => model.IdUnidad, "", new { @class = "helper-text" })
+                    </div>
+
+                    <div class="col s12 m6 l4">
+                        @Html.LabelFor(model => model.IdTipoUsuario, new { @class = "po-relative font-bold" })
+                        @Html.DropDownListFor(model => model.IdTipoUsuario, new SelectList(ViewBag.TipoUsuario, "id", "nombre"), new { @class = "browser-default" })
+                        @Html.ValidationMessageFor(model => model.IdTipoUsuario, "", new { @class = "helper-text" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col s12">
+                        <div class="input-field red-text font-bold">
+                            @Html.ValidationSummary(true, "", new { @class = "data-error" })
+                        </div>
+                    </div>
+
+                    <div class="col s12">
+                        <button type="submit" title="Guardar" id="GuardarUsuario" class="btn btn-small yellow black-text waves-effect waves-light font-bold">
+                            Guardar
+                        </button>
+
+                        <a title="Cancelar" id="Cancelar" href="@Url.Action("Inicio", "Usuario")" class="btn btn-small grey lighten-3 black-text waves-effect">
+                            Regresar a lista de usuarios
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        var PopUp, UsuarioGuardado;
+
+        // Si la vista se carga despues de crear un usuario se verifica si existe el mensaje dentro del ViewBag para mostrarlo como notificación
+        @if (ViewBag.UsuarioGuardado != null) {
+            @:UsuarioGuardado = '@ViewBag.UsuarioGuardado';
+        }
+
+        if (UsuarioGuardado === 'true') {
+            MostrarMensajeExito("Usuario guardado correctamente");
+        }
+    </script>
+}

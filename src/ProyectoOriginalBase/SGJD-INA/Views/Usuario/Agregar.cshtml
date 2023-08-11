@@ -1,0 +1,265 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model CrearUsuarioViewModel
+
+@{
+    ViewBag.Title = "Agregar usuario";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="AgreUsu" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Inicio", "Usuario")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Usuarios
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="@Url.Action("Inicio", "Usuario")" class="breadcrumb">Usuarios</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            @using (Html.BeginForm("Agregar", "Usuario", FormMethod.Post, new { id = "frmAgregarUsuario", autocomplete = "off" })) {
+                @Html.AntiForgeryToken()
+
+                <div class="row">
+                    <div class="col s12 m8 mb-1">
+                        <span class="fz-1-2r font-bold">Agregar usuario</span>
+                    </div>
+                    <div class="col s12 m4">
+                        <button type="button" onclick="AbrirModalUsuariosSIRH()" data-target="ModalUsuariosSIRH" class="btn btn-small grey lighten-3 blue-text font-bold waves-effect width-100 modal-trigger">Buscar usuarios en SIRH</button>
+                    </div>
+                </div>
+
+                <div class="row mb-0">
+                    <div class="col s12 m6 l4">
+                        <div class="input-field">
+                            @Html.EditorFor(model => model.Cedula, new { htmlAttributes = new { @class = "validate", @autocomplete = "off" } })
+                            @Html.LabelFor(model => model.Cedula, new { @class = "black-text LblCedula" })
+                            @Html.ValidationMessageFor(model => model.Cedula, "", new { @class = "helper-text" })
+                        </div>
+                    </div>
+
+                    <div class="col s12 m6 l4">
+                        <div class="input-field">
+                            @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "validate", @autocomplete = "off" } })
+                            @Html.LabelFor(model => model.Nombre, new { @class = "black-text LblNombre" })
+                            @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "helper-text" })
+                        </div>
+                    </div>
+
+                    <div class="col s12 m6 l4">
+                        <div class="input-field">
+                            @Html.EditorFor(model => model.Usuario, new { htmlAttributes = new { @class = "validate", @readonly = "readonly" } })
+                            @Html.LabelFor(model => model.Usuario, new { @class = "black-text LblUsuario" })
+                            @Html.ValidationMessageFor(model => model.Usuario, "", new { @class = "helper-text" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-0">
+                    <div class="col s12 m6 l4">
+                        <div class="input-field">
+                            @Html.EditorFor(model => model.CorreoElectronico, new { htmlAttributes = new { @class = "validate", autocomplete = "off", autofill = "off" } })
+                            @Html.LabelFor(model => model.CorreoElectronico, new { @class = "black-text LblCorreo" })
+                            @Html.ValidationMessageFor(model => model.CorreoElectronico, "", new { @class = "helper-text" })
+                        </div>
+                    </div>
+
+                    <div class="col s12 m6 l4">
+                        <div class="input-field">
+                            @Html.EditorFor(model => model.Contrasena, new { htmlAttributes = new { @class = "validate", autocomplete = "off", autofill = "off" } })
+                            @Html.LabelFor(model => model.Contrasena, new { @class = "black-text" })
+                            @Html.ValidationMessageFor(model => model.Contrasena, "", new { @class = "helper-text" })
+                        </div>
+                    </div>
+
+                    <div class="col s12 m6 l4">
+                        <div class="input-field">
+                            @Html.EditorFor(model => model.ConfirmarContrasena, new { htmlAttributes = new { @class = "validate" } })
+                            @Html.LabelFor(model => model.ConfirmarContrasena, new { @class = "black-text" })
+                            @Html.ValidationMessageFor(model => model.ConfirmarContrasena, "", new { @class = "helper-text" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-0">
+                    <div class="col s12 m6 l4">
+                        @Html.LabelFor(model => model.NombreRol, new { @class = "po-relative font-bold" })
+                        @Html.DropDownListFor(model => model.NombreRol, new SelectList(ViewBag.Perfil, "Name", "Name"), new { @class = "browser-default" })
+                        @Html.ValidationMessageFor(model => model.NombreRol, "", new { @class = "helper-text" })
+                    </div>
+
+                    <div class="col s12 m6 l4">
+                        @Html.LabelFor(model => model.IdUnidad, new { @class = "po-relative font-bold" })
+                        @Html.DropDownListFor(model => model.IdUnidad, new SelectList(ViewBag.Unidad, "Id", "Nombre"), new { @class = "browser-default" })
+                        @Html.ValidationMessageFor(model => model.IdUnidad, "", new { @class = "helper-text" })
+                    </div>
+
+                    <div class="col s12 m6 l4">
+                        @Html.LabelFor(model => model.IdTipoUsuario, new { @class = "po-relative font-bold" })
+                        @Html.DropDownListFor(model => model.IdTipoUsuario, new SelectList(ViewBag.TipoUsuario, "Id", "Nombre"), new { @class = "browser-default" })
+                        @Html.ValidationMessageFor(model => model.IdTipoUsuario, "", new { @class = "helper-text" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col s12">
+                        <div class="input-field red-text font-bold">
+                            @Html.ValidationSummary(true, "", new { @class = "data-error" })
+                        </div>
+                    </div>
+
+                    <div class="col s12">
+                        <button type="submit" title="Agregar" value="Agregar" id="AgregarUsuario" class="btn btn-small yellow black-text waves-effect waves-light font-bold">
+                            Agregar
+                        </button>
+
+                        <a title="Cancelar" id="Cancelar" href="@Url.Action("Inicio", "Usuario")" class="btn btn-small grey lighten-3 red-text waves-effect">
+                            Cancelar
+                        </a>
+
+                        <button type="reset" id="BtnLimpiarCampos" class="btn btn-small grey lighten-3 waves-effect black-text">Limpiar campos</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_UsuariosSIRHModal")
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+
+    <script type="text/javascript">
+        var TablaUsuariosSIRH; // Tabla de usuarios de SIRH
+
+        $(document).ready(function () {
+            // Replicar el texto digitado en el campo correo en el campo nombre de usuario
+            $("#CorreoElectronico").on("input", function () {
+                if ($(this).val().length !== 0) {
+                    $("#Usuario").val($("#CorreoElectronico").val());
+                    $(".LblUsuario").addClass("active");
+                }
+                else {
+                    $("#Usuario").val("");
+                    $(".LblUsuario").removeClass("active");
+                }
+            });
+        });
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Usuarios SIRH
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Abrir modal para ver y agregar usuarios desde SIRH
+        function AbrirModalUsuariosSIRH() {
+            //Parámetros AJAX para cargar DataTable
+            var parametrosAJAX = {
+                url: '@Url.Action("ObtenerTodos", "UsuarioSIRH")',
+                type: "GET",
+                datatype: "json",
+                error: MensajeError
+            };
+
+            TablaUsuariosSIRH = $("#TablaUsuariosSIRH").DataTable();
+            TablaUsuariosSIRH.destroy();
+
+            TablaUsuariosSIRH = $("#TablaUsuariosSIRH").DataTable({
+                ajax: parametrosAJAX,
+                columns: [
+                    { data: "Cedula", className: 'no-wrap' },
+                    { data: "Nombre", className: 'no-wrap' },
+                    { data: "Correo", className: 'no-wrap' },
+                    { data: "NombreUsuario", className: 'no-wrap' },
+                    {
+                        className: "dt-right no-wrap", render: function (data, type, row) {
+                            return "<a class='btn btn-small grey lighten-3 waves-effect waves-teal' title='Seleccionar' onclick='CargarUsuarioSIRHElegido(" + JSON.stringify(row) + ")'><i class='fa fa-check blue-text'></i></a>";
+                        }
+                    }
+                ],
+                columnDefs: [
+                    { responsivePriority: 1, targets: 3 },
+                    { responsivePriority: 2, targets: -1 },
+                ],
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                pageLength: 5,
+                //searching: false,
+                responsive: true,
+                info: false,
+                autoWidth: true,
+                lengthChange: false,
+                orderCellsTop: true,
+                fixedHeader: true
+            });
+        }
+
+        // Cargar datos de Usuario de SIRH elegido*/
+        function CargarUsuarioSIRHElegido(row) {
+            // Verificar si el nombre de usuario está duplicado en SIRH, si está duplicado no
+            // proceder al llenado automático y en su lugar notificar al usuario
+            var NombreUsuarioDuplicado = false;
+
+            // Ejecutar petición AJAX
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.Action("VerificarSiNombreUsuarioEstaDuplicado", "UsuarioSIRH")',
+                data: {
+                    NombreUsuario: row.NombreUsuario
+                },
+                success: function (data) {
+                    NombreUsuarioDuplicado = data.Duplicado;
+                },
+                error: function () {
+                    MostrarMensajeError("Error al procesar su solicitud."); // Notificar error
+                }
+            });
+
+            if (NombreUsuarioDuplicado === true) {
+                MostrarMensajeInformacion("El nombre de usuario " + row.NombreUsuario + " está duplicado dentro de los registros de SIRH, por favor comunicarse con el administrador para resolver el problema.");
+                return false;
+            }
+            else {
+                // Llenar campos con los datos del usuario de SIRH seleccionado
+                $("#Cedula").val(row.Cedula);
+                $("#Nombre").val(row.Nombre);
+                $("#Usuario").val(row.NombreUsuario);
+                $("#CorreoElectronico").val(row.Correo);
+
+                $("#Cedula, #Nombre, #Usuario, #CorreoElectronico").attr("readonly", "readonly"); // Deshabilitar campos
+
+                // Añadir active para que el label de materialize se traslade a la parte superior de
+                // cada control de texto
+                $(".LblCedula, .LblNombre, .LblUsuario, .LblCorreo").addClass("active");
+
+                M.Modal.getInstance($(".modal")).close(); // Cerrar modal
+            }
+        }
+
+        $("#BtnLimpiarCampos").click(function () {
+            $("#Cedula, #Nombre, #Usuario, #CorreoElectronico").removeAttr("readonly"); // Deshabilitar campos
+        });
+    </script>
+}

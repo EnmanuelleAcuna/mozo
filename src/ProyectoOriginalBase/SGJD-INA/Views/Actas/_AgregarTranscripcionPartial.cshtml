@@ -1,0 +1,29 @@
+﻿<!-- Modal para agregar un articulo al acta mientras se edita -->
+<div id="ModalTranscripciones" class="modal">
+    <div class="modal-content px-0 py-1">
+        <div class="row">
+            <div class="col s12">
+                <h6 class="text-center blue-text">
+                    Audios transcritos de esta Sesión
+                </h6>
+                <small>Hacer clien en el nombre del audio para expandir y ver la transcripción</small>
+            </div>
+
+            @* Agregar nuevo Articulo *@
+            <div class="col s12">
+                <ul id="AudiosTranscritos" class="collapsible expandable z-depth-0">
+                </ul>
+
+                <div class="text-center">
+                    @*<button id="BtnAgregarArticulo" class="btn btn-small waves-effect yellow black-text font-bold" title="Agregar nuevo articulo" onclick="AgregarNuevoArticulo()">Agregar</button>*@
+                    <a class="modal-close btn btn-small grey lighten-3 waves-effect red-text font-bold">Cancelar</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

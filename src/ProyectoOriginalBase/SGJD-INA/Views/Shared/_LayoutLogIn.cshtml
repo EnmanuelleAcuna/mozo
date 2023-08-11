@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html lang="es-CR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="text/html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1">
+    <meta http-equiv="X-UA-Compatible Content-Type" content="ie=edge">
+    <title>@ViewBag.Title - SGJD</title>
+
+    @Scripts.Render("~/bundles/modernizr")
+    @Styles.Render("~/Content/normalize")
+    @Styles.Render("~/Content/materialize")
+    @Styles.Render("~/Content/material-icons")
+    @Styles.Render("~/Content/faicons")
+
+    @Styles.Render("~/Content/helpers")
+    @Styles.Render("~/Content/customcss")
+</head>
+
+<body>
+    @* Preloader *@
+    <div class="page-loader-wrapper">
+        <div class="loader">
+            <div class="sk-wave">
+                <div class="sk-rect sk-rect1 "></div>
+                <div class="sk-rect sk-rect2 "></div>
+                <div class="sk-rect sk-rect3 "></div>
+                <div class="sk-rect sk-rect4 "></div>
+                <div class="sk-rect sk-rect5 "></div>
+                <div class="sk-rect sk-rect6 "></div>
+                <div class="sk-rect sk-rect7 "></div>
+                <div class="sk-rect sk-rect8 "></div>
+            </div>
+            <p class="center">Cargando</p>
+        </div>
+    </div>
+
+    <div class="login valign-wrapper">
+        <div class="row">
+            <div class="col s12">
+                <div class="card-panel">
+                    <header class="center">
+                        <img class="responsive-img" alt="Logo INA" src="~/Content/Images/INA.png">
+                        <div class="row">
+                            <div class="col s12">
+                                <h6 class="blue-text font-semibold center">SISTEMA DE GESTIÓN DE JUNTA DIRECTIVA</h6>
+                            </div>
+                        </div>
+                    </header>
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Boton flotante para que abre un partial en las vistas para mostrar la ayuda en las vistas*@
+    <div class="fixed-action-btn" id="BtnAyuda">
+        <a class="btn-floating blue" onclick="OpenModalManual('@Url.Action("Detalle","AyudaUsuario")?Abreviatura=' + $('#nameView').val());">
+            <i class="fas fa-info fa-2x my-float"></i>
+        </a>
+        <div id="ModalAyudaUsuario" class="modal" role="dialog"></div>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryajaxunobtrusive")
+    @Scripts.Render("~/bundles/materialize")
+    @Scripts.Render("~/bundles/firmadigital")
+    @Scripts.Render("~/bundles/customjs")
+    @Scripts.Render("~/bundles/userway")
+
+    @RenderSection("scripts", required: false)
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-113324076-4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-113324076-4');
+    </script>
+
+    <script type="text/javascript">
+        //Inicializar componentes MaterializeCSS
+        document.addEventListener('DOMContentLoaded', function () {
+            // Modals
+            const Modals = document.querySelectorAll('.modal');
+            M.Modal.init(Modals, { dismissible: false });
+        });
+
+        //Establecer parametros al PlugIn de accesibilidad, es necesario hacerlo antes del document ready por especificacion de UserWay
+        var _userway_config = {
+            position: '5', // uncomment the following line to override default position
+            size: 'small', // uncomment the following line to override default size (values: small, large)
+            language: 'es', // uncomment the following line to override default language (e.g., fr, de, es, he, nl, etc.)
+            mobile: true, //uncomment the following line to override support on mobile devices
+            account: 'SG2u9UdEBd'
+        };
+       
+        $(document).ready(function () {
+            DesaparecerCargandoPagina(); //Desaparece la carga de pagina
+
+            //Inicializar el boton flotante
+            $("#BtnAyuda").floatingActionButton({
+                hoverEnabled: false
+            });
+        });
+
+        // Función para abrir el partial en las vistas correspondientes
+        function OpenModalManual(url) {
+            console.log(url);
+            var form = $('<div/>');
+            $('#ModalAyudaUsuario').modal();
+            $.get(url).done(
+                function (response) {
+                    if (form.length != 0) {
+                        form.html(response);
+                        $('#ModalAyudaUsuario').append(form);
+                        $('#ModalAyudaUsuario').modal('open');
+                    }
+                }
+            );
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+﻿@using SGJD_INA.Models.ViewModels
+
+@model InicioParametrosGeneralesViewModel
+
+@{
+    ViewBag.Title = "Parametros Generales";
+}
+
+@* Codigo para enviar el valor de la vista para abrir el modal de ayuda en cada vista *@
+<input type="hidden" id="nameView" value="IniParInt" />
+
+<div class="row mt-2">
+    <div class="col s12 m4">
+        <h6 class="seccion white-text truncate">
+            <a title="Regresar" href="@Url.Action("Administracion", "Inicio")">
+                <i class="fa fa-arrow-left white-text">&nbsp;</i>
+            </a>
+            Parámetros Generales
+        </h6>
+    </div>
+    <div class="col s12 m8 hide-on-med-and-down">
+        <nav class="transparent z-depth-0 breadcrumb">
+            <div class="nav-wrapper right">
+                <div class="col s12">
+                    <a href="@Url.Action("Inicio", "Inicio")" class="breadcrumb">Inicio</a>
+                    <a href="@Url.Action("Administracion", "Inicio")" class="breadcrumb">Módulo de Administración</a>
+                    <a href="#" class="breadcrumb">Parámetros Generales</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col s12 mb-1">
+                    <span class="fz-1-2r font-bold">
+                        Lista de Parámetros de la Intitución
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <table id="TablaParametrosInstitucion" class="table responsive display width-100 bordered cell-border">
+                        <thead>
+                            <tr>
+                                <th nowrap>@Html.DisplayNameFor(model => model.ListaParametrosTipoCorreo.FirstOrDefault().Descripcion)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.ListaParametrosTipoCorreo.FirstOrDefault().Valor)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ParametroInstitucion in Model.ListaParametrosTipoInstitucion) {
+                                <tr>
+                                    <td nowrap>
+                                        @Html.DisplayFor(modelItem => ParametroInstitucion.Descripcion)
+                                    </td>
+                                    <td nowrap>
+                                        @Html.DisplayFor(modelItem => ParametroInstitucion.Valor)
+                                    </td>
+                                    <td>
+                                        <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@ParametroInstitucion.IdParametroGeneral'>
+                                            <i class="fa fa-caret-down blue-text"></i>
+                                        </a>
+
+                                        <ul id='dropdown_@ParametroInstitucion.IdParametroGeneral' class='dropdown-content'>
+                                            <li>
+                                                <a class="blue-text" title='Editar' onclick="PopUpForm('@Url.Action("Editar", "ParametrosGenerales", new { Id = ParametroInstitucion.IdParametroGeneral } )')">Editar</a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12 my-1">
+                    <span class="fz-1-2r font-bold">
+                        Lista de Parámetros de Correo
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <table id="TablaParametrosCorreo" class="table responsive display width-100 bordered cell-border">
+                        <thead>
+                            <tr>
+                                <th nowrap>@Html.DisplayNameFor(model => model.ListaParametrosTipoCorreo.FirstOrDefault().Descripcion)</th>
+                                <th nowrap>@Html.DisplayNameFor(model => model.ListaParametrosTipoCorreo.FirstOrDefault().Valor)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ParametroCorreo in Model.ListaParametrosTipoCorreo) {
+                                <tr>
+                                    <td nowrap>
+                                        @Html.DisplayFor(modelItem => ParametroCorreo.Descripcion)
+                                    </td>
+                                    <td nowrap>
+                                        @Html.DisplayFor(modelItem => ParametroCorreo.Valor)
+                                    </td>
+                                    <td>
+                                        <a class='dropdown-trigger btn btn-small grey lighten-3 waves-effect right' href='#' data-target='dropdown_@ParametroCorreo.IdParametroGeneral'>
+                                            <i class="fa fa-caret-down blue-text"></i>
+                                        </a>
+
+                                        <ul id='dropdown_@ParametroCorreo.IdParametroGeneral' class='dropdown-content'>
+                                            <li>
+                                                <a class="blue-text" title='Editar' onclick="PopUpForm('@Url.Action("Editar", "ParametrosGenerales", new { Id = ParametroCorreo.IdParametroGeneral } )')">Editar</a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/jquerydatatable")
+@Styles.Render("~/Content/jquerydatatableresponsive")
+@Styles.Render("~/Content/jqueryui")
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquerydatatable")
+    @Scripts.Render("~/bundles/jquerydatatableresponsive")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+        var PopUp;
+
+        $(document).ready(function () {
+            $("#TablaParametrosInstitucion, #TablaParametrosCorreo").DataTable({
+                language: parametrosLenguajeDataTable,
+                pagingType: "numbers",
+                searching: false,
+                sorting: false,
+                responsive: true,
+                info: false,
+                pageLength: 20,
+                autoWidth: true,
+                lengthChange: false,
+                ordering: false,
+                columnDefs: [ // Indicar a la librería que la primer y ultima columna no se oculten en responsive
+                    { responsivePriority: 1, targets: 0 },
+                    { responsivePriority: 2, targets: -1 }
+                ]
+            });
+        });
+    </script>
+}
